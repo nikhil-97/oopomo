@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Oopomo</string>
     <string name="title_home">Home</string>
-    <string name="title_stats">Stats</string>
+    <string name="title_stats">Statistics</string>
     <string-array name="stats_time_array">
         <item>Daily</item>
         <item>Weekly</item>
@@ -9,7 +9,7 @@
     </string-array>
     <string name="title_goals">Goals</string>
     <string name="title_settings">Settings</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="stoptrackingdialog_message">Do you really want to stop the timer ?
+    This will nuke North Korea !</string>
+    <string name="stoptrackingdialog_title">Stop Timer ?</string>
 </resources>
