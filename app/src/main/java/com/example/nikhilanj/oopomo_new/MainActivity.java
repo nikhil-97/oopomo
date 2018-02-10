@@ -13,15 +13,18 @@ import android.support.v4.app.Fragment;
 import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.nikhilanj.oopomo_new.lib.PomoTimer;
+import com.github.lzyzsd.circleprogress.ArcProgress;
+
 import java.util.Set;
 
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener {
 
     //private TextView mTextMessage;
     HomeFragment homefragment = new HomeFragment();
@@ -133,6 +136,10 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(getString (R.string.title_stats));
     }
 
-
-
+    /*
+    * Home fragment listener interface implementation*/
+    public void startTimer(View view){
+        PomoTimer timer = new PomoTimer(this, 60);
+        timer.startTimer();
+    }
 }
