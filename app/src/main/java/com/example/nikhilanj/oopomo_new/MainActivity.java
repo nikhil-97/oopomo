@@ -1,28 +1,25 @@
 package com.example.nikhilanj.oopomo_new;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.res.ResourcesCompat;
 import android.transition.Fade;
 import android.transition.Transition;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v4.app.Fragment;
 import android.transition.TransitionManager;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.nikhilanj.oopomo_new.lib.PomoTimer;
-import com.github.lzyzsd.circleprogress.ArcProgress;
-
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener {
 
@@ -119,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(android.R.id.content, goalsfragment).commit();
         transaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
+        transaction.addToBackStack(null);
         getSupportActionBar().setTitle(getString (R.string.title_goals));
     }
 
@@ -136,10 +134,60 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         getSupportActionBar().setTitle(getString (R.string.title_stats));
     }
 
-    /*
-    * Home fragment listener interface implementation*/
+    /**
+     * Implementation of HomeFragment interaction listener
+     */
+    PomoTimer pomoTimer;
     public void startTimer(View view){
-        PomoTimer timer = new PomoTimer(this, 60);
-        timer.startTimer();
+        if( this.pomoTimer != null ){
+            if(this.pomoTimer.isTimerRunning()){
+                this.pauseTimer(view);
+            }
+            else {
+                this.resumeTimer(view);
+            }
+            return;
+        }
+        this.pomoTimer = new PomoTimer(this, 60);
+        this.pomoTimer.startTimer();
+        FloatingActionButton timerActionButton = view.findViewById(R.id.timer_action_button);
+        timerActionButton.setImageDrawable(
+                ResourcesCompat.getDrawable(
+                        getResources(),
+                        R.drawable.ic_pause_black_24dp,
+                        null
+                )
+        );
+    }
+
+    public void pauseTimer(View view){
+        this.pomoTimer.pauseTimer();
+        FloatingActionButton timerActionButton = view.findViewById(R.id.timer_action_button);
+        timerActionButton.setImageDrawable(
+                ResourcesCompat.getDrawable(
+                        getResources(),
+                        R.drawable.ic_play_arrow_white_24dp,
+                        null
+                )
+        );
+    }
+
+    public void resumeTimer(View view){
+        this.pomoTimer.resumeTimer();
+        FloatingActionButton timerActionButton = view.findViewById(R.id.timer_action_button);
+        timerActionButton.setImageDrawable(
+                ResourcesCompat.getDrawable(
+                        getResources(),
+                        R.drawable.ic_pause_black_24dp,
+                        null
+                )
+        );
+    }
+
+    public void updatePomoTimerUiElements(View view){
+        if(this.pomoTimer == null){
+            return;
+        }
+        pomoTimer.updateUiElements(view);
     }
 }

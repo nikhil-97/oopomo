@@ -2,6 +2,8 @@ package com.example.nikhilanj.oopomo_new.lib;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.example.nikhilanj.oopomo_new.R;
@@ -26,7 +28,16 @@ public class PomoTimer {
         this.countdownTime = countdownTime;
         this.timer = new Timer();
         this.task = new PomoTimerTask();
-        System.out.println(countdownTime);
+    }
+
+    public boolean isTimerRunning() {
+        return isTimerRunning;
+    }
+
+    public void updateUiElements(View view) {
+        this.timerActivity = (Activity) view.getContext();
+        this.arcProgress = view.findViewById(R.id.arc_progress);
+        this.timerText = view.findViewById(R.id.timeView);
     }
 
     public String getTime() {
@@ -47,24 +58,20 @@ public class PomoTimer {
     }
 
     public void resumeTimer(){
-        this.isTimerRunning = true;
+        if( this.isTimerRunning() ){
+            return;
+        }
+        this.timer = new Timer();
+        this.task = new PomoTimerTask();
         this.timer.scheduleAtFixedRate(task, 0, 1000);
-    }
-
-    public void resetTimer() {
-        if( isTimerRunning ) {
-            this.pauseTimer();
-            this.currentCountdown = this.countdownTime;
-        }
-        else {
-            this.currentCountdown = this.countdownTime;
-        }
+        this.isTimerRunning = true;
     }
 
     public void updateViews(){
         timerActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Log.d("timer_debug", "Thread running");
                 arcProgress.setProgress((countdownTime-currentCountdown)*100/countdownTime);
                 timerText.setText(getTime());
             }
@@ -73,10 +80,9 @@ public class PomoTimer {
 
     class PomoTimerTask extends TimerTask {
         public void run() {
-            if( currentCountdown == 0) {
+            if( currentCountdown == 0 ) {
                 timer.cancel();
                 isTimerRunning = false;
-                resetTimer();
                 return;
             }
             currentCountdown--;
