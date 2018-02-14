@@ -13,12 +13,15 @@ import android.support.v4.app.Fragment;
 import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Set;
+
+import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -82,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.dark_mode_setting:
                 item.setChecked(!item.isChecked());
-                Context context = getBaseContext();
                 String toasttext;
                 if(item.isChecked()){
                     setTheme(R.style.DarkTheme);
@@ -93,13 +95,24 @@ public class MainActivity extends AppCompatActivity {
                     toasttext="Dark Theme removed";
                     setTheme(R.style.AppTheme);
                 }
-                Toast.makeText(context, toasttext, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), toasttext, Toast.LENGTH_SHORT).show();
                 return true;
+
+            case R.id.fullscreen_setting:
+                item.setChecked(!item.isChecked());
+                if(item.isChecked()){
+                    final View decorView = getWindow().getDecorView();
+                    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN);
+                    System.out.println("insane checked");
+                }
+                else{
+                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                    System.out.println("insane unchecked");
+                }
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 
 
     private void loadHomeFragment(HomeFragment homefragment){
@@ -132,7 +145,5 @@ public class MainActivity extends AppCompatActivity {
         manager.beginTransaction().replace(android.R.id.content, statsfragment).commit();
         getSupportActionBar().setTitle(getString (R.string.title_stats));
     }
-
-
 
 }

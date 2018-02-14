@@ -1,28 +1,22 @@
 package com.example.nikhilanj.oopomo_new;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
+import android.view.animation.Animation;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.ThemedSpinnerAdapter;
 import android.widget.Toast;
 import com.github.lzyzsd.circleprogress.ArcProgress;
-import com.github.lzyzsd.circleprogress.CircleProgress;
-
-import org.w3c.dom.Text;
-
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import static com.example.nikhilanj.oopomo_new.appimer.getMinutes;
 import static com.example.nikhilanj.oopomo_new.appimer.getSeconds;
@@ -33,7 +27,11 @@ public class HomeFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public HomeFragment() {} //essential empty constructor
-    boolean track;
+    private BottomSheetBehavior mBottomSheetBehavior;
+    private Button profilesbutton;
+    private Button startbutton;
+    private Button pausebutton;
+    private Button stopbutton;
 
     public static HomeFragment newInstance() {
         HomeFragment fragment = new HomeFragment();
@@ -45,8 +43,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v("Created View", "Not ded");
-        track = false;}
+        Log.v("Created View", "Not ded");}
 
 
     @Override
@@ -54,48 +51,115 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home_fragment_layout, container, false);
 
-        final Button profilesbutton = (Button) view.findViewById(R.id.timeProfilesButton);
+        mBottomSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet));
+        profilesbutton = (Button) view.findViewById(R.id.timeProfilesButton);
+        startbutton = (Button) view.findViewById(R.id.startTimeButton);
+        pausebutton = (Button) view.findViewById(R.id.pauseTimeButton);
+        stopbutton = (Button) view.findViewById(R.id.stopTimeButton);
+
         profilesbutton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
                 Toast.makeText(getContext(), "Under Construction !", Toast.LENGTH_SHORT).show();
+                if(mBottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                    profilesbutton.animate().rotation(0).start();
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }
+                else {
+                    profilesbutton.animate().rotation(180).start();
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+
 
             }
         });
 
-        final Button starttimebutton = (Button) view.findViewById(R.id.startTimeButton);
-        starttimebutton.setOnClickListener(new View.OnClickListener() {
+        startbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                track=!track;
-                if(track==true) {
-                    trackTime();
-                    starttimebutton.setText("STOP");
-                    Toast.makeText(getContext(), "Starting Time !", Toast.LENGTH_SHORT).show();
-                }
-                else if (track==false){
+                pausebutton.setAlpha((float)0.001);
+                pausebutton.setVisibility(View.VISIBLE);
+                pausebutton.setAlpha((float)0.001);
+                stopbutton.setVisibility(View.VISIBLE);
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setMessage(R.string.stoptrackingdialog_message).setTitle(R.string.stoptrackingdialog_title);
-                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {starttimebutton.setText("START");}});
-                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            track = true;
-                            Toast.makeText(getContext(), "Pressed NO", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
+                buttonFadeOutAnimation(startbutton,1000);
+                //startCountdown();
+                buttonFadeInAnimation(pausebutton,1200);
+                buttonFadeInAnimation(stopbutton,1200);
+                Toast.makeText(getContext(), "Starting Time !", Toast.LENGTH_SHORT).show();
+                }
+        });
+
+        pausebutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                if(pausebutton.getText().equals("PAUSE")){
+                    //TODO : pauseCountdown;
+                    Toast.makeText(getContext(), "Time Paused!", Toast.LENGTH_SHORT).show();
+
+                }
+                else if(pausebutton.getText().equals("RESUME")){
+                    //TODO : resumeCountdown;
+                    Toast.makeText(getContext(), "Time Resumed!", Toast.LENGTH_SHORT).show();
 
                 }
             }
         });
+
+        stopbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                //TODO : pauseCountdown;
+                showStopAlert();
+            }
+        });
+
         return view;
     }
 
-    private void trackTime(){
+    private void buttonFadeOutAnimation(Button somebutton,long fadeouttime){
+        ViewPropertyAnimator buttonanimation = somebutton.animate().alpha((float)0.01).setDuration(fadeouttime);
+        buttonanimation.start();
+        somebutton.setEnabled(false);
+    }
+
+    private void buttonFadeInAnimation(Button somebutton,long fadeintime){
+        ViewPropertyAnimator buttonanimation = somebutton.animate().alpha(1).setDuration(fadeintime);
+        buttonanimation.start();
+        somebutton.setEnabled(true);
+    }
+
+    private void showStopAlert(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.stoptrackingdialog_message).setTitle(R.string.stoptrackingdialog_title);
+        boolean response;
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {stopTimerYes();}
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {stopTimerNo();}
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void stopTimerYes(){
+        Toast.makeText(getContext(), "Pressed YES", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "stopCountdown()", Toast.LENGTH_SHORT).show();
+        buttonFadeOutAnimation(pausebutton, 1000);
+        buttonFadeOutAnimation(stopbutton, 1000);
+        //TODO : stopCountdown();
+        buttonFadeInAnimation(startbutton, 1000);
+        Toast.makeText(getContext(), "Time Stopped!", Toast.LENGTH_SHORT).show();
+    }
+
+    private void stopTimerNo(){
+        Toast.makeText(getContext(), "Pressed NO", Toast.LENGTH_SHORT).show();
+        //TODO : resumeCountdown()
+    }
+
+    /*private void trackTime(){
         final String[] message = new String[]{"hello","bello","mello"};
         new Thread(new Runnable() {
             @Override
@@ -136,7 +200,7 @@ public class HomeFragment extends Fragment {
                 }
             }
         }).start();
-    }
+    }*/
 
 
     // TODO: Rename method, update argument and hook method into UI event
