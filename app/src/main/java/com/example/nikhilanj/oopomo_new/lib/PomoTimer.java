@@ -17,8 +17,18 @@ public class PomoTimer {
         this.task = new PomoTimerTask();
     }
 
+    /*
+    * Getters
+    * */
     public boolean isTimerRunning() {
         return isTimerRunning;
+    }
+
+    /*
+    * Setters
+    * */
+    public void setCountdownTime(int countdownTime) {
+        this.countdownTime = countdownTime;
     }
 
     public String getTime() {
