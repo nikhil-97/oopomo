@@ -31,7 +31,6 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home_fragment_layout, container, false);
-        mListener.updatePomoTimerUiElements(view);
         return view;
     }
 
@@ -56,6 +55,5 @@ public class HomeFragment extends Fragment {
         void startTimer(View view);
         void pauseTimer(View view);
         void resumeTimer(View view);
-        void updatePomoTimerUiElements(View view);
     }
 }

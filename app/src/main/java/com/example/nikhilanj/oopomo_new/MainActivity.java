@@ -21,7 +21,9 @@ import android.widget.Toast;
 
 import com.example.nikhilanj.oopomo_new.lib.PomoTimer;
 
-public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements
+        HomeFragment.OnFragmentInteractionListener,
+        PomoTimer.PomoTimerEventsListener{
 
     //private TextView mTextMessage;
     HomeFragment homefragment = new HomeFragment();
@@ -116,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(android.R.id.content, goalsfragment).commit();
         transaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
-        transaction.addToBackStack(null);
         getSupportActionBar().setTitle(getString (R.string.title_goals));
     }
 
@@ -134,6 +135,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         getSupportActionBar().setTitle(getString (R.string.title_stats));
     }
 
+    /*
+     *Implementation of PomoTimerEventListener
+     */
+    public void onPomoTimerUpdate(){
+        Log.d("interaction", "onPomoTimerUpdate invoked");
+    }
+
     /**
      * Implementation of HomeFragment interaction listener
      */
@@ -148,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
             }
             return;
         }
-        this.pomoTimer = new PomoTimer(this, 60);
+        this.pomoTimer = new PomoTimer(60, this);
         this.pomoTimer.startTimer();
         FloatingActionButton timerActionButton = view.findViewById(R.id.timer_action_button);
         timerActionButton.setImageDrawable(
@@ -182,12 +190,5 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
                         null
                 )
         );
-    }
-
-    public void updatePomoTimerUiElements(View view){
-        if(this.pomoTimer == null){
-            return;
-        }
-        pomoTimer.updateUiElements(view);
     }
 }
