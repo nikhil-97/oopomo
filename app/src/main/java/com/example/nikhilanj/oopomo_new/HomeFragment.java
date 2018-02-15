@@ -3,7 +3,9 @@ package com.example.nikhilanj.oopomo_new;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -27,8 +29,7 @@ public class HomeFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public HomeFragment() {} //essential empty constructor
-    private BottomSheetBehavior mBottomSheetBehavior;
-    private Button profilesbutton;
+    private FloatingActionButton edittimebutton;
     private Button startbutton;
     private Button pausebutton;
     private Button stopbutton;
@@ -51,27 +52,18 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home_fragment_layout, container, false);
 
-        mBottomSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet));
-        profilesbutton = (Button) view.findViewById(R.id.timeProfilesButton);
+        //timeSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet));
+        //profilesbutton = (Button) view.findViewById(R.id.timeProfilesButton);
+
+        edittimebutton = (FloatingActionButton) view.findViewById(R.id.edit_time_button);
         startbutton = (Button) view.findViewById(R.id.startTimeButton);
         pausebutton = (Button) view.findViewById(R.id.pauseTimeButton);
         stopbutton = (Button) view.findViewById(R.id.stopTimeButton);
 
-        profilesbutton.setOnClickListener(new View.OnClickListener() {
-
+        edittimebutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                Toast.makeText(getContext(), "Under Construction !", Toast.LENGTH_SHORT).show();
-                if(mBottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
-                    profilesbutton.animate().rotation(0).start();
-                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                }
-                else {
-                    profilesbutton.animate().rotation(180).start();
-                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                }
-
-
+                showTimeSettingsFragment();
             }
         });
 
@@ -118,6 +110,12 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    public void showTimeSettingsFragment() {
+        BottomSheetDialogFragment timeProfileFragment = new TimeProfileSheetFragment();
+        getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_layout, null);
+        timeProfileFragment.show(getFragmentManager(), timeProfileFragment.getTag());
+
+    }
     private void buttonFadeOutAnimation(Button somebutton,long fadeouttime){
         ViewPropertyAnimator buttonanimation = somebutton.animate().alpha((float)0.01).setDuration(fadeouttime);
         buttonanimation.start();

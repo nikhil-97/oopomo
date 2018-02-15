@@ -7,10 +7,23 @@
         <item>Weekly</item>
         <item>Monthly</item>
     </string-array>
+
+    <string name="classictime">Classic</string>
+    <string name="superfocus">Super Focus</string>
+    <string name="addcustom">Add Custom</string>
+    <string-array name="time_profiles_array">
+        <item>@string/classictime</item>
+        <item>@string/superfocus</item>
+        <item>@string/addcustom</item>
+    </string-array>
+
     <string name="title_goals">Goals</string>
     <string name="title_settings">Settings</string>
     <string name="stoptrackingdialog_message">Do you really want to stop the timer ?</string>
     <string name="goalstext">This is a goal.</string>
     <string name="stoptrackingdialog_title">Stop Timer ?</string>
     <string name="statsname">Stats</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

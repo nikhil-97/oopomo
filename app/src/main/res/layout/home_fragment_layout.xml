@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <Space
-        android:id="@+id/space"
+        android:id="@+id/space_for_bottomnavbar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -15,212 +16,109 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/home_coord_layout"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/space"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:paddingBottom="4dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:paddingTop="4dp">
 
-        <RelativeLayout
-            android:id="@+id/bottom_sheet"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:background="@android:color/white"
-            android:elevation="4dp"
+        <TextView
+            android:id="@+id/timeView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/roboto_thin"
+            android:text="25:00"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textSize="48sp"
+            android:textStyle="bold"
+            android:typeface="serif"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.225" />
+
+        <Button
+            android:id="@+id/startTimeButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/transparent"
+            android:drawableEnd="@drawable/ic_triangular_play_button"
+            android:elevation="20dp"
+            android:textSize="18sp"
             android:visibility="visible"
-            app:behavior_hideable="false"
-            app:behavior_peekHeight="50dp"
-            app:layout_anchorGravity="bottom|fill_horizontal|center"
-            app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
-            tools:layout_editor_absoluteY="390dp">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/timeView" />
 
-            <include layout="@layout/bottom_sheet_layout" />
+        <Button
+            android:id="@+id/pauseTimeButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="8dp"
+            android:alpha="0"
+            android:background="@android:color/transparent"
+            android:drawableEnd="@drawable/ic_pause"
+            android:elevation="20dp"
+            android:enabled="false"
+            android:textSize="18sp"
+            android:visibility="invisible"
+            app:layout_constraintBaseline_toBaselineOf="@+id/startTimeButton"
+            app:layout_constraintEnd_toStartOf="@+id/startTimeButton"
+            app:layout_constraintStart_toStartOf="parent" />
 
-            <!--RelativeLayout
-                android:id="@+id/bottom_sheet_title"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@color/colorPrimary">
+        <Button
+            android:id="@+id/stopTimeButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@android:color/transparent"
+            android:drawableEnd="@drawable/ic_square"
+            android:elevation="20dp"
+            android:enabled="false"
+            android:textSize="18sp"
+            android:visibility="invisible"
+            app:layout_constraintBaseline_toBaselineOf="@+id/startTimeButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.503"
+            app:layout_constraintStart_toEndOf="@+id/startTimeButton" />
 
-                <TextView
-                    android:id="@+id/text_view_sheet_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_thin"
-                    android:paddingLeft="8dp"
-                    android:paddingTop="8dp"
-                    android:text="Classic"
-                    android:textAlignment="viewStart"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:typeface="sans"
-                    tools:layout_editor_absoluteX="88dp"
-                    tools:layout_editor_absoluteY="0dp" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/edit_time_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:tint="@android:color/black"
+            app:backgroundTint="@android:color/white"
+            app:elevation="2dp"
+            app:fabSize="mini"
+            app:layout_constraintBottom_toBottomOf="@+id/timeView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/timeView"
+            app:layout_constraintTop_toTopOf="@+id/timeView"
+            app:layout_constraintVertical_bias="0.437"
+            app:rippleColor="@android:color/black"
+            app:srcCompat="@drawable/ic_pencil_button" android:focusable="true" />
 
-                <Button
-                    android:id="@+id/timeProfilesButton"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginEnd="34dp"
-                    android:background="@android:color/transparent"
-                    android:drawableStart="@mipmap/down_arrow1"
-                    android:elevation="20dp"
-                    android:rotation="180"
-                    android:visibility="visible"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent" />
-            </RelativeLayout-->
+    </android.support.constraint.ConstraintLayout>
 
-        </RelativeLayout>
-
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/button"
-            android:layout_alignParentStart="true"
-            android:paddingBottom="4dp"
-            android:paddingLeft="4dp"
-            android:paddingTop="4dp">
-
-            <TextView
-                android:id="@+id/timeView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="216dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:fontFamily="@font/roboto_thin"
-                android:text="25:00"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat"
-                android:textSize="45sp"
-                android:textStyle="bold"
-                android:typeface="serif"
-                app:layout_constraintBottom_toBottomOf="@+id/arc_progress"
-                app:layout_constraintEnd_toEndOf="@+id/arc_progress"
-                app:layout_constraintHorizontal_bias="0.504"
-                app:layout_constraintStart_toStartOf="@+id/arc_progress" />
-
-            <com.github.lzyzsd.circleprogress.ArcProgress
-                android:id="@+id/arc_progress"
-                android:layout_width="250dp"
-                android:layout_height="250dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:elevation="10dp"
-                android:rotation="180"
-                android:rotationX="0"
-                android:rotationY="0"
-                app:arc_finished_color="@android:color/black"
-                app:arc_stroke_width="6dp"
-                app:arc_suffix_text=" "
-                app:arc_text_color="@android:color/transparent"
-                app:arc_unfinished_color="@color/colorPrimary"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.2"
-                tools:arc_angle="295"
-                tools:arc_bottom_text="ArcProgress"
-                tools:arc_finished_color="#d50000"
-                tools:arc_max="100"
-                tools:arc_progress="80"
-                tools:arc_unfinished_color="#000000" />
-
-            <Button
-                android:id="@+id/startTimeButton"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:background="@android:color/transparent"
-                android:drawableRight="@drawable/ic_triangular_play_button"
-                android:elevation="20dp"
-                android:textSize="18sp"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/arc_progress"
-                app:layout_constraintVertical_bias="0.106" />
-
-            <Button
-                android:id="@+id/pauseTimeButton"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="8dp"
-                android:alpha="0"
-                android:background="@android:color/transparent"
-                android:drawableRight="@drawable/ic_pause"
-                android:elevation="20dp"
-                android:enabled="false"
-                android:textSize="18sp"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/stopTimeButton"
-                app:layout_constraintHorizontal_bias="0.44"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/arc_progress"
-                app:layout_constraintVertical_bias="0.176" />
-
-            <Button
-                android:id="@+id/stopTimeButton"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="80dp"
-                android:layout_marginTop="8dp"
-                android:background="@android:color/transparent"
-                android:drawableRight="@drawable/ic_square"
-                android:elevation="20dp"
-                android:enabled="false"
-                android:textSize="18sp"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/arc_progress"
-                app:layout_constraintVertical_bias="0.176" />
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/roboto_thin"
-                android:text="@string/goalstext"
-                android:maxLines="4"
-                android:minLines="1"
-                android:singleLine="false"
-                android:textAlignment="center"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/arc_progress"
-                app:layout_constraintEnd_toEndOf="@+id/arc_progress"
-                app:layout_constraintHorizontal_bias="0.459"
-                app:layout_constraintStart_toStartOf="@+id/arc_progress"
-                app:layout_constraintTop_toBottomOf="@+id/timeView"
-                app:layout_constraintVertical_bias="0.388" />
-
-        </android.support.constraint.ConstraintLayout>
-    </android.support.design.widget.CoordinatorLayout>
 </android.support.constraint.ConstraintLayout>
