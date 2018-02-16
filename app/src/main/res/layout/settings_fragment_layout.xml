@@ -8,7 +8,7 @@
     tools:context="com.example.nikhilanj.oopomo_new.MainActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/statstext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -25,7 +25,6 @@
         app:layout_constraintVertical_bias="0.034" />
 
     <ImageView
-        android:id="@+id/imageView2"
         android:layout_width="match_parent"
         android:layout_height="266dp"
         android:layout_marginBottom="8dp"
@@ -35,7 +34,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/statstext"
         app:srcCompat="@drawable/ic_settings" />
 
 </android.support.constraint.ConstraintLayout>

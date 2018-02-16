@@ -17,7 +17,6 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/another_setting"
         android:textSize="10sp"
         android:title="Another Setting"
         app:showAsAction="never"/>

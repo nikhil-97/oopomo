@@ -9,60 +9,59 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link GoalsFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link GoalsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class StatsFragment extends Fragment implements AdapterView.OnItemSelectedListener{
+public class StatsFragment extends Fragment{
 
     private OnFragmentInteractionListener mListener;
 
     public StatsFragment() {}
 
-    public static StatsFragment newInstance(String param1, String param2) {
-        StatsFragment fragment = new StatsFragment();
-        return fragment;
-    }
+    private TextView statstextview;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    public void onCreate(Bundle savedInstanceState) {super.onCreate(savedInstanceState);}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.stats_fragment_layout, container, false);
-        Spinner spinner_timely = (Spinner) view.findViewById(R.id.spinner_timely);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.stats_time_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_timely.setAdapter(adapter);
-        spinner_timely.setOnItemSelectedListener(this);
+        final View view = inflater.inflate(R.layout.stats_fragment_layout, container, false);
+        RadioGroup rangeRadioGroup = (RadioGroup)view.findViewById(R.id.rangeradiogroup);
+        RadioButton dailyradiobutton = view.findViewById(R.id.radio_daily);
+        statstextview = view.findViewById(R.id.statstext);
+        rangeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checked_id) {
+                if(checked_id==R.id.radio_daily){showDailyStats();}
+
+                else if(checked_id==R.id.radio_weekly){showWeeklyStats();}
+
+                else if(checked_id==R.id.radio_monthly){showMonthlyStats();}
+            }
+        });
         return view;
     }
-    public void onItemSelected(AdapterView<?> parent, View view,
-                               int pos, long id) {
-        int pos1 = 1;
-        //if(parent.getItemAtPosition())
-    }
-    public void onNothingSelected(AdapterView<?> parent) {
-        // Another interface callback
+
+    private void showDailyStats(){
+        //Toast.makeText(getContext(),"Daily Stats",Toast.LENGTH_SHORT).show();
+        statstextview.setText("Daily Stats");
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    private void showWeeklyStats(){
+        //Toast.makeText(getContext(),"Weekly Stats",Toast.LENGTH_SHORT).show();
+        statstextview.setText("Weekly Stats");
     }
+
+    private void showMonthlyStats(){
+        //Toast.makeText(getContext(),"Monthly Stats",Toast.LENGTH_SHORT).show();
+        statstextview.setText("Monthly Stats");
+    }
+
+
 
     /*@Override
     public void onAttach(Context context) {

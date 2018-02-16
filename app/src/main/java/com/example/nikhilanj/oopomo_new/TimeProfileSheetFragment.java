@@ -5,8 +5,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.view.Gravity;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -16,11 +16,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 
 public class TimeProfileSheetFragment extends BottomSheetDialogFragment implements AdapterView.OnItemSelectedListener {
 
+    private LinkedHashMap<String, List<Integer>> map;
     private View contentView;
-    private Spinner timeprofile_spinner;
     private EditText addcustomtextentry;
     private SeekBar focustimeseekbar;
     private TextView focustimeview;
@@ -40,17 +45,30 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
         contentView = View.inflate(getContext(), R.layout.bottom_sheet_layout, null);
         dialog.setContentView(contentView);
 
-        timeprofile_spinner = contentView.findViewById(R.id.time_profiles_spinner);
-        ArrayAdapter<CharSequence> adapter = null;
-        try{
-            adapter = ArrayAdapter.createFromResource(getActivity(),
-                    R.array.time_profiles_array, android.R.layout.simple_spinner_item);}
-        catch(NullPointerException e){System.out.println("Missing owner activity");return;}
+        Spinner timeprofile_spinner = contentView.findViewById(R.id.time_profiles_spinner);
+        map = new LinkedHashMap<String, List<Integer>>();
+        List<Integer> classic = new ArrayList<Integer>();
+        classic.addAll(Arrays.asList(0,25,5,15,4));
+        map.put("Classic", classic);
+
+        List<Integer> superfocus = new ArrayList<Integer>();
+        superfocus.addAll(Arrays.asList(0,60,10,20,6));
+        map.put("Super Focus", superfocus);
+
+        List<Integer> custom = new ArrayList<Integer>();
+        custom.addAll(Arrays.asList(1,25,5,15,4));
+        map.put("Add Custom", custom);
+
+        List<String> timeProfilesNamesList = new ArrayList<String>(map.keySet());
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_spinner_item,timeProfilesNamesList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         timeprofile_spinner.setAdapter(adapter);
         timeprofile_spinner.setOnItemSelectedListener(this);
 
         addcustomtextentry = contentView.findViewById(R.id.addcustomtext);
+        addcustomtextentry.setHint("Custom1");
 
         focustimeseekbar = contentView.findViewById(R.id.focustimeseekbar);
         focustimeview    = contentView.findViewById(R.id.focustimeseekbarvalue);
@@ -59,7 +77,7 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
                     @Override
                     public void onProgressChanged(SeekBar seekBar,
                                                   int progresValue, boolean fromUser) {
-                        focustimeview.setText(Integer.toString(progresValue));
+                        focustimeview.setText(getString(R.string.focustimeviewstring,progresValue));
                     }
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -74,7 +92,7 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
                     @Override
                     public void onProgressChanged(SeekBar seekBar,
                                                   int progresValue, boolean fromUser) {
-                        shortbreaktimeview.setText(Integer.toString(progresValue));
+                        shortbreaktimeview.setText(getString(R.string.shortbreaktimeviewstring,progresValue));
                     }
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -89,7 +107,7 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
                     @Override
                     public void onProgressChanged(SeekBar seekBar,
                                                   int progresValue, boolean fromUser) {
-                        longbreaktimeview.setText(Integer.toString(progresValue));
+                        longbreaktimeview.setText(getString(R.string.longbreaktimeviewstring,progresValue));
                     }
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -104,7 +122,7 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
                     @Override
                     public void onProgressChanged(SeekBar seekBar,
                                                   int progresValue, boolean fromUser) {
-                        repeatsview.setText(Integer.toString(progresValue+1)+" times");
+                        repeatsview.setText(getString(R.string.repeatsviewstring, progresValue));
                     }
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -115,6 +133,17 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
         savebutton   = contentView.findViewById(R.id.savetimeprofilebutton);
         deletebutton = contentView.findViewById(R.id.deletetimeprofilebutton);
 
+        savebutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                //saveTimeSettings();
+                String savedstring = getString(R.string.timeprofilesavedstring,addcustomtextentry.getText());
+                Toast infotoast = Toast.makeText(getContext(), savedstring, Toast.LENGTH_SHORT);
+                infotoast.setGravity(Gravity.CENTER, 0, 0);
+                infotoast.show();
+            }
+        });
+
 
     }
 
@@ -123,73 +152,74 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
                                int pos, long id) {
 
         String selected = parent.getItemAtPosition(pos).toString();
+        List<Integer> selected_data = map.get(selected);
+        System.out.println(selected_data);
+        int changeTimeSettings = selected_data.get(0);
 
-        if(selected.equals(getResources().getString(R.string.classictime))){
-            System.out.println("classic");
-            setConstantSeekBarValues(25,5,15,4);
-            addcustomtextentry.setEnabled(false);
-            disableSeekbars(focustimeseekbar,shortbreaktimeseekbar,longbreaktimeseekbar,repeatseekbar);
-            disableButtons(savebutton,deletebutton);
-
-        }
-        else if (selected.equals(getResources().getString(R.string.superfocus))){
-            setConstantSeekBarValues(60,10,30,6);
-            addcustomtextentry.setEnabled(false);
-            disableSeekbars(focustimeseekbar,shortbreaktimeseekbar,longbreaktimeseekbar,repeatseekbar);
-            disableButtons(savebutton,deletebutton);}
-
-        else if (selected.equals(getResources().getString(R.string.addcustom))){
-            addcustomtextentry.setEnabled(true);
-            enableSeekbars(focustimeseekbar,shortbreaktimeseekbar,longbreaktimeseekbar,repeatseekbar);
-            enableButtons(savebutton,deletebutton);
-            addcustomtextentry.requestFocus();
-        }
+        if (changeTimeSettings == 0) {
+            disableCustomTimeSetting();
+            setConstantSeekBarValuesAndDisable(selected_data.get(1), selected_data.get(2),
+                    selected_data.get(3), selected_data.get(4));
+        } else if (changeTimeSettings == 1) enableCustomTimeSetting();
     }
 
-    private void disableSeekbars(SeekBar seekbar1,SeekBar seekbar2,SeekBar seekbar3,SeekBar seekbar4){
-        seekbar1.setEnabled(false);
-        seekbar2.setEnabled(false);
-        seekbar3.setEnabled(false);
-        seekbar4.setEnabled(false);
+    private void disableCustomTimeSetting(){
+        addcustomtextentry.setVisibility(View.INVISIBLE);
+        addcustomtextentry.setEnabled(false);
+        disableSaveAndDeleteButtons();
     }
 
-    private void enableSeekbars(SeekBar seekbar1,SeekBar seekbar2,SeekBar seekbar3,SeekBar seekbar4){
-        seekbar1.setEnabled(true);
-        seekbar2.setEnabled(true);
-        seekbar3.setEnabled(true);
-        seekbar4.setEnabled(true);
+    private void enableCustomTimeSetting(){
+        addcustomtextentry.setVisibility(View.VISIBLE);
+        addcustomtextentry.setEnabled(true);
+        enableAllSeekbars();
+        enableSaveAndDeleteButtons();
+        addcustomtextentry.requestFocus();
     }
 
-    private void disableButtons(Button button1,Button button2){
-        button1.setEnabled(false);
-        button1.setTextColor(Color.GRAY);
-        button2.setEnabled(false);
-        button2.setTextColor(Color.GRAY);
+
+    private void enableAllSeekbars(){
+        focustimeseekbar.setEnabled(true);
+        shortbreaktimeseekbar.setEnabled(true);
+        longbreaktimeseekbar.setEnabled(true);
+        repeatseekbar.setEnabled(true);
     }
 
-    private void enableButtons(Button button1,Button button2){
-        button1.setEnabled(true);
-        button1.setTextColor(getResources().getColor(R.color.colorAccent));
-        button2.setEnabled(true);
-        button2.setTextColor(Color.BLACK);
+    private void disableSaveAndDeleteButtons(){
+        savebutton.setEnabled(false);
+        savebutton.setTextColor(Color.GRAY);
+        deletebutton.setEnabled(false);
+        deletebutton.setTextColor(Color.GRAY);
+    }
+
+    private void enableSaveAndDeleteButtons(){
+        savebutton.setEnabled(true);
+        savebutton.setTextColor(getResources().getColor(R.color.colorAccent,null));
+        deletebutton.setEnabled(true);
+        deletebutton.setTextColor(Color.BLACK);
         //TODO : somehow pass these colours also, so that they can be changed later if needed
-
     }
-    private void setConstantSeekBarValues(int focustime,int shortbreaktime,int longbreaktime,int repeats) {
+
+    private void setConstantSeekBarValuesAndDisable(int focustime,int shortbreaktime,int longbreaktime,int repeats) {
         try {
 
             focustimeseekbar.setProgress(focustime);
-            focustimeview.setText(Integer.toString(focustimeseekbar.getProgress()));
+            focustimeview.setText(getString(R.string.focustimeviewstring, focustimeseekbar.getProgress()));
+            focustimeseekbar.setEnabled(false);
+
             shortbreaktimeseekbar.setProgress(shortbreaktime);
-            shortbreaktimeview.setText(Integer.toString(shortbreaktimeseekbar.getProgress()));
+            shortbreaktimeview.setText(getString(R.string.shortbreaktimeviewstring, shortbreaktimeseekbar.getProgress()));
+            shortbreaktimeseekbar.setEnabled(false);
+
             longbreaktimeseekbar.setProgress(longbreaktime);
-            longbreaktimeview.setText(Integer.toString(longbreaktimeseekbar.getProgress()));
+            longbreaktimeview.setText(getString(R.string.longbreaktimeviewstring, longbreaktimeseekbar.getProgress()));
+            longbreaktimeseekbar.setEnabled(false);
+
             repeatseekbar.setProgress(repeats-1);
-            repeatsview.setText(Integer.toString(repeatseekbar.getProgress()+1)+" times");
+            repeatsview.setText(getString(R.string.repeatsviewstring, repeatseekbar.getProgress()));
+            repeatseekbar.setEnabled(false);
         }
-        catch (NullPointerException e) {
-            return;
-        }
+        catch (NullPointerException e) {return;}
     }
 
 

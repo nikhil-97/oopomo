@@ -61,7 +61,6 @@
         <TableRow>
 
             <TextView
-                android:id="@+id/focustimetextview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
@@ -92,15 +91,14 @@
                 android:layout_margin="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:text="25 mins."
-                android:textAlignment="textStart" />
+                android:text="@string/focustimeviewstring"
+                android:textAlignment="textEnd" />
 
         </TableRow>
 
         <TableRow>
 
             <TextView
-                android:id="@+id/shortbreaktimeview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
@@ -132,15 +130,14 @@
                 android:layout_margin="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:text="5 mins."
-                android:textAlignment="textStart" />
+                android:text="@string/shortbreaktimeviewstring"
+                android:textAlignment="textEnd" />
 
         </TableRow>
 
         <TableRow>
 
             <TextView
-                android:id="@+id/longbreaktimeview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
@@ -172,15 +169,14 @@
                 android:layout_margin="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:text="15 mins."
-                android:textAlignment="textStart" />
+                android:text="@string/longbreaktimeviewstring"
+                android:textAlignment="textEnd" />
 
         </TableRow>
 
         <TableRow>
 
             <TextView
-                android:id="@+id/intervalview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
@@ -207,8 +203,8 @@
                 android:layout_height="wrap_content"
                 android:layout_column="3"
                 android:layout_margin="8dp"
-                android:text="4 times"
-                android:textAlignment="textStart" />
+                android:text="@string/repeatsviewstring"
+                android:textAlignment="textEnd" />
 
         </TableRow>
     </TableLayout>
@@ -263,7 +259,6 @@
         android:gravity="center_vertical|center_horizontal|center"
         android:inputType="textCapWords|textAutoCorrect|textShortMessage"
         android:maxEms="10"
-        android:text="Custom1"
         android:textAlignment="viewStart"
         android:textSize="14sp"
         android:textStyle="bold"
