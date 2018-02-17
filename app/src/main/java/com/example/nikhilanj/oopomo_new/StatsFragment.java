@@ -36,27 +36,27 @@ public class StatsFragment extends Fragment{
         rangeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checked_id) {
-                if(checked_id==R.id.radio_daily){showDailyStats();}
+                if(checked_id==R.id.radio_daily){showDailyStatsFragment();}
 
-                else if(checked_id==R.id.radio_weekly){showWeeklyStats();}
+                else if(checked_id==R.id.radio_weekly){showWeeklyStatsFragment();}
 
-                else if(checked_id==R.id.radio_monthly){showMonthlyStats();}
+                else if(checked_id==R.id.radio_monthly){showMonthlyStatsFragment();}
             }
         });
         return view;
     }
 
-    private void showDailyStats(){
+    private void showDailyStatsFragment(){
         //Toast.makeText(getContext(),"Daily Stats",Toast.LENGTH_SHORT).show();
         statstextview.setText("Daily Stats");
     }
 
-    private void showWeeklyStats(){
+    private void showWeeklyStatsFragment(){
         //Toast.makeText(getContext(),"Weekly Stats",Toast.LENGTH_SHORT).show();
         statstextview.setText("Weekly Stats");
     }
 
-    private void showMonthlyStats(){
+    private void showMonthlyStatsFragment(){
         //Toast.makeText(getContext(),"Monthly Stats",Toast.LENGTH_SHORT).show();
         statstextview.setText("Monthly Stats");
     }
