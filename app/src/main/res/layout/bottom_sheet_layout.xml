@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="300dp">
+    android:layout_height="350dp">
 
     <TextView
         android:id="@+id/textView2"
@@ -58,7 +58,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.509">
 
-        <TableRow>
+        <TableRow
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -96,7 +98,9 @@
 
         </TableRow>
 
-        <TableRow>
+        <TableRow
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -135,7 +139,9 @@
 
         </TableRow>
 
-        <TableRow>
+        <TableRow
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -174,7 +180,9 @@
 
         </TableRow>
 
-        <TableRow>
+        <TableRow
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -256,7 +264,6 @@
         android:ems="6"
         android:enabled="false"
         android:fontFamily="@font/roboto_thin"
-        android:gravity="center_vertical|center_horizontal|center"
         android:inputType="textCapWords|textAutoCorrect|textShortMessage"
         android:maxEms="10"
         android:textAlignment="viewStart"

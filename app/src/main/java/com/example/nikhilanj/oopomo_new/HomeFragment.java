@@ -59,6 +59,7 @@ public class HomeFragment extends Fragment {
         startbutton = (Button) view.findViewById(R.id.startTimeButton);
         pausebutton = (Button) view.findViewById(R.id.pauseTimeButton);
         stopbutton = (Button) view.findViewById(R.id.stopTimeButton);
+        //pausebutton.setAlpha((float)0.001);
 
         edittimebutton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,7 +73,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View arg0) {
                 pausebutton.setAlpha((float)0.001);
                 pausebutton.setVisibility(View.VISIBLE);
-                pausebutton.setAlpha((float)0.001);
+                stopbu  tton.setAlpha((float)0.001);
                 stopbutton.setVisibility(View.VISIBLE);
 
                 buttonFadeOutAnimation(startbutton,1000);
