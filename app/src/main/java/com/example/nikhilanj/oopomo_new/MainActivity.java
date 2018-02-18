@@ -20,24 +20,58 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Set;
+import java.util.Stack;
 
 import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    //private TextView mTextMessage;
-    HomeFragment homefragment = new HomeFragment();
-    GoalsFragment goalsfragment = new GoalsFragment();
-    StatsFragment statsfragment = new StatsFragment();
-    SettingsFragment settingsfragment = new SettingsFragment();
-    Transition mFadeIn = new Fade(Fade.IN);
-    Transition mFadeOut = new Fade(Fade.OUT);
+    private BottomNavigationView bottomnav;
+    private FragmentManager manager = getSupportFragmentManager();
+    private HomeFragment homefragment = new HomeFragment();
+    private GoalsFragment goalsfragment = new GoalsFragment();
+    private StatsFragment statsfragment = new StatsFragment();
+    private SettingsFragment settingsfragment = new SettingsFragment();
+    private Transition mFadeIn = new Fade(Fade.IN);
+    private Transition mFadeOut = new Fade(Fade.OUT);
+    public static Stack<Integer> bottomnavtabstack = new Stack<>();
+    //bottomnavtabstack is the stack where all the tabs are added on clicking.
+    //This will be useful to go back to previous tab when back (<-) is pressed
+    static MenuItem item1;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        bottomnav = findViewById(R.id.bottomnavigation);
+        bottomnav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        FragmentManager manager = getSupportFragmentManager();
+        manager.beginTransaction().add(android.R.id.content, homefragment).commit();
+        getSupportActionBar().setTitle(getString (R.string.app_name));
+
+        bottomnavtabstack.push(R.id.navigation_home);
+    }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            item1 = item;
+
+            System.out.println(bottomnavtabstack);
+            if(!bottomnavtabstack.empty()) {
+                //This if-statement is there because Stack.peek() throws EmptyStackException when stack is empty
+                if (bottomnavtabstack.peek() != item.getItemId())
+                    bottomnavtabstack.push(item.getItemId());
+            }
+            else{
+                //push id to stack regardless
+                bottomnavtabstack.push(item.getItemId());
+            }
+
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     loadHomeFragment(homefragment);
@@ -57,20 +91,19 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public void onBackPressed() {
+        System.out.println("backpressed="+bottomnavtabstack);
+        if (bottomnavtabstack.size()>1){
+            int popid = bottomnavtabstack.pop();
+            //This while loop is there to prevent self-referential pops in stack popping, i.e.
+            // the popid refers to the current tab itself, and prevents any further movement.
+            //Don't change this unless you are absolutely sure of what you're doing. I am not :)
+            while(bottomnav.findViewById(popid).getId()==item1.getItemId() && !bottomnavtabstack.empty())
+            {popid= bottomnavtabstack.pop();}
 
-        //mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().add(android.R.id.content, homefragment).commit();
-
-        TransitionManager.beginDelayedTransition(navigation, mFadeOut);
-
-        getSupportActionBar().setTitle(getString (R.string.app_name));
+            bottomnav.findViewById(popid).performClick();
+        }
+        else super.onBackPressed();
     }
 
     @Override
@@ -116,32 +149,21 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void loadHomeFragment(HomeFragment homefragment){
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(android.R.id.content, homefragment).commit();
-        transaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
-        transaction.addToBackStack(null);
+        manager.beginTransaction().replace(android.R.id.content, homefragment).commit();
         getSupportActionBar().setTitle(getString (R.string.app_name));
     }
 
     private void loadGoalsFragment(GoalsFragment goalsfragment){
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(android.R.id.content, goalsfragment).commit();
-        transaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
+        manager.beginTransaction().replace(android.R.id.content, goalsfragment).commit();
         getSupportActionBar().setTitle(getString (R.string.title_goals));
     }
 
     private void loadSettingsFragment(SettingsFragment settingsfragment){
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(android.R.id.content, settingsfragment).commit();
-        transaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
+        manager.beginTransaction().replace(android.R.id.content, settingsfragment).commit();
         getSupportActionBar().setTitle(getString (R.string.title_settings));
     }
 
     private void loadStatsFragment(StatsFragment statsfragment){
-        FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(android.R.id.content, statsfragment).commit();
         getSupportActionBar().setTitle(getString (R.string.title_stats));
     }

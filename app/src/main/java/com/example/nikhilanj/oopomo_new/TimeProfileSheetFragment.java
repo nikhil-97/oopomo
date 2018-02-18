@@ -122,7 +122,7 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
                     @Override
                     public void onProgressChanged(SeekBar seekBar,
                                                   int progresValue, boolean fromUser) {
-                        repeatsview.setText(getString(R.string.repeatsviewstring, progresValue));
+                        repeatsview.setText(getString(R.string.repeatsviewstring, progresValue+1));
                     }
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -216,7 +216,7 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
             longbreaktimeseekbar.setEnabled(false);
 
             repeatseekbar.setProgress(repeats-1);
-            repeatsview.setText(getString(R.string.repeatsviewstring, repeatseekbar.getProgress()));
+            repeatsview.setText(getString(R.string.repeatsviewstring, repeatseekbar.getProgress()+1));
             repeatseekbar.setEnabled(false);
         }
         catch (NullPointerException e) {return;}

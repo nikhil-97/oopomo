@@ -2,7 +2,6 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -17,13 +16,13 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:paddingBottom="4dp"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
-        android:paddingTop="4dp">
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/space_for_bottomnavbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@android:color/white">
 
         <TextView
             android:id="@+id/timeView"
@@ -46,44 +45,53 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.225" />
 
-        <Button
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/startTimeButton"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@android:color/transparent"
-            android:drawableEnd="@drawable/ic_triangular_play_button"
+            android:layout_marginTop="184dp"
             android:elevation="20dp"
             android:textSize="18sp"
             android:visibility="visible"
+            app:backgroundTint="@android:color/white"
+            app:elevation="2dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/timeView" />
+            app:layout_constraintTop_toBottomOf="@+id/timeView"
+            app:layout_constraintVertical_bias="0.288"
+            app:rippleColor="@android:color/transparent"
+            app:srcCompat="@drawable/ic_triangular_play_button" />
 
-        <Button
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/pauseTimeButton"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:alpha="0"
             android:background="@android:color/transparent"
-            android:drawableEnd="@drawable/ic_pause"
             android:elevation="20dp"
             android:enabled="false"
             android:textSize="18sp"
             android:visibility="invisible"
-            app:layout_constraintBaseline_toBaselineOf="@+id/startTimeButton"
+            app:backgroundTint="@android:color/white"
+            app:elevation="2dp"
+            app:layout_constraintBottom_toBottomOf="@+id/startTimeButton"
             app:layout_constraintEnd_toStartOf="@+id/startTimeButton"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/startTimeButton"
+            app:rippleColor="@android:color/transparent"
+            app:srcCompat="@drawable/ic_pause" />
 
-        <Button
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/stopTimeButton"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:background="@android:color/transparent"
@@ -92,10 +100,14 @@
             android:enabled="false"
             android:textSize="18sp"
             android:visibility="invisible"
-            app:layout_constraintBaseline_toBaselineOf="@+id/startTimeButton"
+            app:backgroundTint="@android:color/white"
+            app:elevation="2dp"
+            app:layout_constraintBottom_toBottomOf="@+id/startTimeButton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.503"
-            app:layout_constraintStart_toEndOf="@+id/startTimeButton" />
+            app:layout_constraintStart_toEndOf="@+id/startTimeButton"
+            app:layout_constraintTop_toTopOf="@+id/startTimeButton"
+            app:rippleColor="@android:color/transparent"
+            app:srcCompat="@drawable/ic_square" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/edit_time_button"
@@ -106,6 +118,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:clickable="true"
+            android:focusable="true"
             android:tint="@android:color/black"
             app:backgroundTint="@android:color/white"
             app:elevation="2dp"
@@ -117,8 +130,7 @@
             app:layout_constraintTop_toTopOf="@+id/timeView"
             app:layout_constraintVertical_bias="0.437"
             app:rippleColor="@android:color/black"
-            app:srcCompat="@drawable/ic_pencil_button" android:focusable="true" />
-
+            app:srcCompat="@drawable/ic_pencil_button" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

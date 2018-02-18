@@ -3,7 +3,6 @@ package com.example.nikhilanj.oopomo_new;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -13,15 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
-import android.view.animation.Animation;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.ThemedSpinnerAdapter;
 import android.widget.Toast;
-import com.github.lzyzsd.circleprogress.ArcProgress;
-
-import static com.example.nikhilanj.oopomo_new.appimer.getMinutes;
-import static com.example.nikhilanj.oopomo_new.appimer.getSeconds;
 
 
 public class HomeFragment extends Fragment {
@@ -29,10 +20,11 @@ public class HomeFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public HomeFragment() {} //essential empty constructor
+
     private FloatingActionButton edittimebutton;
-    private Button startbutton;
-    private Button pausebutton;
-    private Button stopbutton;
+    private FloatingActionButton startbutton;
+    private FloatingActionButton pausebutton;
+    private FloatingActionButton stopbutton;
 
     public static HomeFragment newInstance() {
         HomeFragment fragment = new HomeFragment();
@@ -55,11 +47,10 @@ public class HomeFragment extends Fragment {
         //timeSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet));
         //profilesbutton = (Button) view.findViewById(R.id.timeProfilesButton);
 
-        edittimebutton = (FloatingActionButton) view.findViewById(R.id.edit_time_button);
-        startbutton = (Button) view.findViewById(R.id.startTimeButton);
-        pausebutton = (Button) view.findViewById(R.id.pauseTimeButton);
-        stopbutton = (Button) view.findViewById(R.id.stopTimeButton);
-        //pausebutton.setAlpha((float)0.001);
+        edittimebutton = view.findViewById(R.id.edit_time_button);
+        startbutton = view.findViewById(R.id.startTimeButton);
+        pausebutton = view.findViewById(R.id.pauseTimeButton);
+        stopbutton = view.findViewById(R.id.stopTimeButton);
 
         edittimebutton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,23 +78,13 @@ public class HomeFragment extends Fragment {
         pausebutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                if(pausebutton.getText().equals("PAUSE")){
-                    //TODO : pauseCountdown;
-                    Toast.makeText(getContext(), "Time Paused!", Toast.LENGTH_SHORT).show();
 
-                }
-                else if(pausebutton.getText().equals("RESUME")){
-                    //TODO : resumeCountdown;
-                    Toast.makeText(getContext(), "Time Resumed!", Toast.LENGTH_SHORT).show();
-
-                }
             }
         });
 
         stopbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                //TODO : pauseCountdown;
                 showStopAlert();
             }
         });
@@ -117,13 +98,13 @@ public class HomeFragment extends Fragment {
         timeProfileFragment.show(getFragmentManager(), timeProfileFragment.getTag());
 
     }
-    private void buttonFadeOutAnimation(Button somebutton,long fadeouttime){
+    private void buttonFadeOutAnimation(FloatingActionButton somebutton,long fadeouttime){
         ViewPropertyAnimator buttonanimation = somebutton.animate().alpha((float)0.01).setDuration(fadeouttime);
         buttonanimation.start();
         somebutton.setEnabled(false);
     }
 
-    private void buttonFadeInAnimation(Button somebutton,long fadeintime){
+    private void buttonFadeInAnimation(FloatingActionButton somebutton,long fadeintime){
         ViewPropertyAnimator buttonanimation = somebutton.animate().alpha(1).setDuration(fadeintime);
         buttonanimation.start();
         somebutton.setEnabled(true);
@@ -131,76 +112,39 @@ public class HomeFragment extends Fragment {
 
     private void showStopAlert(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.stoptrackingdialog_message).setTitle(R.string.stoptrackingdialog_title);
+        builder.setMessage( R.string.stoptrackingdialog_message).setTitle(R.string.stoptrackingdialog_title);
         boolean response;
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {stopTimerYes();}
+        builder.setPositiveButton(R.string.stoptrackingdialog_quitmsg, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {quitTimer();}
         });
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {stopTimerNo();}
+        builder.setNeutralButton(R.string.stoptrackingdialog_skipcurrent, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {skipCurrentSession();}
         });
+        builder.setNegativeButton(R.string.stoptrackingdialog_nogoback, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {continueTimer();}
+        });
+
         AlertDialog dialog = builder.create();
         dialog.show();
     }
 
-    private void stopTimerYes(){
-        Toast.makeText(getContext(), "Pressed YES", Toast.LENGTH_SHORT).show();
+    private void quitTimer(){
         Toast.makeText(getContext(), "stopCountdown()", Toast.LENGTH_SHORT).show();
         buttonFadeOutAnimation(pausebutton, 1000);
         buttonFadeOutAnimation(stopbutton, 1000);
         //TODO : stopCountdown();
         buttonFadeInAnimation(startbutton, 1000);
-        Toast.makeText(getContext(), "Time Stopped!", Toast.LENGTH_SHORT).show();
     }
 
-    private void stopTimerNo(){
-        Toast.makeText(getContext(), "Pressed NO", Toast.LENGTH_SHORT).show();
+    private void skipCurrentSession(){
+        Toast.makeText(getContext(), "skipSession()", Toast.LENGTH_SHORT).show();
+        //TODO : skipSession()
+    }
+
+    private void continueTimer(){
+        Toast.makeText(getContext(), "resumeCountdown()", Toast.LENGTH_SHORT).show();
         //TODO : resumeCountdown()
     }
-
-    /*private void trackTime(){
-        final String[] message = new String[]{"hello","bello","mello"};
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    if (track) {
-                        message[0] = String.format("%02d", getSeconds());
-                        message[1] = String.format("%02d", getMinutes());
-                        message[2] = message[1] + ':' + message[0];
-                        try {
-                            getView().post(new Runnable() {
-                                public void run() {
-                                    try {
-                                        TextView tv = getView().findViewById(R.id.timeView);
-                                        int secondstime = Integer.parseInt(message[0]) * 60;
-                                        int progress = (int) (((float) secondstime / 60.0));
-                                        //TODO ; sort out this random shit
-                                        tv.setText(message[2]);
-                                        ArcProgress arcprog = getView().findViewById(R.id.arc_progress);
-                                        arcprog.setProgress(progress);
-                                    } catch (NullPointerException n) {
-                                        ;
-                                    }
-                                }
-                            });
-                            try {
-                                Thread.sleep(50);
-                            } catch (InterruptedException e2) {
-                                System.out.println("thread interrupted");
-                                Thread.currentThread().interrupt();
-                            }
-
-                        } catch (NullPointerException e1) {
-                            ;
-                        }
-
-                    }
-                }
-            }
-        }).start();
-    }*/
-
 
     // TODO: Rename method, update argument and hook method into UI event
     /*public void onButtonPressed(FloatingActionButton fb) {
@@ -230,16 +174,13 @@ public class HomeFragment extends Fragment {
     }
 
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //Save the fragment's state here
+    }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

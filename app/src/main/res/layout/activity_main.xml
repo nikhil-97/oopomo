@@ -9,7 +9,7 @@
     tools:context="com.example.nikhilanj.oopomo_new.MainActivity">
 
     <android.support.design.widget.BottomNavigationView
-        android:id="@+id/navigation"
+        android:id="@+id/bottomnavigation"
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:alwaysDrawnWithCache="true"

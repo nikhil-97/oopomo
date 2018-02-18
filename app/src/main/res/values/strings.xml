@@ -3,8 +3,11 @@
 
     <!--All strings related to Home-->
     <string name="title_home">Home</string>
-    <string name="stoptrackingdialog_message">Do you really want to stop the timer ?</string>
     <string name="stoptrackingdialog_title">Stop Timer ?</string>
+    <string name="stoptrackingdialog_message">Do you really want to quit the task, or just skip the current session ?</string>
+    <string name="stoptrackingdialog_quitmsg">Yes, quit the task</string>
+    <string name="stoptrackingdialog_nogoback">No, go back</string>
+    <string name="stoptrackingdialog_skipcurrent">Skip current session</string>
 
     <!--All strings related to Time profile settings in Home-->
     <string name="focustimeviewstring">%1$d mins.</string>
