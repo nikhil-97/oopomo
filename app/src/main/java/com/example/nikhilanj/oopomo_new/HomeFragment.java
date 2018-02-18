@@ -73,7 +73,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View arg0) {
                 pausebutton.setAlpha((float)0.001);
                 pausebutton.setVisibility(View.VISIBLE);
-                stopbu  tton.setAlpha((float)0.001);
+                stopbutton.setAlpha((float)0.001);
                 stopbutton.setVisibility(View.VISIBLE);
 
                 buttonFadeOutAnimation(startbutton,1000);
