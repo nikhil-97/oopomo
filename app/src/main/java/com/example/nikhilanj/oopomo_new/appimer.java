@@ -8,6 +8,22 @@ import java.util.concurrent.TimeUnit;
  */
 
 class appimer {
+    private int focustime;
+    private int shortbreaktime;
+    private int longbreaktime;
+    private int repeats;
+
+    appimer(int focus,int shortbreakt,int longbreak,int repeat){
+        this.focustime = focus;
+        this.shortbreaktime = shortbreakt;
+        this.longbreaktime = longbreak;
+        this.repeats = repeat;
+    }
+
+    private int getfocustime(){
+        return this.focustime;
+    }
+
     static int getSeconds(){
         Random r = new Random();
         //System.out.println(System.currentTimeMillis());

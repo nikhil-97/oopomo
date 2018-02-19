@@ -4,28 +4,24 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.FragmentTransaction;
-import android.transition.Fade;
-import android.transition.Transition;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
-import android.transition.TransitionManager;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Set;
 import java.util.Stack;
 
 import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 
+interface timeChangeNotifierInterface{
+    void registerInterface(timeChangeListenerInterface listener);
+}
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements timeChangeListenerInterface{
 
     private BottomNavigationView bottomnav;
     private FragmentManager manager = getSupportFragmentManager();
@@ -33,8 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private GoalsFragment goalsfragment = new GoalsFragment();
     private StatsFragment statsfragment = new StatsFragment();
     private SettingsFragment settingsfragment = new SettingsFragment();
-    private Transition mFadeIn = new Fade(Fade.IN);
-    private Transition mFadeOut = new Fade(Fade.OUT);
+
     public static Stack<Integer> bottomnavtabstack = new Stack<>();
     //bottomnavtabstack is the stack where all the tabs are added on clicking.
     //This will be useful to go back to previous tab when back (<-) is pressed
@@ -74,16 +69,16 @@ public class MainActivity extends AppCompatActivity {
 
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    loadHomeFragment(homefragment);
-                    return true;
-                case R.id.navigation_stats:
-                    loadStatsFragment(statsfragment);
+                    loadTabFragment(homefragment,R.string.title_home);
                     return true;
                 case R.id.navigation_goals:
-                    loadGoalsFragment(goalsfragment);
+                    loadTabFragment(goalsfragment,R.string.title_goals);
+                    return true;
+                case R.id.navigation_stats:
+                    loadTabFragment(statsfragment,R.string.title_stats);
                     return true;
                 case R.id.navigation_settings:
-                    loadSettingsFragment(settingsfragment);
+                    loadTabFragment(settingsfragment,R.string.title_settings);
                     return true;
             }
             return false;
@@ -120,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
                 item.setChecked(!item.isChecked());
                 String toasttext;
                 if(item.isChecked()){
+
                     setTheme(R.style.DarkTheme);
                     //TODO: Doesn't work
                     toasttext="Dark Theme applied";
@@ -147,25 +143,13 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-    private void loadHomeFragment(HomeFragment homefragment){
-        manager.beginTransaction().replace(android.R.id.content, homefragment).commit();
-        getSupportActionBar().setTitle(getString (R.string.app_name));
+    private void loadTabFragment(Fragment fragment,int stringid){
+        manager.beginTransaction().replace(android.R.id.content, fragment).commit();
+        getSupportActionBar().setTitle(getString (stringid));
     }
 
-    private void loadGoalsFragment(GoalsFragment goalsfragment){
-        manager.beginTransaction().replace(android.R.id.content, goalsfragment).commit();
-        getSupportActionBar().setTitle(getString (R.string.title_goals));
+    @Override
+    public void updateTimeView(int data) {
+        //TODO
     }
-
-    private void loadSettingsFragment(SettingsFragment settingsfragment){
-        manager.beginTransaction().replace(android.R.id.content, settingsfragment).commit();
-        getSupportActionBar().setTitle(getString (R.string.title_settings));
-    }
-
-    private void loadStatsFragment(StatsFragment statsfragment){
-        manager.beginTransaction().replace(android.R.id.content, statsfragment).commit();
-        getSupportActionBar().setTitle(getString (R.string.title_stats));
-    }
-
 }

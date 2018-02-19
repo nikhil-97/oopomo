@@ -22,11 +22,6 @@
 
     <!--All strings related to Statistics-->
     <string name="title_stats">Statistics</string>
-    <string-array name="stats_time_array">
-        <item>Daily</item>
-        <item>Weekly</item>
-        <item>Monthly</item>
-    </string-array>
     <string name="statsname">Stats</string>
 
 

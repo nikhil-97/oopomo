@@ -1,8 +1,11 @@
 package com.example.nikhilanj.oopomo_new;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -12,12 +15,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
+import android.widget.TextView;
 import android.widget.Toast;
 
+interface timeChangeListenerInterface{
+    void updateTimeView(int data);
+}
 
-public class HomeFragment extends Fragment {
+
+public class HomeFragment extends Fragment implements timeChangeListenerInterface{
 
     private OnFragmentInteractionListener mListener;
+
+    MainActivity mainactivity = (MainActivity) getActivity();
 
     public HomeFragment() {} //essential empty constructor
 
@@ -26,12 +36,16 @@ public class HomeFragment extends Fragment {
     private FloatingActionButton pausebutton;
     private FloatingActionButton stopbutton;
 
+    timeChangeListenerInterface tcli;
+    private Handler uiHandler;
+
     public static HomeFragment newInstance() {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,12 +81,12 @@ public class HomeFragment extends Fragment {
                 stopbutton.setAlpha((float)0.001);
                 stopbutton.setVisibility(View.VISIBLE);
 
-                buttonFadeOutAnimation(startbutton,1000);
+                buttonFadeAnimation(startbutton,(float)0.001,1000,false);
                 //startCountdown();
-                buttonFadeInAnimation(pausebutton,1200);
-                buttonFadeInAnimation(stopbutton,1200);
+                buttonFadeAnimation(pausebutton,(float)1,1200,true);
+                buttonFadeAnimation(stopbutton,(float)1,1200,true);
                 Toast.makeText(getContext(), "Starting Time !", Toast.LENGTH_SHORT).show();
-                }
+            }
         });
 
         pausebutton.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +99,7 @@ public class HomeFragment extends Fragment {
         stopbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+
                 showStopAlert();
             }
         });
@@ -98,16 +113,11 @@ public class HomeFragment extends Fragment {
         timeProfileFragment.show(getFragmentManager(), timeProfileFragment.getTag());
 
     }
-    private void buttonFadeOutAnimation(FloatingActionButton somebutton,long fadeouttime){
-        ViewPropertyAnimator buttonanimation = somebutton.animate().alpha((float)0.01).setDuration(fadeouttime);
-        buttonanimation.start();
-        somebutton.setEnabled(false);
-    }
 
-    private void buttonFadeInAnimation(FloatingActionButton somebutton,long fadeintime){
-        ViewPropertyAnimator buttonanimation = somebutton.animate().alpha(1).setDuration(fadeintime);
+    private void buttonFadeAnimation(FloatingActionButton somebutton,float toAlpha,long fadetime,boolean setenable){
+        ViewPropertyAnimator buttonanimation = somebutton.animate().alpha(toAlpha).setDuration(fadetime);
         buttonanimation.start();
-        somebutton.setEnabled(true);
+        somebutton.setEnabled(setenable);
     }
 
     private void showStopAlert(){
@@ -130,10 +140,10 @@ public class HomeFragment extends Fragment {
 
     private void quitTimer(){
         Toast.makeText(getContext(), "stopCountdown()", Toast.LENGTH_SHORT).show();
-        buttonFadeOutAnimation(pausebutton, 1000);
-        buttonFadeOutAnimation(stopbutton, 1000);
+        buttonFadeAnimation(pausebutton, (float)0.001,1000,false);
+        buttonFadeAnimation(stopbutton, (float)0.001,1000,false);
         //TODO : stopCountdown();
-        buttonFadeInAnimation(startbutton, 1000);
+        buttonFadeAnimation(startbutton,1, 1000,true);
     }
 
     private void skipCurrentSession(){
@@ -146,26 +156,31 @@ public class HomeFragment extends Fragment {
         //TODO : resumeCountdown()
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    /*public void onButtonPressed(FloatingActionButton fb) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(fb);
+
+    public void updateTimeView(int data) {
+        final String[] placeholder_string = new String[]{"placeholder"};
+        System.out.println("updateTimeView");
+        placeholder_string[0] = Integer.toString(data);
+        try {
+            uiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        System.out.println("in uiHandler.post");
+                        TextView timeview = getView().findViewById(R.id.timeView);
+                        timeview.setText(placeholder_string[0]);
+                    }
+                    catch (NullPointerException e) {
+                        Log.v("Cannot find timeView", "NPE @ find timeView");
+                    }
+                }
+            });
+
         }
-    }*/
-
-
-
-
-    /*@Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+        catch (NullPointerException e) {
+            Log.v("Cannot find View", "NPE @ getView().post()");
         }
-    }*/
+    }
 
     @Override
     public void onDetach() {
