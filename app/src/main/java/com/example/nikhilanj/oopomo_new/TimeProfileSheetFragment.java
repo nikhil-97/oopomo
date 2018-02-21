@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v4.app.Fragment;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -40,6 +41,8 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
     private int shortbreaktime_set;
     private int longbreaktime_set;
     private int repeats_set;
+
+
 
 
     @SuppressLint("RestrictedApi")
@@ -90,6 +93,7 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
                         setFocusTime(focustime);
+                        setHomeFragmentTimeView(this.focustime);
                     }
                 });
 
@@ -180,7 +184,9 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
             disableCustomTimeSetting();
             setConstantSeekBarValuesAndDisable(selected_data.get(1), selected_data.get(2),
                     selected_data.get(3), selected_data.get(4));
-        } else if (changeTimeSettings == 1) enableCustomTimeSetting();
+        }
+        else if (changeTimeSettings == 1) enableCustomTimeSetting();
+        setHomeFragmentTimeView(this.focustime_set);
     }
 
     private void disableCustomTimeSetting(){
@@ -270,6 +276,10 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
     public int getLongBreakTime(){return this.longbreaktime_set;}
     public int getRepeats(){return this.repeats_set;}
 
+    private void setHomeFragmentTimeView(int data){
+        MainActivity host = (MainActivity)this.getHost();
+        host.updateTimeViewInHomeFragment(data);
+    }
 
     public void onNothingSelected(AdapterView<?> parent) {}
 }

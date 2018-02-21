@@ -101,6 +101,7 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
                     l1 = default_data.get(3);
                     r1 = default_data.get(4);
                 }
+                updateTimeView(f1);
                 timer_instance = tfi.startCountdown(f1,s1,l1,r1);
             }
         });
@@ -176,7 +177,7 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     public void updateTimeView(int data) {
         final String[] placeholder_string = new String[]{"placeholder"};
         System.out.println("updateTimeView in fragment");
-        placeholder_string[0] = Integer.toString(data);
+        placeholder_string[0] = Integer.toString(data)+":00";
         System.out.println(placeholder_string);
         try {
             getView().post(new Runnable() {

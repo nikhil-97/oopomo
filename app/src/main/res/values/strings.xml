@@ -18,7 +18,7 @@
 
     <!--All strings related to Goals-->
     <string name="title_goals">Goals</string>
-    <string name="newgoal">You have not set any goals yet.\n Tap \u2295 to set one !</string>
+    <string name="newgoal">You have not set any goals yet.\n Tap + to set one !</string>
 
     <!--All strings related to Statistics-->
     <string name="title_stats">Statistics</string>

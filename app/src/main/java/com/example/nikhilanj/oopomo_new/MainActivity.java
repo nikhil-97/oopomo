@@ -145,9 +145,9 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
         getSupportActionBar().setTitle(getString (stringid));
     }
 
-    public void updateTimeViewInHomeFragment(){
+    public void updateTimeViewInHomeFragment(int data){
         tcli = (timeChangeListenerInterface) homefragment;
-        tcli.updateTimeView(8);
+        tcli.updateTimeView(data);
     }
 
     @Override
