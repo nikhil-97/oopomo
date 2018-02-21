@@ -22,10 +22,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 
-public class TimeProfileSheetFragment extends BottomSheetDialogFragment implements AdapterView.OnItemSelectedListener {
+public class TimeProfileSheetFragment extends BottomSheetDialogFragment implements AdapterView.OnItemSelectedListener,getSetTimesInterface {
 
     private LinkedHashMap<String, List<Integer>> map;
-    private View contentView;
     private EditText addcustomtextentry;
     private SeekBar focustimeseekbar;
     private TextView focustimeview;
@@ -38,11 +37,17 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
     private Button savebutton;
     private Button deletebutton;
 
+    private int focustime_set;
+    private int shortbreaktime_set;
+    private int longbreaktime_set;
+    private int repeats_set;
+
+
     @SuppressLint("RestrictedApi")
     @Override
     public void setupDialog(final Dialog dialog, int style) {
         super.setupDialog(dialog, style);
-        contentView = View.inflate(getContext(), R.layout.bottom_sheet_layout, null);
+        View contentView = View.inflate(getContext(), R.layout.bottom_sheet_layout, null);
         dialog.setContentView(contentView);
 
         Spinner timeprofile_spinner = contentView.findViewById(R.id.time_profiles_spinner);
@@ -74,60 +79,76 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
         focustimeview    = contentView.findViewById(R.id.focustimeseekbarvalue);
         focustimeseekbar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
+                    int focustime;
                     @Override
                     public void onProgressChanged(SeekBar seekBar,
                                                   int progresValue, boolean fromUser) {
-                        focustimeview.setText(getString(R.string.focustimeviewstring,progresValue));
+                        focustime = progresValue;
+                        focustimeview.setText(getString(R.string.focustimeviewstring,focustime));
                     }
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {}
                     @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {}
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        setFocusTime(focustime);
+                    }
                 });
 
         shortbreaktimeseekbar = contentView.findViewById(R.id.shortbreaktimeseekbar);
         shortbreaktimeview    = contentView.findViewById(R.id.shortbreaktimeseekbarvalue);
         shortbreaktimeseekbar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
+                    int shortbreak;
                     @Override
                     public void onProgressChanged(SeekBar seekBar,
                                                   int progresValue, boolean fromUser) {
-                        shortbreaktimeview.setText(getString(R.string.shortbreaktimeviewstring,progresValue));
+                        shortbreak = progresValue;
+                        shortbreaktimeview.setText(getString(R.string.shortbreaktimeviewstring,shortbreak));
                     }
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {}
                     @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {}
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        setShortBreakTime(shortbreak);
+                    }
                 });
 
         longbreaktimeseekbar = contentView.findViewById(R.id.longbreaktimeseekbar);
         longbreaktimeview    = contentView.findViewById(R.id.longbreaktimeseekbarvalue);
         longbreaktimeseekbar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
+                    int longbreak;
                     @Override
                     public void onProgressChanged(SeekBar seekBar,
                                                   int progresValue, boolean fromUser) {
-                        longbreaktimeview.setText(getString(R.string.longbreaktimeviewstring,progresValue));
+                        longbreak = progresValue;
+                        longbreaktimeview.setText(getString(R.string.longbreaktimeviewstring,longbreak));
                     }
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {}
                     @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {}
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        setLongBreakTime(longbreak);
+                    }
                 });
 
         repeatseekbar = contentView.findViewById(R.id.intervalseekbar);
         repeatsview   = contentView.findViewById(R.id.intervalseekbarvalue);
         repeatseekbar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
+                    int repeats;
                     @Override
                     public void onProgressChanged(SeekBar seekBar,
                                                   int progresValue, boolean fromUser) {
-                        repeatsview.setText(getString(R.string.repeatsviewstring, progresValue+1));
+                        repeats = progresValue+1;
+                        repeatsview.setText(getString(R.string.repeatsviewstring, repeats));
                     }
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {}
                     @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {}
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        setRepeats(repeats);
+                    }
                 });
 
         savebutton   = contentView.findViewById(R.id.savetimeprofilebutton);
@@ -202,25 +223,53 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
 
     private void setConstantSeekBarValuesAndDisable(int focustime,int shortbreaktime,int longbreaktime,int repeats) {
         try {
-
+            this.focustime_set = focustime;
             focustimeseekbar.setProgress(focustime);
             focustimeview.setText(getString(R.string.focustimeviewstring, focustimeseekbar.getProgress()));
             focustimeseekbar.setEnabled(false);
 
+            this.shortbreaktime_set = shortbreaktime;
             shortbreaktimeseekbar.setProgress(shortbreaktime);
             shortbreaktimeview.setText(getString(R.string.shortbreaktimeviewstring, shortbreaktimeseekbar.getProgress()));
             shortbreaktimeseekbar.setEnabled(false);
 
+            this.longbreaktime_set = longbreaktime;
             longbreaktimeseekbar.setProgress(longbreaktime);
             longbreaktimeview.setText(getString(R.string.longbreaktimeviewstring, longbreaktimeseekbar.getProgress()));
             longbreaktimeseekbar.setEnabled(false);
 
+            this.repeats_set = repeats;
             repeatseekbar.setProgress(repeats-1);
             repeatsview.setText(getString(R.string.repeatsviewstring, repeatseekbar.getProgress()+1));
             repeatseekbar.setEnabled(false);
         }
         catch (NullPointerException e) {return;}
     }
+
+    private void setFocusTime(int focustime){
+        this.focustime_set = focustime;
+        System.out.println("focustime_set = "+this.focustime_set);
+    }
+
+    private void setShortBreakTime(int shortbreaktime){
+        this.shortbreaktime_set = shortbreaktime;
+        System.out.println("shortbreaktime_set = "+this.shortbreaktime_set);
+    }
+
+    private void setLongBreakTime(int longbreaktime){
+        this.longbreaktime_set = longbreaktime;
+        System.out.println("longbreaktime_set = "+this.longbreaktime_set);
+    }
+
+    private void setRepeats(int repeats){
+        this.repeats_set = repeats;
+        System.out.println("repeats_set = "+this.repeats_set);
+    }
+
+    public int getFocusTime(){return this.focustime_set;}
+    public int getShortBreakTime(){return this.shortbreaktime_set;}
+    public int getLongBreakTime(){return this.longbreaktime_set;}
+    public int getRepeats(){return this.repeats_set;}
 
 
     public void onNothingSelected(AdapterView<?> parent) {}

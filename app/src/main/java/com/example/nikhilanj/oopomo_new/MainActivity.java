@@ -17,11 +17,8 @@ import java.util.Stack;
 
 import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 
-interface timeChangeNotifierInterface{
-    void registerInterface(timeChangeListenerInterface listener);
-}
 
-public class MainActivity extends AppCompatActivity implements timeChangeListenerInterface{
+public class MainActivity extends AppCompatActivity implements timerFragmentInterface{
 
     private BottomNavigationView bottomnav;
     private FragmentManager manager = getSupportFragmentManager();
@@ -31,9 +28,12 @@ public class MainActivity extends AppCompatActivity implements timeChangeListene
     private SettingsFragment settingsfragment = new SettingsFragment();
 
     public static Stack<Integer> bottomnavtabstack = new Stack<>();
+    private timeChangeListenerInterface tcli;
+    Timer mainTimer;
     //bottomnavtabstack is the stack where all the tabs are added on clicking.
     //This will be useful to go back to previous tab when back (<-) is pressed
     static MenuItem item1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements timeChangeListene
                 item.setChecked(!item.isChecked());
                 String toasttext;
                 if(item.isChecked()){
-
                     setTheme(R.style.DarkTheme);
                     //TODO: Doesn't work
                     toasttext="Dark Theme applied";
@@ -148,8 +147,25 @@ public class MainActivity extends AppCompatActivity implements timeChangeListene
         getSupportActionBar().setTitle(getString (stringid));
     }
 
-    @Override
-    public void updateTimeView(int data) {
-        //TODO
+    public void updateTimeViewInHomeFragment(){
+        tcli = (timeChangeListenerInterface) homefragment;
+        tcli.updateTimeView(8);
     }
+
+    @Override
+    public Timer startCountdown(int f,int s,int l,int r){
+        this.mainTimer = new Timer(f,s,l,r);
+        return this.mainTimer;
+    }
+
+    @Override
+    public void pauseCountdown(Timer timerinstance){timerinstance.pauseTimer();}
+
+    @Override
+    public void resumeCountdown(Timer timerinstance){timerinstance.resumeTimer();}
+
+    @Override
+    public void stopFullCountdown(Timer timerinstance){timerinstance.stopTimer();}
+
+
 }

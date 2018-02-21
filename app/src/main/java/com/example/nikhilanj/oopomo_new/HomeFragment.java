@@ -1,11 +1,8 @@
 package com.example.nikhilanj.oopomo_new;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -18,39 +15,43 @@ import android.view.ViewPropertyAnimator;
 import android.widget.TextView;
 import android.widget.Toast;
 
-interface timeChangeListenerInterface{
-    void updateTimeView(int data);
-}
-
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class HomeFragment extends Fragment implements timeChangeListenerInterface{
 
-    private OnFragmentInteractionListener mListener;
-
-    MainActivity mainactivity = (MainActivity) getActivity();
+    private timerFragmentInterface tfi;
+    private getSetTimesInterface gsti;
 
     public HomeFragment() {} //essential empty constructor
 
-    private FloatingActionButton edittimebutton;
     private FloatingActionButton startbutton;
     private FloatingActionButton pausebutton;
     private FloatingActionButton stopbutton;
 
-    timeChangeListenerInterface tcli;
-    private Handler uiHandler;
+    private BottomSheetDialogFragment timeProfileFragment;
 
-    public static HomeFragment newInstance() {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
+    Timer timer_instance;
+
+    private int f1,s1,l1,r1;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v("Created View", "Not ded");}
+
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+        try {
+            tfi = (timerFragmentInterface) context;
+        } catch (ClassCastException castException) {
+            Log.e("ClassCastException","Couldn't attach");
+        }
+    }
 
 
     @Override
@@ -61,7 +62,7 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
         //timeSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet));
         //profilesbutton = (Button) view.findViewById(R.id.timeProfilesButton);
 
-        edittimebutton = view.findViewById(R.id.edit_time_button);
+        FloatingActionButton edittimebutton = view.findViewById(R.id.edit_time_button);
         startbutton = view.findViewById(R.id.startTimeButton);
         pausebutton = view.findViewById(R.id.pauseTimeButton);
         stopbutton = view.findViewById(R.id.stopTimeButton);
@@ -86,20 +87,35 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
                 buttonFadeAnimation(pausebutton,(float)1,1200,true);
                 buttonFadeAnimation(stopbutton,(float)1,1200,true);
                 Toast.makeText(getContext(), "Starting Time !", Toast.LENGTH_SHORT).show();
+                try {
+                    gsti = (getSetTimesInterface) timeProfileFragment;
+                    f1 = gsti.getFocusTime();
+                    s1 = gsti.getShortBreakTime();
+                    l1 = gsti.getLongBreakTime();
+                    r1 = gsti.getRepeats();
+                }
+                catch(NullPointerException e){
+                    System.out.println("Can't get timeprofilesheetfragment. Loading default settings.");
+                    List<Integer> default_data = loadDefaultTimeSettings();
+                    f1 = default_data.get(1);
+                    s1 = default_data.get(2);
+                    l1 = default_data.get(3);
+                    r1 = default_data.get(4);
+                }
+                timer_instance = tfi.startCountdown(f1,s1,l1,r1);
             }
         });
 
         pausebutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-
+                if(timer_instance!=null) tfi.pauseCountdown(timer_instance);
             }
         });
 
         stopbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-
                 showStopAlert();
             }
         });
@@ -108,7 +124,7 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     }
 
     public void showTimeSettingsFragment() {
-        BottomSheetDialogFragment timeProfileFragment = new TimeProfileSheetFragment();
+        timeProfileFragment = new TimeProfileSheetFragment();
         getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_layout, null);
         timeProfileFragment.show(getFragmentManager(), timeProfileFragment.getTag());
 
@@ -142,8 +158,9 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
         Toast.makeText(getContext(), "stopCountdown()", Toast.LENGTH_SHORT).show();
         buttonFadeAnimation(pausebutton, (float)0.001,1000,false);
         buttonFadeAnimation(stopbutton, (float)0.001,1000,false);
-        //TODO : stopCountdown();
         buttonFadeAnimation(startbutton,1, 1000,true);
+        //TODO : stopCountdown();
+        if(timer_instance!=null) tfi.stopFullCountdown(timer_instance);
     }
 
     private void skipCurrentSession(){
@@ -153,20 +170,22 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
 
     private void continueTimer(){
         Toast.makeText(getContext(), "resumeCountdown()", Toast.LENGTH_SHORT).show();
+        if(timer_instance!=null) tfi.resumeCountdown(timer_instance);
         //TODO : resumeCountdown()
     }
 
-
+    @Override
     public void updateTimeView(int data) {
         final String[] placeholder_string = new String[]{"placeholder"};
-        System.out.println("updateTimeView");
+        System.out.println("updateTimeView in fragment");
         placeholder_string[0] = Integer.toString(data);
+        System.out.println(placeholder_string);
         try {
-            uiHandler.post(new Runnable() {
+            getView().post(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        System.out.println("in uiHandler.post");
+                        System.out.println("in getView().post");
                         TextView timeview = getView().findViewById(R.id.timeView);
                         timeview.setText(placeholder_string[0]);
                     }
@@ -183,11 +202,7 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
+    public void onDetach() {super.onDetach();}
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -196,8 +211,10 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
         //Save the fragment's state here
     }
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    private List<Integer> loadDefaultTimeSettings(){
+        List<Integer> defaultSetting = new ArrayList<Integer>();
+        defaultSetting.addAll(Arrays.asList(0,25,5,15,4));
+        return defaultSetting;
     }
+
 }
