@@ -2,7 +2,6 @@ package com.example.nikhilanj.oopomo_new;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Context;
 import android.graphics.Color;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.Gravity;

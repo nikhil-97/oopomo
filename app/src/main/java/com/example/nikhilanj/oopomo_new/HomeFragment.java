@@ -15,7 +15,6 @@ import android.view.ViewPropertyAnimator;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -139,7 +138,6 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     private void showStopAlert(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage( R.string.stoptrackingdialog_message).setTitle(R.string.stoptrackingdialog_title);
-        boolean response;
         builder.setPositiveButton(R.string.stoptrackingdialog_quitmsg, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {quitTimer();}
         });
