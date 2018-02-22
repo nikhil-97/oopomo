@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 
+import com.example.nikhilanj.oopomo_new.lib.PomoTimer;
+
 import java.util.Stack;
 
 import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
@@ -21,17 +23,17 @@ import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 
 public class MainActivity extends AppCompatActivity implements timerFragmentInterface{
 
-    private BottomNavigationView bottomnav;
+    private BottomNavigationView bottomNav;
     private FragmentManager manager = getSupportFragmentManager();
-    private HomeFragment homefragment = new HomeFragment();
-    private GoalsFragment goalsfragment = new GoalsFragment();
-    private StatsFragment statsfragment = new StatsFragment();
-    private SettingsFragment settingsfragment = new SettingsFragment();
+    private HomeFragment homeFragment = new HomeFragment();
+    private GoalsFragment goalsFragment = new GoalsFragment();
+    private StatsFragment statsFragment = new StatsFragment();
+    private SettingsFragment settingsFragment = new SettingsFragment();
 
-    public static Stack<Integer> bottomnavtabstack = new Stack<>();
+    public static Stack<Integer> bottomNavTabStack = new Stack<>();
     private timeChangeListenerInterface tcli;
     Timer mainTimer;
-    //bottomnavtabstack is the stack where all the tabs are added on clicking.
+    //bottomNavTabStack is the stack where all the tabs are added on clicking.
     //This will be useful to go back to previous tab when back (<-) is pressed
     static MenuItem item1;
 
@@ -41,14 +43,14 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        bottomnav = findViewById(R.id.bottomnavigation);
-        bottomnav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        bottomNav = findViewById(R.id.bottomnavigation);
+        bottomNav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().add(android.R.id.content, homefragment).commit();
+        manager.beginTransaction().add(android.R.id.content, homeFragment).commit();
         getSupportActionBar().setTitle(getString (R.string.app_name));
 
-        bottomnavtabstack.push(R.id.navigation_home);
+        bottomNavTabStack.push(R.id.navigation_home);
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -57,29 +59,29 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             item1 = item;
 
-            System.out.println(bottomnavtabstack);
-            if(!bottomnavtabstack.empty()) {
+            System.out.println(bottomNavTabStack);
+            if(!bottomNavTabStack.empty()) {
                 //This if-statement is there because Stack.peek() throws EmptyStackException when stack is empty
-                if (bottomnavtabstack.peek() != item.getItemId())
-                    bottomnavtabstack.push(item.getItemId());
+                if (bottomNavTabStack.peek() != item.getItemId())
+                    bottomNavTabStack.push(item.getItemId());
             }
             else{
                 //push id to stack regardless
-                bottomnavtabstack.push(item.getItemId());
+                bottomNavTabStack.push(item.getItemId());
             }
 
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    loadTabFragment(homefragment,R.string.title_home);
+                    loadTabFragment(homeFragment,R.string.title_home);
                     return true;
                 case R.id.navigation_goals:
-                    loadTabFragment(goalsfragment,R.string.title_goals);
+                    loadTabFragment(goalsFragment,R.string.title_goals);
                     return true;
                 case R.id.navigation_stats:
-                    loadTabFragment(statsfragment,R.string.title_stats);
+                    loadTabFragment(statsFragment,R.string.title_stats);
                     return true;
                 case R.id.navigation_settings:
-                    loadTabFragment(settingsfragment,R.string.title_settings);
+                    loadTabFragment(settingsFragment,R.string.title_settings);
                     return true;
             }
             return false;
@@ -88,16 +90,16 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
 
     @Override
     public void onBackPressed() {
-        System.out.println("backpressed="+bottomnavtabstack);
-        if (bottomnavtabstack.size()>1){
-            int popid = bottomnavtabstack.pop();
+        System.out.println("backpressed="+bottomNavTabStack);
+        if (bottomNavTabStack.size()>1){
+            int popid = bottomNavTabStack.pop();
             //This while loop is there to prevent self-referential pops in stack popping, i.e.
             // the popid refers to the current tab itself, and prevents any further movement.
             //Don't change this unless you are absolutely sure of what you're doing. I am not :)
-            while(bottomnav.findViewById(popid).getId()==item1.getItemId() && !bottomnavtabstack.empty())
-            {popid= bottomnavtabstack.pop();}
+            while(bottomNav.findViewById(popid).getId()==item1.getItemId() && !bottomNavTabStack.empty())
+            {popid= bottomNavTabStack.pop();}
 
-            bottomnav.findViewById(popid).performClick();
+            bottomNav.findViewById(popid).performClick();
         }
         else super.onBackPressed();
     }
@@ -149,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
     }
 
     public void updateTimeViewInHomeFragment(int data){
-        tcli = (timeChangeListenerInterface) homefragment;
+        tcli = homeFragment;
         tcli.updateTimeView(data);
     }
 
@@ -167,11 +169,11 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
 
     @Override
     public void stopFullCountdown(Timer timerinstance){timerinstance.stopTimer();}
-/*
+
     /**
      * Implementation of HomeFragment interaction listener
      */
-    PomoTimer pomoTimer;
+    /*PomoTimer pomoTimer;
     public void startTimer(View view){
         if( this.pomoTimer != null ){
             if(this.pomoTimer.isTimerRunning()){

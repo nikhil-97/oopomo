@@ -27,7 +27,7 @@
         android:background="@android:color/white">
 
         <TextView
-            android:id="@+id/timeView"
+            android:id="@+id/current_countdown_time_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -48,7 +48,7 @@
             app:layout_constraintVertical_bias="0.225" />
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/startTimeButton"
+            android:id="@+id/startButton"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_marginBottom="8dp"
@@ -64,7 +64,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/timeView"
+            app:layout_constraintTop_toBottomOf="@+id/current_countdown_time_view"
             app:layout_constraintVertical_bias="0.288"
             app:rippleColor="@android:color/transparent"
             app:srcCompat="@drawable/ic_triangular_play_button" />
@@ -83,10 +83,10 @@
             android:visibility="invisible"
             app:backgroundTint="@android:color/white"
             app:elevation="2dp"
-            app:layout_constraintBottom_toBottomOf="@+id/startTimeButton"
-            app:layout_constraintEnd_toStartOf="@+id/startTimeButton"
+            app:layout_constraintBottom_toBottomOf="@+id/startButton"
+            app:layout_constraintEnd_toStartOf="@+id/startButton"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/startTimeButton"
+            app:layout_constraintTop_toTopOf="@+id/startButton"
             app:rippleColor="@android:color/transparent"
             app:srcCompat="@drawable/ic_pause" />
 
@@ -104,15 +104,15 @@
             android:visibility="invisible"
             app:backgroundTint="@android:color/white"
             app:elevation="2dp"
-            app:layout_constraintBottom_toBottomOf="@+id/startTimeButton"
+            app:layout_constraintBottom_toBottomOf="@+id/startButton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/startTimeButton"
-            app:layout_constraintTop_toTopOf="@+id/startTimeButton"
+            app:layout_constraintStart_toEndOf="@+id/startButton"
+            app:layout_constraintTop_toTopOf="@+id/startButton"
             app:rippleColor="@android:color/transparent"
             app:srcCompat="@drawable/ic_square" />
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/edit_time_button"
+            android:id="@+id/editTimeProfilesButton"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginBottom="8dp"
@@ -125,11 +125,11 @@
             app:backgroundTint="@android:color/white"
             app:elevation="2dp"
             app:fabSize="mini"
-            app:layout_constraintBottom_toBottomOf="@+id/timeView"
+            app:layout_constraintBottom_toBottomOf="@+id/current_countdown_time_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/timeView"
-            app:layout_constraintTop_toTopOf="@+id/timeView"
+            app:layout_constraintStart_toEndOf="@+id/current_countdown_time_view"
+            app:layout_constraintTop_toTopOf="@+id/current_countdown_time_view"
             app:layout_constraintVertical_bias="0.437"
             app:rippleColor="@android:color/black"
             app:srcCompat="@drawable/ic_pencil_button" />
@@ -145,10 +145,10 @@
             android:text="FOCUS 1"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/edit_time_button"
+            app:layout_constraintEnd_toStartOf="@+id/editTimeProfilesButton"
             app:layout_constraintHorizontal_bias="0.428"
-            app:layout_constraintStart_toStartOf="@+id/timeView"
-            app:layout_constraintTop_toBottomOf="@+id/timeView" />
+            app:layout_constraintStart_toStartOf="@+id/current_countdown_time_view"
+            app:layout_constraintTop_toBottomOf="@+id/current_countdown_time_view" />
 
     </android.support.constraint.ConstraintLayout>
 

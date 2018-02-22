@@ -21,6 +21,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
+interface timeChangeListenerInterface{
+    void updateTimeView(int data);
+}
+
+
 public class HomeFragment extends Fragment implements timeChangeListenerInterface{
 
     private timerFragmentInterface tfi;
@@ -28,9 +34,9 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
 
     public HomeFragment() {} //essential empty constructor
 
-    private FloatingActionButton startbutton;
-    private FloatingActionButton pausebutton;
-    private FloatingActionButton stopbutton;
+    private FloatingActionButton startButton;
+    private FloatingActionButton pauseButton;
+    private FloatingActionButton stopButton;
 
     private BottomSheetDialogFragment timeProfileFragment;
 
@@ -62,30 +68,30 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
         //timeSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet));
         //profilesbutton = (Button) view.findViewById(R.id.timeProfilesButton);
 
-        FloatingActionButton edittimebutton = view.findViewById(R.id.edit_time_button);
-        startbutton = view.findViewById(R.id.startTimeButton);
-        pausebutton = view.findViewById(R.id.pauseTimeButton);
-        stopbutton = view.findViewById(R.id.stopTimeButton);
+        FloatingActionButton editTimeProfilesButton = view.findViewById(R.id.editTimeProfilesButton);
+        startButton = view.findViewById(R.id.startButton);
+        pauseButton = view.findViewById(R.id.pauseTimeButton);
+        stopButton = view.findViewById(R.id.stopTimeButton);
 
-        edittimebutton.setOnClickListener(new View.OnClickListener() {
+        editTimeProfilesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 showTimeSettingsFragment();
             }
         });
 
-        startbutton.setOnClickListener(new View.OnClickListener() {
+        startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                pausebutton.setAlpha((float)0.001);
-                pausebutton.setVisibility(View.VISIBLE);
-                stopbutton.setAlpha((float)0.001);
-                stopbutton.setVisibility(View.VISIBLE);
+                pauseButton.setAlpha((float)0.001);
+                pauseButton.setVisibility(View.VISIBLE);
+                stopButton.setAlpha((float)0.001);
+                stopButton.setVisibility(View.VISIBLE);
 
-                buttonFadeAnimation(startbutton,(float)0.001,1000,false);
+                buttonFadeAnimation(startButton,(float)0.001,1000,false);
                 //startCountdown();
-                buttonFadeAnimation(pausebutton,(float)1,1200,true);
-                buttonFadeAnimation(stopbutton,(float)1,1200,true);
+                buttonFadeAnimation(pauseButton,(float)1,1200,true);
+                buttonFadeAnimation(stopButton,(float)1,1200,true);
                 Toast.makeText(getContext(), "Starting Time !", Toast.LENGTH_SHORT).show();
                 try {
                     gsti = (getSetTimesInterface) timeProfileFragment;
@@ -103,18 +109,18 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
                     r1 = default_data.get(4);
                 }
                 updateTimeView(f1);
-                timer_instance = tfi.startCountdown(f1,s1,l1,r1);
+                //timer_instance = tfi.startCountdown(f1,s1,l1,r1);
             }
         });
 
-        pausebutton.setOnClickListener(new View.OnClickListener() {
+        pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 if(timer_instance!=null) tfi.pauseCountdown(timer_instance);
             }
         });
 
-        stopbutton.setOnClickListener(new View.OnClickListener() {
+        stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 showStopAlert();
@@ -156,9 +162,9 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
 
     private void quitTimer(){
         Toast.makeText(getContext(), "stopCountdown()", Toast.LENGTH_SHORT).show();
-        buttonFadeAnimation(pausebutton, (float)0.001,1000,false);
-        buttonFadeAnimation(stopbutton, (float)0.001,1000,false);
-        buttonFadeAnimation(startbutton,1, 1000,true);
+        buttonFadeAnimation(pauseButton, (float)0.001,1000,false);
+        buttonFadeAnimation(stopButton, (float)0.001,1000,false);
+        buttonFadeAnimation(startButton,1, 1000,true);
         //TODO : stopCountdown();
         if(timer_instance!=null) tfi.stopFullCountdown(timer_instance);
     }
@@ -186,7 +192,7 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
                 public void run() {
                     try {
                         System.out.println("in getView().post");
-                        TextView timeview = getView().findViewById(R.id.timeView);
+                        TextView timeview = getView().findViewById(R.id.current_countdown_time_view);
                         timeview.setText(placeholder_string[0]);
                     }
                     catch (NullPointerException e) {

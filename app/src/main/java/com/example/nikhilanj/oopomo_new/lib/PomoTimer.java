@@ -32,7 +32,7 @@ public class PomoTimer {
     }
 
     public String getTime() {
-        int minutes = (int) (currentCountdown/60);
+        int minutes = currentCountdown/60;
         int seconds = currentCountdown % 60;
         return String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
     }

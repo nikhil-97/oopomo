@@ -26,24 +26,24 @@ public class StatsFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {super.onCreate(savedInstanceState);}
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.stats_fragment_layout, container, false);
-        RadioGroup rangeRadioGroup = (RadioGroup)view.findViewById(R.id.rangeradiogroup);
-        RadioButton dailyradiobutton = view.findViewById(R.id.radio_daily);
-        statstextview = view.findViewById(R.id.statstext);
-        rangeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int checked_id) {
-                if(checked_id==R.id.radio_daily){showDailyStatsFragment();}
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState) {
+            final View view = inflater.inflate(R.layout.stats_fragment_layout, container, false);
+            RadioGroup rangeRadioGroup = view.findViewById(R.id.rangeradiogroup);
+            RadioButton dailyradiobutton = view.findViewById(R.id.radio_daily);
+            statstextview = view.findViewById(R.id.statstext);
+            rangeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup radioGroup, int checked_id) {
+                    if(checked_id==R.id.radio_daily){showDailyStatsFragment();}
 
-                else if(checked_id==R.id.radio_weekly){showWeeklyStatsFragment();}
+                    else if(checked_id==R.id.radio_weekly){showWeeklyStatsFragment();}
 
-                else if(checked_id==R.id.radio_monthly){showMonthlyStatsFragment();}
-            }
-        });
-        return view;
+                    else if(checked_id==R.id.radio_monthly){showMonthlyStatsFragment();}
+                }
+            });
+            return view;
     }
 
     private void showDailyStatsFragment(){
