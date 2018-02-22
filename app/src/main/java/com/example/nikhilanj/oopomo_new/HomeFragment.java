@@ -1,6 +1,7 @@
 package com.example.nikhilanj.oopomo_new;
 
 import android.content.Context;
+
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.view.ViewPropertyAnimator;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,7 +37,6 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     Timer timer_instance;
 
     private int f1,s1,l1,r1;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

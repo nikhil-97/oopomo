@@ -1,15 +1,18 @@
 package com.example.nikhilanj.oopomo_new;
 
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
+
 import android.view.Menu;
 import android.view.View;
 import android.view.MenuItem;
 import android.widget.Toast;
+
 
 import java.util.Stack;
 
@@ -164,6 +167,54 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
 
     @Override
     public void stopFullCountdown(Timer timerinstance){timerinstance.stopTimer();}
+/*
+    /**
+     * Implementation of HomeFragment interaction listener
+     */
+    PomoTimer pomoTimer;
+    public void startTimer(View view){
+        if( this.pomoTimer != null ){
+            if(this.pomoTimer.isTimerRunning()){
+                this.pauseTimer(view);
+            }
+            else {
+                this.resumeTimer(view);
+            }
+            return;
+        }
+        this.pomoTimer = new PomoTimer(60, this);
+        this.pomoTimer.startTimer();
+        FloatingActionButton timerActionButton = view.findViewById(R.id.timer_action_button);
+        timerActionButton.setImageDrawable(
+                ResourcesCompat.getDrawable(
+                        getResources(),
+                        R.drawable.ic_pause_black_24dp,
+                        null
+                )
+        );
+    }
 
+    public void pauseTimer(View view){
+        this.pomoTimer.pauseTimer();
+        FloatingActionButton timerActionButton = view.findViewById(R.id.timer_action_button);
+        timerActionButton.setImageDrawable(
+                ResourcesCompat.getDrawable(
+                        getResources(),
+                        R.drawable.ic_play_arrow_white_24dp,
+                        null
+                )
+        );
+    }
 
+    public void resumeTimer(View view){
+        this.pomoTimer.resumeTimer();
+        FloatingActionButton timerActionButton = view.findViewById(R.id.timer_action_button);
+        timerActionButton.setImageDrawable(
+                ResourcesCompat.getDrawable(
+                        getResources(),
+                        R.drawable.ic_pause_black_24dp,
+                        null
+                )
+        );
+    }*/
 }
