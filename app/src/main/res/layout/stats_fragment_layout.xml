@@ -7,41 +7,73 @@
     android:layout_height="match_parent"
     tools:context="com.example.nikhilanj.oopomo_new.MainActivity">
 
+    <RadioGroup
+        android:id="@+id/rangeradiogroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:checkedButton="@+id/radio_daily"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioButton
+            android:id="@+id/radio_daily"
+            style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/radiobutton"
+            android:button="@null"
+            android:hapticFeedbackEnabled="true"
+            android:padding="8dp"
+            android:text="Daily"
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/radio_weekly"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/radiobutton"
+            android:button="@null"
+            android:checked="false"
+            android:hapticFeedbackEnabled="true"
+            android:padding="8dp"
+            android:text="Weekly"
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/radio_monthly"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/radiobutton"
+            android:button="@null"
+            android:hapticFeedbackEnabled="true"
+            android:padding="8dp"
+            android:text="Monthly"
+            android:textSize="16sp" />
+
+    </RadioGroup>
+
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/statstext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="100dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Stats"
+        android:text="@string/statsname"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="0dp"
-        android:layout_height="308dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.272"
-        app:srcCompat="@drawable/ic_graph_view" />
-
-    <Spinner
+    <!--Spinner
         android:id="@+id/spinner_timely"
-        android:layout_width="115dp"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="16dp"
@@ -50,6 +82,6 @@
         app:layout_constraintHorizontal_bias="0.055"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0" /-->
 
 </android.support.constraint.ConstraintLayout>

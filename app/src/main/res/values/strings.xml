@@ -1,15 +1,31 @@
 <resources>
     <string name="app_name">Oopomo</string>
+
+    <!--All strings related to Home-->
     <string name="title_home">Home</string>
-    <string name="title_stats">Statistics</string>
-    <string-array name="stats_time_array">
-        <item>Daily</item>
-        <item>Weekly</item>
-        <item>Monthly</item>
-    </string-array>
-    <string name="title_goals">Goals</string>
-    <string name="title_settings">Settings</string>
-    <string name="stoptrackingdialog_message">Do you really want to stop the timer ?
-    This will nuke North Korea !</string>
     <string name="stoptrackingdialog_title">Stop Timer ?</string>
+    <string name="stoptrackingdialog_message">Do you really want to quit the task, or just skip the current session ?</string>
+    <string name="stoptrackingdialog_quitmsg">Yes, quit the task</string>
+    <string name="stoptrackingdialog_nogoback">No, go back</string>
+    <string name="stoptrackingdialog_skipcurrent">Skip current session</string>
+
+    <!--All strings related to Time profile settings in Home-->
+    <string name="focustimeviewstring">%1$d mins.</string>
+    <string name="shortbreaktimeviewstring">%1$d mins.</string>
+    <string name="longbreaktimeviewstring">%1$d mins.</string>
+    <string name="repeatsviewstring">%1$d times</string>
+    <string name="timeprofilesavedstring">Setting \'%1$s\' saved successfully</string>
+
+    <!--All strings related to Goals-->
+    <string name="title_goals">Goals</string>
+    <string name="newgoal">You have not set any goals yet.\n Tap + to set one !</string>
+
+    <!--All strings related to Statistics-->
+    <string name="title_stats">Statistics</string>
+    <string name="statsname">Stats</string>
+
+
+    <!--All strings related to Settings-->
+    <string name="title_settings">Settings</string>
+
 </resources>

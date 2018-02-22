@@ -8,8 +8,15 @@
         android:textSize="10sp"
         android:title="Dark Mode"
         app:showAsAction="never"/>
+
     <item
-        android:id="@+id/another_setting"
+        android:id="@+id/fullscreen_setting"
+        android:checkable="true"
+        android:textSize="10sp"
+        android:title="Insane Focus"
+        app:showAsAction="never"/>
+
+    <item
         android:textSize="10sp"
         android:title="Another Setting"
         app:showAsAction="never"/>
