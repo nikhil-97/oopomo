@@ -8,64 +8,18 @@
     android:layout_height="match_parent"
     tools:context="com.example.nikhilanj.oopomo_new.MainActivity">
 
-    <!--TextView
-        android:id="@+id/message"
-        android:layout_width="wrap_content"
-        android:layout_height="59dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="48dp"
-        android:layout_marginTop="56dp"
-        android:text="@string/title_home"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" -->
-
     <android.support.design.widget.BottomNavigationView
-        android:id="@+id/navigation"
+        android:id="@+id/bottomnavigation"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:alwaysDrawnWithCache="true"
         android:animateLayoutChanges="true"
         android:animationCache="true"
         android:background="?android:attr/windowBackground"
+        app:elevation="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:elevation="16dp"
         app:menu="@menu/navigation" />
-
-    <fragment
-        class="com.example.nikhilanj.oopomo_new.HomeFragment"
-        android:id="@+id/home_fragment"
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout="@layout/home_fragment_layout"/>
-
-
-    <fragment
-        class="com.example.nikhilanj.oopomo_new.StatsFragment"
-        android:id="@+id/stats_fragment"
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout="@layout/stats_fragment_layout"/>
-
-    <fragment
-        class="com.example.nikhilanj.oopomo_new.GoalsFragment"
-        android:id="@+id/goals_fragment"
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout="@layout/goals_fragment_layout"/>
-
-    <fragment
-        class="com.example.nikhilanj.oopomo_new.SettingsFragment"
-        android:id="@+id/settings_fragment"
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout="@layout/settings_fragment_layout"/>
-
 
 </android.support.constraint.ConstraintLayout>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/dark_mode_setting"
+        android:checkable="true"
+        android:textSize="10sp"
+        android:title="Dark Mode"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/fullscreen_setting"
+        android:checkable="true"
+        android:textSize="10sp"
+        android:title="Insane Focus"
+        app:showAsAction="never"/>
+
+    <item
+        android:textSize="10sp"
+        android:title="Another Setting"
+        app:showAsAction="never"/>
+
+
+</menu>
