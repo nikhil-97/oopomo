@@ -185,7 +185,6 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
         final String[] placeholder_string = new String[]{"placeholder"};
         System.out.println("updateTimeView in fragment");
         placeholder_string[0] = Integer.toString(data)+":00";
-        System.out.println(placeholder_string);
         try {
             getView().post(new Runnable() {
                 @Override
