@@ -145,11 +145,14 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
 
     private void showStopAlert(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage( R.string.stoptrackingdialog_message).setTitle(R.string.stoptrackingdialog_title);
+        String currentSession = "FOCUS 1";
+        String stopMessage = getString(R.string.stoptrackingdialog_message,currentSession);
+        builder.setMessage(stopMessage).setTitle(R.string.stoptrackingdialog_title);
         builder.setPositiveButton(R.string.stoptrackingdialog_quitmsg, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {quitTimer();}
         });
-        builder.setNeutralButton(R.string.stoptrackingdialog_skipcurrent, new DialogInterface.OnClickListener() {
+        builder.setNeutralButton(getString(R.string.stoptrackingdialog_skipcurrent,currentSession),
+                new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {skipCurrentSession();}
         });
         builder.setNegativeButton(R.string.stoptrackingdialog_nogoback, new DialogInterface.OnClickListener() {

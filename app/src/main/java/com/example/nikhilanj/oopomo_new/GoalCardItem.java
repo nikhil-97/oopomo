@@ -9,18 +9,13 @@ public class GoalCardItem {
     private String description;
     private boolean markedAsDone = false;
 
-    public GoalCardItem(String title,String description){
-        this.title = title;
-        this.description = description;
-    }
-
-    public GoalCardItem(){} //Overloaded empty constructor
+    public GoalCardItem(){} //empty constructor
 
     public void markGoalAsDone(boolean done){this.markedAsDone = done;}
 
-    public void editGoalTitle(String title){this.title = title;}
+    public void setGoalTitle(String title){this.title = title;}
 
-    public void editGoalDesciption(String desc){this.description = desc;}
+    public void setGoalDesciption(String desc){this.description = desc;}
 
     public String getGoalTitle(){return this.title;}
 

@@ -1,7 +1,5 @@
 package com.example.nikhilanj.oopomo_new;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,27 +10,22 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.LinkedList;
 
 public class GoalsFragment extends Fragment implements goalInteractionInterface{
 
-    private LinkedList<GoalCardItem> goalsList = new LinkedList<>(); ;
+    public LinkedList<GoalCardItem> goalsList = new LinkedList<>();
     private RecyclerView goalsRecyclerView;
     private RecyclerView.Adapter goalsRecyclerViewAdapter;
-
-
 
     private TextView emptyGoalsText;
     public GoalsFragment() {}
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
+    public void onCreate(Bundle savedInstanceState) {super.onCreate(savedInstanceState);}
 
 
     @Override
@@ -42,17 +35,13 @@ public class GoalsFragment extends Fragment implements goalInteractionInterface{
         View view = inflater.inflate(R.layout.goals_fragment_layout, container, false);
         goalsRecyclerView = view.findViewById(R.id.goals_recycler_view);
         RecyclerView.LayoutManager goalsRecyclerViewLayoutMgr = new LinearLayoutManager(getContext());
-        goalsRecyclerViewAdapter = new GoalsCardAdapter(goalsList,this);
+        goalsRecyclerViewAdapter = new GoalsCardAdapter(this);
 
         goalsRecyclerView.setLayoutManager(goalsRecyclerViewLayoutMgr);
         goalsRecyclerView.setAdapter(goalsRecyclerViewAdapter);
 
-        //goalinterface = (goalInteractionInterface) this;
-
-        //goalsList.add(new GoalCardItem("Goal3","Description of goal 3"));
-
         emptyGoalsText = view.findViewById(R.id.tv_show_if_no_goals);
-        System.out.println("goalslistsize = "+goalsList.size());
+        //System.out.println("goalslistsize = "+goalsList.size());
         setTextIfNoGoal();
 
         FloatingActionButton addGoalFab = view.findViewById(R.id.fab_add_goal);
@@ -64,9 +53,11 @@ public class GoalsFragment extends Fragment implements goalInteractionInterface{
         });
 
         ItemTouchHelper.SimpleCallback simpleItemSwipeCallback =
-                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT |
+                        ItemTouchHelper.RIGHT) {
                     @Override
-                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                                          RecyclerView.ViewHolder target) {
                         return false;
                     }
 
@@ -86,25 +77,19 @@ public class GoalsFragment extends Fragment implements goalInteractionInterface{
     public void onDetach() {super.onDetach();}
 
     public void addGoal() {
-        goalsList.addLast(new GoalCardItem());
-        goalsRecyclerViewAdapter.notifyItemInserted(goalsList.size());
+        goalsList.addFirst(new GoalCardItem());
+        goalsRecyclerViewAdapter.notifyItemInserted(0);
+        goalsRecyclerView .smoothScrollToPosition(0);
         setTextIfNoGoal();
-        Toast.makeText(getContext(),"Goal Added",Toast.LENGTH_SHORT).show();
-        System.out.println("goalsize = "+goalsList.size()+"addgoal "+goalsList.peek().getGoalTitle());
+        System.out.println("goalsize = "+goalsList.size());
     }
 
     @Override
     public void saveGoalToList(String goalTitle,String goalDesc,int pos) {
-        System.out.println("pos = "+pos+" saveGoaltolist_bef"+goalsList.get(pos));
         if(goalsList.get(pos)!=null){
-            try{System.out.println("saveGoaltolist_getpos!=null"+goalsList.peek().getGoalTitle());}
-            catch (NullPointerException e){System.out.println("NPE @ peek()");}
             GoalCardItem item = goalsList.get(pos);
-            item.editGoalTitle(goalTitle);
-            item.editGoalDesciption(goalDesc);
-        }
-        else {
-            goalsList.addLast(new GoalCardItem(goalTitle, goalDesc));
+            item.setGoalTitle(goalTitle);
+            item.setGoalDesciption(goalDesc);
         }
         System.out.println("saveGoaltolist"+goalsList.peek());
     }
@@ -112,8 +97,10 @@ public class GoalsFragment extends Fragment implements goalInteractionInterface{
     @Override
     public void deleteGoalFromList(int position) {
         goalsList.remove(position);
-        System.out.println("deletegoalfromlist"+goalsList);
+        goalsRecyclerView.removeViewAt(position);
         goalsRecyclerViewAdapter.notifyItemRemoved(position);
+        goalsRecyclerViewAdapter.notifyDataSetChanged();
+        System.out.println("deletegoalfromlist"+goalsList);
         setTextIfNoGoal();
     }
 
@@ -125,10 +112,16 @@ public class GoalsFragment extends Fragment implements goalInteractionInterface{
         deleteGoalFromList(position);
         //doesnt actually "delete"
         //TODO : sort out this
-        Snackbar.make(getActivity().findViewById(android.R.id.content),
-                "Marked as done", Snackbar.LENGTH_LONG).show();
-        //TODO : Snackbar currently overlaps bottomnavbar. fix this.
-        Toast.makeText(getContext(),"Marked as done",Toast.LENGTH_SHORT).show();
+        Snackbar snack = Snackbar.make(getActivity().findViewById(android.R.id.content),
+                "Marked as done", Snackbar.LENGTH_LONG).setAction("UNDO",null);
+        FrameLayout.LayoutParams parameters = (FrameLayout.LayoutParams) snack.getView().getLayoutParams();
+        int BOTTOM_NAV_BAR_HEIGHT = 60;
+        float d = getContext().getResources().getDisplayMetrics().density;
+        int bottomnavBarMargin = (int)(BOTTOM_NAV_BAR_HEIGHT * d);
+        parameters.setMargins(0, 0, 0, bottomnavBarMargin);
+        snack.getView().setLayoutParams(parameters);
+        snack.show();
+        //TODO : Snackbar currently overlaps FAB. fix this.
     }
 
     public void setTextIfNoGoal() {

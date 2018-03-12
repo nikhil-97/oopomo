@@ -3,14 +3,16 @@ package com.example.nikhilanj.oopomo_new;
 import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
-import java.util.LinkedList;
 
 interface goalInteractionInterface{
     void saveGoalToList(String goalTitle,String goalDesc,int position);
@@ -21,115 +23,109 @@ interface goalInteractionInterface{
 
 public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.GoalsViewHolder>{
 
-    private LinkedList<GoalCardItem> goalsLinkedList;
     private GoalsFragment parentGoalFragment;
     private goalInteractionInterface goalInteractionListener;
-    private RecyclerView parentRecyclerView;
 
-    public GoalsCardAdapter(LinkedList<GoalCardItem> goalsList,GoalsFragment goalsFragment){
-        this.goalsLinkedList = goalsList;
+    GoalsCardAdapter(GoalsFragment goalsFragment){
+        setHasStableIds(true);
         this.parentGoalFragment = goalsFragment;
         this.goalInteractionListener = (goalInteractionInterface) this.parentGoalFragment;
     }
 
-    public static class GoalsViewHolder extends RecyclerView.ViewHolder{
-        public EditText goalTitleEditText;
-        public EditText goalDescEditText;
-        public TextView goalTitleTextView;
-        public TextView goalDescTextView;
-        public FloatingActionButton goalDeleteButton;
-        public FloatingActionButton goalSaveButton;
-        public FloatingActionButton goalEditButton;
+    class GoalsViewHolder extends RecyclerView.ViewHolder{
+        EditText goalTitleEditText;
+        EditText goalDescEditText;
+        TextView goalTitleTextView;
+        TextView goalDescTextView;
+        ViewSwitcher switchEditable;
+        FloatingActionButton goalSaveButton;
+        FloatingActionButton goalEditButton;
 
-        public GoalsViewHolder(View itemView) {
+        GoalsViewHolder(View itemView) {
             super(itemView);
             goalTitleEditText = itemView.findViewById(R.id.et_goal_title);
             goalDescEditText = itemView.findViewById(R.id.et_goal_description);
             goalTitleTextView = itemView.findViewById(R.id.tv_show_goal_title_when_not_editing);
             goalDescTextView = itemView.findViewById(R.id.tv_show_goal_desc_when_not_editing);
-            goalDeleteButton = itemView.findViewById(R.id.btn_delete_goal);
             goalSaveButton = itemView.findViewById(R.id.btn_save_goal);
-            goalEditButton = itemView.findViewById(R.id.btn_edit_goal);
+            goalEditButton = itemView.findViewById(R.id.btn_show_goal_edit_menu);
+            switchEditable = itemView.findViewById(R.id.goalViewSwitcher);
+
+            goalSaveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int temp_pos = getAdapterPosition();
+                    String goaltext = goalTitleEditText.getText().toString();
+                    String goaldesc = goalDescEditText.getText().toString();
+                    goalInteractionListener.saveGoalToList(goaltext,goaldesc,temp_pos);
+                    GoalCardItem goalItem = parentGoalFragment.goalsList.get(temp_pos);
+                    goalTitleTextView.setText(goalItem.getGoalTitle());
+                    goalDescTextView.setText(goalItem.getGoalDescription());
+                    System.out.println("goaltitletextview "+goalTitleTextView.getText());
+                    System.out.println("goaltitledescview "+goalDescTextView.getText());
+                    switchEditable.showNext(); //show non-editing layout
+
+                }});
+
+            goalEditButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View view) {
+                    PopupMenu popup = new PopupMenu(goalEditButton.getContext(), goalEditButton);
+                    popup.getMenuInflater().inflate(R.menu.goal_card_menu,popup.getMenu());
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch(item.getItemId()){
+                                case R.id.btn_edit_goal:
+                                    if(switchEditable.getCurrentView()!=view.findViewById(R.id.noteditable_goal)){
+                                        switchEditable.showPrevious();
+                                    }
+                                    return true;
+
+                                case R.id.btn_delete_goal:
+                                    showDeleteAlert(parentGoalFragment,getAdapterPosition());
+                                    return true;
+                            }
+                            return true;
+                        }
+                    });
+                    popup.show();
+                }
+
+            });
 
         }
     }
 
     @Override
     public GoalsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.goal_cardview_editable_layout,parent,false);
-        parentRecyclerView = (RecyclerView) parent;
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.goal_cardview_editable_layout,
+                parent,false);
         GoalsViewHolder gvh = new GoalsViewHolder(view);
+        gvh.switchEditable.setDisplayedChild(0);
         return gvh;
     }
 
     @Override
-    public void onBindViewHolder(final GoalsViewHolder holder, int position) {
-        final LinkedList<GoalCardItem> goalListRef = this.goalsLinkedList;
-
-        holder.goalDeleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDeleteAlert(parentGoalFragment,goalInteractionListener,holder.getAdapterPosition());
-            }
-        });
-
-        holder.goalSaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int temp_pos = holder.getAdapterPosition();
-                String goaltext = holder.goalTitleEditText.getText().toString();
-                String goaldesc = holder.goalDescEditText.getText().toString();
-                goalInteractionListener.saveGoalToList(goaltext,goaldesc,temp_pos);
-                GoalCardItem goalItem = goalListRef.get(temp_pos);
-                holder.goalTitleTextView.setText(goalItem.getGoalTitle());
-                holder.goalDescTextView.setText(goalItem.getGoalDescription());
-                System.out.println(goalItem.getGoalTitle()+goalItem.getGoalDescription());
-                changeCardEditable(holder,false);
-                //GoalsCardAdapter.super.notifyItemChanged(temp_pos);
-                /*TODO : CRAZY BUG.
-                 SOMEHOW THE PREVIOUSLY DELETED GOALS INTERFERE WITH NEW ADDED GOALS.
-                 RANDOM STUFF*/
-
-            }});
-
-        holder.goalEditButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeCardEditable(holder,true);
-            }
-
-        });
-
-    }
+    public void onBindViewHolder(final GoalsViewHolder holder, final int position) {}
 
     @Override
-    public int getItemCount() {
-        return goalsLinkedList.size();
+    public int getItemCount() {return parentGoalFragment.goalsList.size();}
+
+    @Override
+    public long getItemId(int position){return parentGoalFragment.goalsList.get(position).hashCode();
+    // returning unique hashcode here because we have set setStableIds(true) for the adapter.
+    // this is to solve IndexOutOfBoundsException which occurs when removing items.
+    // https://stackoverflow.com/a/41659302/6200378 <- suggested here
     }
 
-    private void changeCardEditable(GoalsViewHolder holder,boolean editable){
-        holder.goalEditButton.setVisibility(editable ? View.GONE : View.VISIBLE);
-        holder.goalTitleTextView.setVisibility(editable ? View.GONE : View.VISIBLE);
-        holder.goalDescTextView.setVisibility(editable ? View.GONE : View.VISIBLE);
 
-        holder.goalDeleteButton.setVisibility(editable ? View.VISIBLE : View.GONE);
-        holder.goalSaveButton.setVisibility(editable ? View.VISIBLE : View.GONE);
-        holder.goalTitleEditText.setVisibility(editable ? View.VISIBLE : View.GONE);
-        holder.goalDescEditText.setVisibility(editable ? View.VISIBLE : View.GONE);
-
-        if(editable) holder.goalTitleEditText.requestFocus();
-        else holder.goalTitleEditText.clearFocus();
-
-    }
-
-    static void showDeleteAlert(GoalsFragment parentGoalFragment,goalInteractionInterface goalInteractionListener, int position){
-        final goalInteractionInterface gil = goalInteractionListener;
+    private void showDeleteAlert(GoalsFragment parentGoalFragment, int position){
         final int pos = position;
         AlertDialog.Builder builder = new AlertDialog.Builder(parentGoalFragment.getContext());
         builder.setMessage("Really delete this goal ?").setTitle("Delete Goal ?");
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                gil.deleteGoalFromList(pos);}
+            public void onClick(DialogInterface dialog, int id) {deleteGoal(pos);}
         });
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -139,5 +135,12 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+    private void deleteGoal(int pos){
+        goalInteractionInterface gil = goalInteractionListener;
+        gil.deleteGoalFromList(pos);
+    }
+
+
 }
 

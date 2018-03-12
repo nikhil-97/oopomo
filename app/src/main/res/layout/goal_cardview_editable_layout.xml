@@ -2,139 +2,162 @@
 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="16dp"
+    android:layout_marginTop="0dp"
+
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.0">
+    app:layout_constraintHorizontal_bias="0.0"
+    app:cardUseCompatPadding="true"
+    card_view:cardElevation="0dp">
 
-    <TableLayout
+    <ViewSwitcher
+        android:id="@+id/goalViewSwitcher"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:measureAllChildren="false"
+        android:animateLayoutChanges="true"
+        android:inAnimation="@android:anim/fade_in">
 
-        <TableRow
-            android:orientation="vertical">
-
-            <EditText
-                android:id="@+id/et_goal_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="0"
-                android:layout_margin="8dp"
-                android:layout_span="2"
-                android:layout_weight="1"
-                android:hint="Goal title"
-                android:maxEms="15"
-                android:minEms="10"
-                android:textAlignment="textStart"
-                android:textSize="18sp"
-                android:visibility="gone"/>
-
-            <TextView
-                android:id="@+id/tv_show_goal_title_when_not_editing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="0"
-                android:layout_marginHorizontal="8dp"
-                android:layout_marginTop="16dp"
-                android:layout_span="2"
-                android:layout_weight="1"
-                android:textAlignment="textStart"
-                android:textAllCaps="false"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:visibility="visible" />
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/btn_delete_goal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="2"
-                android:layout_margin="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:padding="4dp"
-                android:visibility="gone"
-                app:backgroundTint="@android:color/white"
-                app:elevation="2dp"
-                app:fabSize="mini"
-                app:srcCompat="@drawable/ic_delete_black_24px" />
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/btn_save_goal"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_column="3"
-                android:layout_margin="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="4dp"
-                android:padding="4dp"
-                android:visibility="gone"
-                app:backgroundTint="@android:color/white"
-                app:elevation="2dp"
-                app:fabSize="mini"
-                app:srcCompat="@drawable/ic_done_black_24px" />
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/btn_edit_goal"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_column="3"
-                android:layout_margin="8dp"
-                android:layout_marginHorizontal="4dp"
-                android:padding="4dp"
-                android:visibility="visible"
-                app:backgroundTint="@android:color/white"
-                app:elevation="2dp"
-                app:fabSize="mini"
-                app:srcCompat="@drawable/ic_pencil_button" />
-
-        </TableRow>
-
-        <TableRow>
-
-            <EditText
-                android:id="@+id/et_goal_description"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TableLayout
+                android:id="@+id/goal_editable"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_column="0"
-                android:layout_margin="8dp"
-                android:layout_span="4"
-                android:layout_weight="1"
-                android:hint="Write a description of your goal here"
-                android:inputType="textMultiLine"
-                android:minEms="25"
-                android:minLines="2"
-                android:textAlignment="textStart"
-                android:textSize="14sp"
-                android:visibility="gone" />
+                android:layout_height="wrap_content">
+
+                <TableRow
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/et_goal_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_column="0"
+                        android:layout_margin="8dp"
+                        android:layout_span="2"
+                        android:layout_weight="1"
+                        android:hint="Goal title"
+                        android:inputType="textCapWords"
+                        android:maxEms="15"
+                        android:minEms="8"
+                        android:selectAllOnFocus="false"
+                        android:textAlignment="textStart"
+                        android:textSize="18sp"
+                        android:visibility="visible" />
+
+                </TableRow>
+
+                <TableRow>
+
+                    <EditText
+                        android:id="@+id/et_goal_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_column="0"
+                        android:layout_margin="8dp"
+                        android:layout_span="4"
+                        android:layout_weight="1"
+                        android:hint="Write a description of your goal here"
+                        android:inputType="textMultiLine"
+                        android:minEms="25"
+                        android:minLines="2"
+                        android:textAlignment="textStart"
+                        android:textSize="14sp"
+                        android:visibility="visible" />
 
 
-            <TextView
-                android:id="@+id/tv_show_goal_desc_when_not_editing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_column="0"
-                android:layout_marginTop="4dp"
-                android:layout_marginHorizontal="8dp"
-                android:layout_span="4"
-                android:layout_weight="1"
-                android:inputType="textMultiLine"
-                android:minLines="2"
-                android:textAlignment="textStart"
-                android:textSize="14sp"
-                android:textStyle="italic"
-                android:visibility="visible"
-                android:textColor="@android:color/darker_gray"/>
+                </TableRow>
 
-        </TableRow>
+                <TableRow>
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/btn_save_goal"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_column="3"
+                        android:layout_margin="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="4dp"
+                        android:padding="4dp"
+                        android:visibility="visible"
+                        app:backgroundTint="@android:color/white"
+                        app:elevation="2dp"
+                        app:fabSize="mini"
+                        app:srcCompat="@drawable/ic_done_black_24px" />
+                </TableRow>
 
 
-    </TableLayout>
 
+            </TableLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TableLayout
+                android:id="@+id/noteditable_goal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TableRow>
+                    <TextView
+                        android:id="@+id/tv_show_goal_title_when_not_editing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_column="0"
+                        android:layout_marginHorizontal="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_span="2"
+                        android:layout_weight="1"
+                        android:text="Goal 1"
+                        android:textAlignment="textStart"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/btn_show_goal_edit_menu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_column="1"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="8dp"
+                        android:padding="8dp"
+                        app:backgroundTint="@android:color/white"
+                        app:elevation="2dp"
+                        app:fabSize="mini"
+                        app:srcCompat="@drawable/ic_more_vert_black_24px" />
+                </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:id="@+id/tv_show_goal_desc_when_not_editing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_column="0"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_span="4"
+                        android:layout_weight="1"
+                        android:minLines="2"
+                        android:text="Description of Goal 1"
+                        android:textAlignment="textStart"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="16sp"
+                        android:textStyle="italic"/>
+
+                </TableRow>
+
+            </TableLayout>
+        </LinearLayout>
+    </ViewSwitcher>
 
 </android.support.v7.widget.CardView>

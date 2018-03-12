@@ -54,9 +54,9 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment implemen
 
         Spinner timeprofile_spinner = contentView.findViewById(R.id.time_profiles_spinner);
         map = new LinkedHashMap<String, List<Integer>>();
-        List<Integer> classic = new ArrayList<Integer>();
-        classic.addAll(Arrays.asList(0,25,5,15,4));
-        map.put("Classic", classic);
+        List<Integer> pomodoro = new ArrayList<Integer>();
+        pomodoro.addAll(Arrays.asList(0,25,5,15,4));
+        map.put("Pomodoro", pomodoro);
 
         List<Integer> superfocus = new ArrayList<Integer>();
         superfocus.addAll(Arrays.asList(0,60,10,20,6));
