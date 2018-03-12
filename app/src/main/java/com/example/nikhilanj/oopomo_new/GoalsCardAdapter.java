@@ -15,6 +15,8 @@ import android.widget.ViewSwitcher;
 
 
 interface goalInteractionInterface{
+    GoalCardItem getGoalAtListPosition(int position);
+    int getGoalsListSize();
     void saveGoalToList(String goalTitle,String goalDesc,int position);
     void deleteGoalFromList(int position);
     void markGoalDone(int position,boolean done);
@@ -33,13 +35,13 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
     }
 
     class GoalsViewHolder extends RecyclerView.ViewHolder{
-        EditText goalTitleEditText;
-        EditText goalDescEditText;
-        TextView goalTitleTextView;
-        TextView goalDescTextView;
-        ViewSwitcher switchEditable;
-        FloatingActionButton goalSaveButton;
-        FloatingActionButton goalEditButton;
+        private EditText goalTitleEditText;
+        private EditText goalDescEditText;
+        private TextView goalTitleTextView;
+        private TextView goalDescTextView;
+        private ViewSwitcher switchEditable;
+        private FloatingActionButton goalSaveButton;
+        private FloatingActionButton goalEditButton;
 
         GoalsViewHolder(View itemView) {
             super(itemView);
@@ -58,21 +60,28 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
                     String goaltext = goalTitleEditText.getText().toString();
                     String goaldesc = goalDescEditText.getText().toString();
                     goalInteractionListener.saveGoalToList(goaltext,goaldesc,temp_pos);
-                    GoalCardItem goalItem = parentGoalFragment.goalsList.get(temp_pos);
+
+                    // below lines are kinda for rechecking :? . After we set the texts above,
+                    // we again fetch the set data from the list, to make sure we set it correctly.
+                    GoalCardItem goalItem = goalInteractionListener.getGoalAtListPosition(temp_pos);
                     goalTitleTextView.setText(goalItem.getGoalTitle());
                     goalDescTextView.setText(goalItem.getGoalDescription());
                     System.out.println("goaltitletextview "+goalTitleTextView.getText());
                     System.out.println("goaltitledescview "+goalDescTextView.getText());
-                    switchEditable.showNext(); //show non-editing layout
+
+                    switchEditable.showNext(); //switch view to non-editing layout
 
                 }});
 
+
             goalEditButton.setOnClickListener(new View.OnClickListener() {
+
                 @Override
                 public void onClick(final View view) {
                     PopupMenu popup = new PopupMenu(goalEditButton.getContext(), goalEditButton);
                     popup.getMenuInflater().inflate(R.menu.goal_card_menu,popup.getMenu());
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             switch(item.getItemId()){
@@ -99,8 +108,8 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
 
     @Override
     public GoalsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.goal_cardview_editable_layout,
-                parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(
+                R.layout.goal_cardview_editable_layout, parent,false);
         GoalsViewHolder gvh = new GoalsViewHolder(view);
         gvh.switchEditable.setDisplayedChild(0);
         return gvh;
@@ -110,10 +119,10 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
     public void onBindViewHolder(final GoalsViewHolder holder, final int position) {}
 
     @Override
-    public int getItemCount() {return parentGoalFragment.goalsList.size();}
+    public int getItemCount() {return goalInteractionListener.getGoalsListSize();}
 
     @Override
-    public long getItemId(int position){return parentGoalFragment.goalsList.get(position).hashCode();
+    public long getItemId(int position){return goalInteractionListener.getGoalAtListPosition(position).hashCode();
     // returning unique hashcode here because we have set setStableIds(true) for the adapter.
     // this is to solve IndexOutOfBoundsException which occurs when removing items.
     // https://stackoverflow.com/a/41659302/6200378 <- suggested here
