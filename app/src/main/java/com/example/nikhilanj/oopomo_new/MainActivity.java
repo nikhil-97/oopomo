@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 
+import com.example.nikhilanj.oopomo_new.db.PomoDatabase;
 import com.example.nikhilanj.oopomo_new.lib.PomoTimer;
 
 import java.util.Stack;
@@ -37,10 +38,13 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
     //This will be useful to go back to previous tab when back (<-) is pressed
     static MenuItem item1;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //instantiate room database
+        PomoDatabase.getPomoDatabaseInstance(getApplicationContext());
+
         setContentView(R.layout.activity_main);
 
         bottomNav = findViewById(R.id.bottomnavigation);
