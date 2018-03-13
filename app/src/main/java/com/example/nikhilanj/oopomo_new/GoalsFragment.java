@@ -14,11 +14,11 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.List;
 
 public class GoalsFragment extends Fragment implements goalInteractionInterface{
 
-    private LinkedList<GoalCardItem> goalsList = new LinkedList<>();
+    private List<GoalCardItem> goalsList = new ArrayList<>();
     private RecyclerView goalsRecyclerView;
     private RecyclerView.Adapter goalsRecyclerViewAdapter;
 
@@ -31,8 +31,6 @@ public class GoalsFragment extends Fragment implements goalInteractionInterface{
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             System.out.println("savedinstancestate alive");
-            ArrayList<GoalCardItem> loadedSavedList = savedInstanceState.getParcelableArrayList("saveGoalsList");
-            goalsList = new LinkedList<GoalCardItem>(loadedSavedList);
         }}
 
 
@@ -79,7 +77,7 @@ public class GoalsFragment extends Fragment implements goalInteractionInterface{
 
 
     public void addGoal() {
-        goalsList.addFirst(new GoalCardItem());
+        goalsList.add(0,new GoalCardItem());
         goalsRecyclerViewAdapter.notifyItemInserted(0);
         goalsRecyclerView .smoothScrollToPosition(0);
         setTextIfNoGoal();
@@ -93,7 +91,7 @@ public class GoalsFragment extends Fragment implements goalInteractionInterface{
             item.setGoalTitle(goalTitle);
             item.setGoalDesciption(goalDesc);
         }
-        System.out.println("saveGoaltolist"+goalsList.peek());
+        System.out.println("saveGoaltolist"+goalsList);
     }
 
     @Override
@@ -152,7 +150,6 @@ public class GoalsFragment extends Fragment implements goalInteractionInterface{
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         ArrayList<GoalCardItem> listToSave = new ArrayList<>(goalsList);
-        outState.putParcelableArrayList("saveGoalsList", listToSave);
         System.out.println("save instance state");
     }
 

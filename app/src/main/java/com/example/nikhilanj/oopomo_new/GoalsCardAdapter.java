@@ -116,7 +116,12 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
     }
 
     @Override
-    public void onBindViewHolder(final GoalsViewHolder holder, final int position) {}
+    public void onBindViewHolder(GoalsViewHolder holder,int position) {
+        GoalCardItem cardItem = goalInteractionListener.getGoalAtListPosition(position);
+        holder.goalTitleTextView.setText(cardItem.getGoalTitle());
+        holder.goalDescTextView.setText(cardItem.getGoalDescription());
+
+    }
 
     @Override
     public int getItemCount() {return goalInteractionListener.getGoalsListSize();}
