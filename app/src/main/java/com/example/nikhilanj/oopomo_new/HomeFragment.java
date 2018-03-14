@@ -185,9 +185,8 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
 
     @Override
     public void updateTimeView(int data) {
-        final String[] placeholder_string = new String[]{"placeholder"};
         System.out.println("updateTimeView in fragment");
-        placeholder_string[0] = Integer.toString(data)+":00";
+        final String timeString = Integer.toString(data)+":00";
         try {
             getView().post(new Runnable() {
                 @Override
@@ -195,7 +194,7 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
                     try {
                         System.out.println("in getView().post");
                         TextView timeview = getView().findViewById(R.id.current_countdown_time_view);
-                        timeview.setText(placeholder_string[0]);
+                        timeview.setText(timeString);
                     }
                     catch (NullPointerException e) {
                         Log.v("Cannot find timeView", "NPE @ find timeView");

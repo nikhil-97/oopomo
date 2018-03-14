@@ -19,6 +19,7 @@
     <!--All strings related to Goals-->
     <string name="title_goals">Goals</string>
     <string name="newgoal">You have not set any goals yet.\n Tap + to set one !</string>
+    <string name="empty_goal_error">Can\'t have empty goal</string>
 
     <!--All strings related to Statistics-->
     <string name="title_stats">Statistics</string>

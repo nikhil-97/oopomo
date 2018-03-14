@@ -16,11 +16,16 @@ import android.widget.Toast;
 
 import com.example.nikhilanj.oopomo_new.lib.PomoTimer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 
+interface IGoalFragmentInterface{
+    List getGoalsListFromMainActivity();
 
+}
 public class MainActivity extends AppCompatActivity implements timerFragmentInterface{
 
     private BottomNavigationView bottomNav;
@@ -36,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
     //bottomNavTabStack is the stack where all the tabs are added on clicking.
     //This will be useful to go back to previous tab when back (<-) is pressed
     static MenuItem item1;
+
 
 
     @Override

@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="0dp"
+    android:layout_marginBottom="0dp"
+
 
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
@@ -18,12 +20,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:measureAllChildren="false"
-        android:animateLayoutChanges="true"
-        android:inAnimation="@android:anim/fade_in">
+        android:animateLayoutChanges="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <TableLayout
                 android:id="@+id/goal_editable"
                 android:layout_width="match_parent"
@@ -47,7 +49,9 @@
                         android:selectAllOnFocus="false"
                         android:textAlignment="textStart"
                         android:textSize="18sp"
-                        android:visibility="visible" />
+                        android:visibility="visible">
+                        <requestFocus/>
+                    </EditText>
 
                 </TableRow>
 
@@ -77,16 +81,28 @@
                         android:id="@+id/btn_save_goal"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
-                        android:layout_column="3"
-                        android:layout_margin="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginStart="4dp"
+                        android:layout_column="0"
+                        android:layout_margin="16dp"
                         android:padding="4dp"
                         android:visibility="visible"
                         app:backgroundTint="@android:color/white"
                         app:elevation="2dp"
                         app:fabSize="mini"
                         app:srcCompat="@drawable/ic_done_black_24px" />
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/btn_undo_goal"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_column="0"
+                        android:layout_margin="16dp"
+                        android:padding="4dp"
+                        android:visibility="visible"
+                        app:backgroundTint="@android:color/white"
+                        app:elevation="2dp"
+                        app:fabSize="mini"
+                        app:srcCompat="@drawable/ic_undo_black_24px" />
+
                 </TableRow>
 
 
