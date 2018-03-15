@@ -14,13 +14,10 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 
-import com.example.nikhilanj.oopomo_new.lib.PomoTimer;
+import com.example.nikhilanj.oopomo_new.goals_package.GoalsFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-
-import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 
 interface IGoalFragmentInterface{
     List getGoalsListFromMainActivity();

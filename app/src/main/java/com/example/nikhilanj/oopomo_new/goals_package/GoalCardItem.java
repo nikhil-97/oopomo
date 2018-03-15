@@ -1,4 +1,4 @@
-package com.example.nikhilanj.oopomo_new;
+package com.example.nikhilanj.oopomo_new.goals_package;
 
 /**
  * Created by Nikhilanj on 23-02-18.

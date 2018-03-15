@@ -3,4 +3,5 @@
     <color name="colorPrimary">#d50000</color>
     <color name="colorPrimaryDark">#9b0000</color>
     <color name="colorAccent">#007bc5</color>
+    <color name="addFabDisabledColour">@android:color/darker_gray</color>
 </resources>

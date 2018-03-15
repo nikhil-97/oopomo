@@ -1,7 +1,7 @@
-package com.example.nikhilanj.oopomo_new;
+package com.example.nikhilanj.oopomo_new.goals_package;
 
+import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.support.constraint.solver.Goal;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -16,31 +16,40 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.nikhilanj.oopomo_new.R;
+//import com.example.nikhilanj.oopomo_new.goalInteractionInterface;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class GoalsFragment extends Fragment implements goalInteractionInterface{
+public class GoalsFragment extends Fragment implements goalInteractionInterface {
 
-    public List<GoalCardItem> goalsList = new ArrayList<>();
-    public RecyclerView goalsRecyclerView;
-    public RecyclerView.Adapter goalsRecyclerViewAdapter;
-    public RecyclerView.LayoutManager goalsRecyclerViewLayoutMgr;
-
+    private List<GoalCardItem> goalsList = new ArrayList<>();
+    RecyclerView goalsRecyclerView;
+    GoalsCardAdapter goalsRecyclerViewAdapter;
+    RecyclerView.LayoutManager goalsRecyclerViewLayoutMgr;
     private TextView emptyGoalsText;
+    FloatingActionButton addGoalFab;
+    ColorStateList defaultAddFabEnabledColour;
+    ColorStateList defaultAddFabDisabledColour;
 
     public GoalsFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if(goalsList.isEmpty()){
+
             goalsList.add(0,new GoalCardItem("1",""));
             goalsList.add(0,new GoalCardItem("2",""));
             goalsList.add(0,new GoalCardItem("3",""));
             goalsList.add(0,new GoalCardItem("4",""));
             goalsList.add(0,new GoalCardItem("5",""));
             goalsList.add(0,new GoalCardItem("6",""));
+
         }
+
         if (savedInstanceState != null) {
             System.out.println("savedinstancestate alive");
         }}
@@ -64,10 +73,12 @@ public class GoalsFragment extends Fragment implements goalInteractionInterface{
         emptyGoalsText = view.findViewById(R.id.tv_show_if_no_goals);
         setTextIfNoGoal();
 
-        FloatingActionButton addGoalFab = view.findViewById(R.id.fab_add_goal);
+        addGoalFab = view.findViewById(R.id.fab_add_goal);
+        defaultAddFabEnabledColour = addGoalFab.getBackgroundTintList();
+        defaultAddFabDisabledColour = ColorStateList.valueOf(getResources().getColor(R.color.addFabDisabledColour,null));
         addGoalFab.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View arg0){ addGoal(); }});
+            public void onClick(View arg0){ addGoalManually(); }});
 
         ItemTouchHelper.SimpleCallback simpleItemSwipeCallback =
                 new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT |
@@ -96,10 +107,12 @@ public class GoalsFragment extends Fragment implements goalInteractionInterface{
     }
 
 
-    public void addGoal() {
-        goalsList.add(0,new GoalCardItem());
+    public void addGoalManually() {
+        GoalCardItem newGoal = new GoalCardItem();
+        goalsList.add(0,newGoal);
         goalsRecyclerViewAdapter.notifyItemInserted(0);
         goalsRecyclerView .smoothScrollToPosition(0);
+        goalsRecyclerViewAdapter.addNewGoal(newGoal.hashCode());
         setTextIfNoGoal();
     }
 
@@ -163,7 +176,11 @@ public class GoalsFragment extends Fragment implements goalInteractionInterface{
 
     public void setTextIfNoGoal() {
         if (goalsList.size() != 0) emptyGoalsText.setVisibility(View.INVISIBLE);
-        else emptyGoalsText.setVisibility(View.VISIBLE);
+        else {
+            emptyGoalsText.setVisibility(View.VISIBLE);
+            addGoalFab.setBackgroundTintList(defaultAddFabEnabledColour);
+            addGoalFab.setEnabled(true);
+        }
     }
 
     public class SnackBarListener implements View.OnClickListener{
