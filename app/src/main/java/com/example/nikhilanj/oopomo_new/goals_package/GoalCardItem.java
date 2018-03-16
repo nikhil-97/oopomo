@@ -1,35 +1,31 @@
 package com.example.nikhilanj.oopomo_new.goals_package;
 
-/**
- * Created by Nikhilanj on 23-02-18.
- */
-
-public class GoalCardItem{
+class GoalCardItem{
     private String title;
     private String description;
     private boolean markedAsDone = false;
-    private boolean isEnabled = true;
+    private boolean markedImportant = false;
 
-    public GoalCardItem(){} //empty constructor
+    GoalCardItem(){} //empty constructor
 
-    public GoalCardItem(String title,String desc){
+    GoalCardItem(String title,String desc){
         this.title = title;
         this.description = desc;
     }
 
-    public void markGoalAsDone(boolean done){ this.markedAsDone = done;}
+    void markGoalAsDone(boolean done){ this.markedAsDone = done;}
 
-    public void setGoalTitle(String title){ this.title = title;}
+    void setGoalTitle(String title){ this.title = title;}
 
-    public void setGoalDesciption(String desc){ this.description = desc;}
+    void setMarkedImportant(boolean important){this.markedImportant = important;}
 
-    public void setEnabled(boolean setEnable){ this.isEnabled = setEnable;}
+    void setGoalDesciption(String desc){ this.description = desc;}
 
-    public String getGoalTitle(){ return this.title;}
+    String getGoalTitle(){ return this.title;}
 
-    public String getGoalDescription(){ return this.description;}
+    String getGoalDescription(){ return this.description;}
 
-    public boolean isGoalDone(){ return this.markedAsDone;}
+    boolean isGoalMarkedDone(){ return this.markedAsDone;}
 
-    public boolean isEnabled() { return isEnabled;}
+    boolean isMarkedImportant(){return this.markedImportant;}
 }

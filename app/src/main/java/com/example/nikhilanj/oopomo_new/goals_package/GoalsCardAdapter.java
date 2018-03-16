@@ -8,24 +8,26 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import com.example.nikhilanj.oopomo_new.R;
 
+import java.util.EmptyStackException;
 import java.util.HashMap;
+import java.util.Stack;
 
 
-public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.GoalsViewHolder>{
+public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.GoalsViewHolder> {
 
     private GoalsFragment parentGoalFragment;
-    private goalInteractionInterface goalInteractionListener;
+    private IgoalFragmentAdapterInteraction interactWithGoalFragment;
 
     // What is fadeOutMap ?
     // When a particular goal("item") is selected, we want all other items to fade out, so that only
@@ -38,7 +40,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
     // If you have any better ideas, raise an issue on GitHub.
 
     @SuppressLint("UseSparseArrays")
-    private HashMap<Long,Boolean> fadeOutMap = new HashMap<>();
+    private HashMap<Long, Boolean> fadeOutMap = new HashMap<>();
     //private LongSparseArray<Boolean> fadeOutMap = new LongSparseArray<>();
 
     // IDE would prompt you to use LongSparseArray(LSA) instead of HashMap here, as LSA is more memory efficient.
@@ -47,19 +49,28 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
     // There would be far more key accesses. Hence time overhead is more important than memory overhead here.
     // Also, as it's only a few items, the memory advantage is not considerable.
 
+    final private float FADE_OUT_ALPHA = 0.25f;
+    final private float DEFAULT_ALPHA = 1.0f;
 
-    GoalsCardAdapter(GoalsFragment goalsFragment){
+    final private boolean GOAL_VIEW_MODE_NOW_EDITING = false;
+    final private boolean GOAL_VIEW_MODE_NOW_VIEWING = true;
+    final private boolean PREVIOUS_ACTION_IS_ADDING = true;
+    final private boolean PREVIOUS_ACTION_IS_EDITING = false;
+    private boolean addingNewGoal = false;
+    private boolean previousAction;
+
+    private Stack<GoalsViewHolder> viewHolderStack = new Stack<>();
+
+    GoalsCardAdapter(GoalsFragment goalsFragment) {
         setHasStableIds(true);
         this.parentGoalFragment = goalsFragment;
-        //this.parentGoalsRecyclerView = goalsFragment.goalsRecyclerView;
-        this.goalInteractionListener = (goalInteractionInterface) this.parentGoalFragment;
-        for(int i=0;i<goalInteractionListener.getGoalsListSize();i++){
-            fadeOutMap.put(getItemId(i),false);
+        this.interactWithGoalFragment = (IgoalFragmentAdapterInteraction) this.parentGoalFragment;
+        for (int i = 0; i < interactWithGoalFragment.getGoalsActiveListSize(); i++) {
+            fadeOutMap.put(getItemId(i), false);
         }
-
     }
 
-    class GoalsViewHolder extends RecyclerView.ViewHolder{
+    class GoalsViewHolder extends RecyclerView.ViewHolder {
         private CardView goalCardView;
         private EditText goalTitleEditText;
         private EditText goalDescEditText;
@@ -68,9 +79,11 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
         private ViewSwitcher switchEditable;
         private FloatingActionButton goalSaveButton;
         private FloatingActionButton goalUndoButton;
-        FloatingActionButton showGoalEditMenuButton;
-        boolean swipeable = true;
-        boolean editable = false;
+        private FloatingActionButton showGoalEditMenuButton;
+        boolean isCurrentlySwipeable = true;
+        boolean isCurrentlyEditable = false;
+        float defaultCardElevation = 1.0f;
+
 
         GoalsViewHolder(final View itemView) {
             super(itemView);
@@ -84,43 +97,47 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
             goalUndoButton = itemView.findViewById(R.id.btn_undo_goal);
             showGoalEditMenuButton = itemView.findViewById(R.id.btn_show_goal_edit_menu);
             switchEditable = itemView.findViewById(R.id.goalViewSwitcher);
-            final float defaultCardElevation = goalCardView.getCardElevation();
+            defaultCardElevation = goalCardView.getCardElevation();
 
             goalSaveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    int adapter_pos = getAdapterPosition();
+
                     String goaltext = goalTitleEditText.getText().toString();
                     String goaldesc = goalDescEditText.getText().toString();
-                    if(goaltext==null || goaltext.trim().isEmpty()){
+                    if (goaltext == null || goaltext.trim().isEmpty()) {
                         goalTitleEditText.setError("Can't have empty goal");
-                        return;}
-                    else goalInteractionListener.saveGoalToList(goaltext,goaldesc,adapter_pos);
-                    // below lines are kinda for rechecking :? . After we set the texts above,
-                    // we again fetch the set data from the list, to make sure we set it correctly.
-                    GoalCardItem goalItem = goalInteractionListener.getGoalAtListPosition(adapter_pos);
-                    goalTitleTextView.setText(goalItem.getGoalTitle());
-                    goalDescTextView.setText(goalItem.getGoalDescription());
-                    goalCardView.setCardElevation(defaultCardElevation);
-                    swipeable = true;
-                    editable = false;
-                    for (Long id : fadeOutMap.keySet()) {fadeOutMap.put(id,false);}
-                    notifyDataSetChanged();
-                    //switchEditable.showNext(); //switch view to non-editing layout
-                    parentGoalFragment.addGoalFab.setEnabled(true);
-                    parentGoalFragment.addGoalFab.setBackgroundTintList(parentGoalFragment.defaultAddFabEnabledColour);
-                    View currentFocus = parentGoalFragment.getActivity().getCurrentFocus();
-                    currentFocus.clearFocus();
-                    InputMethodManager inputMethodManager =
-                            (InputMethodManager) parentGoalFragment.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputMethodManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
+                        return;
+                    } else
+                        interactWithGoalFragment.saveGoalToList(goaltext, goaldesc, getAdapterPosition());
 
-                }});
+                    changeGoalViewMode(GoalsViewHolder.this,getAdapterPosition(), GOAL_VIEW_MODE_NOW_VIEWING);
+                    for (Long id : fadeOutMap.keySet()) {fadeOutMap.put(id, false);}
+                    notifyItemRangeChanged(0, interactWithGoalFragment.getGoalsActiveListSize());
+                    //notifyItemChanged(getAdapterPosition());
+                    //calling notifyDataSetChanged because we have to change view of all other viewholders
+
+                }
+            });
 
             goalUndoButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    GoalsViewHolder holder = GoalsViewHolder.this;
+                    if(previousAction==GOAL_VIEW_MODE_NOW_EDITING){
+                        try{holder = viewHolderStack.pop();
+                            changeGoalViewMode(holder,getAdapterPosition(), GOAL_VIEW_MODE_NOW_VIEWING);}
+                        catch(EmptyStackException e){
+                            Log.e("empty stack when undo",Log.getStackTraceString(e));}
+                    }
+                    else if(previousAction==PREVIOUS_ACTION_IS_ADDING){
+                        deleteGoal(getAdapterPosition());
+                    }
+                    //changeGoalViewMode(holder,getItemCount(), GOAL_VIEW_MODE_NOW_VIEWING);
+                    for (Long id : fadeOutMap.keySet()) {fadeOutMap.put(id, false);}
+                    notifyDataSetChanged();
+                    //notifyItemRangeChanged(0, interactWithGoalFragment.getGoalsListSize());
+                    interactWithGoalFragment.enableAddGoalFab(true);
                 }
             });
 
@@ -129,18 +146,22 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
                 @Override
                 public void onClick(final View view) {
                     PopupMenu popup = new PopupMenu(showGoalEditMenuButton.getContext(), showGoalEditMenuButton);
-                    popup.getMenuInflater().inflate(R.menu.goal_card_menu,popup.getMenu());
+                    popup.getMenuInflater().inflate(R.menu.goal_card_menu, popup.getMenu());
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            switch(item.getItemId()){
+                            switch (item.getItemId()) {
                                 case R.id.btn_edit_goal:
-                                    openGoalForEditing(getAdapterPosition());
+                                    previousAction = PREVIOUS_ACTION_IS_EDITING;
+                                    changeGoalViewMode(GoalsViewHolder.this,getAdapterPosition(), GOAL_VIEW_MODE_NOW_EDITING);
+                                    long currentItemId = GoalsCardAdapter.this.getItemId(getAdapterPosition());
+                                    for (Long id : fadeOutMap.keySet()) {fadeOutMap.put(id, id != currentItemId);}
+                                    notifyDataSetChanged();
+                                    //calling notifyDataSetChanged because we have to change view of all other viewholders
                                     return true;
-
                                 case R.id.btn_delete_goal:
-                                    showDeleteAlert(parentGoalFragment,getAdapterPosition());
+                                    showDeleteAlert(parentGoalFragment, getAdapterPosition());
                                     return true;
                             }
                             return true;
@@ -150,80 +171,95 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
                 }
 
             });
-
         }
 
-        private void openGoalForEditing(int adapterPos){
-            GoalsViewHolder holder = (GoalsViewHolder) parentGoalFragment.goalsRecyclerView.findViewHolderForAdapterPosition(adapterPos);
-            GoalCardItem goalItem = goalInteractionListener.getGoalAtListPosition(adapterPos);
-            parentGoalFragment.goalsRecyclerView.smoothScrollToPosition(adapterPos);
-            parentGoalFragment.addGoalFab.setEnabled(false);
-            parentGoalFragment.addGoalFab.setBackgroundTintList(parentGoalFragment.defaultAddFabDisabledColour);
+        String getHolderTitleText(){return this.goalTitleTextView.getText().toString();}
+
+    }
+
+    //private void setAllAndNotifyRangeChanged(HashMap<Long, Boolean> fadeOutMap,boolean set){}
+
+    private void changeGoalViewMode(GoalsViewHolder holder,int adapterPos, boolean viewMode) {
+        GoalCardItem goalItem = interactWithGoalFragment.getGoalAtListPosition(adapterPos);
+        if (viewMode == GOAL_VIEW_MODE_NOW_VIEWING) {
+            holder.goalTitleTextView.setText(goalItem.getGoalTitle());
+            holder.goalDescTextView.setText(goalItem.getGoalDescription());
+            holder.goalCardView.setCardElevation(holder.defaultCardElevation);
+            holder.isCurrentlySwipeable = true;
+            holder.isCurrentlyEditable = false;
+            holder.switchEditable.setDisplayedChild(1);
+            interactWithGoalFragment.enableAddGoalFab(true);
+            interactWithGoalFragment.clearFocusAndHideSoftInputKeyboard();
+
+        } else if (viewMode == GOAL_VIEW_MODE_NOW_EDITING) {
+            viewHolderStack.push(holder);
+            parentGoalFragment.goalsRecyclerView.scrollToPosition(adapterPos);
             holder.goalTitleEditText.setText(goalItem.getGoalTitle());
             holder.goalDescEditText.setText(goalItem.getGoalDescription());
-            holder.switchEditable.showPrevious();
+            holder.goalCardView.setCardElevation(10.0f);
             holder.goalTitleEditText.requestFocus();
-            holder.goalCardView.setCardElevation((float)10);
-            holder.swipeable = false;
-            holder.editable = true;
-            long currentItemId = GoalsCardAdapter.this.getItemId(adapterPos);
-            for (Long id : fadeOutMap.keySet()) {fadeOutMap.put(id,id!=currentItemId);}
-            //iterate through the map, set false for all other ids, true for the id which matches current adapterposition id
-            notifyDataSetChanged();
+            holder.isCurrentlySwipeable = false;
+            holder.isCurrentlyEditable = true;
+            interactWithGoalFragment.enableAddGoalFab(false);
+            holder.switchEditable.setDisplayedChild(0);
 
         }
     }
 
-    void addNewGoal(long newGoalId){
-        //currentEditPosition = 0;
-        //fadeOutOthers = true;
-        for (Long id : fadeOutMap.keySet()) {fadeOutMap.put(id,true);}
-        fadeOutMap.put(newGoalId,false);
-        parentGoalFragment.addGoalFab.setEnabled(false);
-        parentGoalFragment.addGoalFab.setBackgroundTintList(parentGoalFragment.defaultAddFabDisabledColour);
+    void addNewGoal(long newGoalId) {
+        for (Long id : fadeOutMap.keySet()) {fadeOutMap.put(id, true);}
+        fadeOutMap.put(newGoalId, false);
+        addingNewGoal = true;
+        notifyItemInserted(0);
         notifyDataSetChanged();
-        notifyDataSetChanged();
+        System.out.println(parentGoalFragment.getGoalsActiveListSize());
+        previousAction = PREVIOUS_ACTION_IS_ADDING;
+
+        parentGoalFragment.enableAddGoalFab(false);
     }
 
     @Override
     public GoalsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.goal_cardview_editable_layout, parent,false);
+                R.layout.goal_cardview_editable_layout, parent, false);
 
         return new GoalsViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(GoalsViewHolder holder,int position) {
+    public void onBindViewHolder(GoalsViewHolder holder, int position) {
         long itemId = getItemId(position);
         if (fadeOutMap.get(itemId)) {
             //set faded alpha i.e. 0.25f if fadeOut is true i.e. if you want it to fade
-            holder.goalCardView.setAlpha(0.25f);
+            holder.goalCardView.setAlpha(FADE_OUT_ALPHA);
             holder.showGoalEditMenuButton.setEnabled(false);
-        }
-        else {
-            holder.goalCardView.setAlpha(1.0f);
+        } else {
+            holder.goalCardView.setAlpha(DEFAULT_ALPHA);
             holder.showGoalEditMenuButton.setEnabled(true);
         }
 
-        GoalCardItem cardItem = goalInteractionListener.getGoalAtListPosition(position);
+        GoalCardItem cardItem = interactWithGoalFragment.getGoalAtListPosition(position);
         String goalTitle = cardItem.getGoalTitle();
         String goalDesc = cardItem.getGoalDescription();
 
-        if((goalTitle!=null && goalDesc!=null) && !holder.editable) {
+        if (addingNewGoal) {
+            changeGoalViewMode(holder,position, GOAL_VIEW_MODE_NOW_EDITING);
+            addingNewGoal = false;
+        }
+
+        if ((goalTitle != null && goalDesc != null) && !holder.isCurrentlyEditable) {
             holder.goalTitleTextView.setText(goalTitle);
             holder.goalDescTextView.setText(goalDesc);
             holder.switchEditable.setDisplayedChild(1);
-        }
-        else holder.switchEditable.setDisplayedChild(0);
+        } else holder.switchEditable.setDisplayedChild(0);
 
     }
 
     @Override
-    public int getItemCount() {return goalInteractionListener.getGoalsListSize();}
+    public int getItemCount() {return interactWithGoalFragment.getGoalsActiveListSize();}
 
     @Override
-    public long getItemId(int position){return goalInteractionListener.getGoalAtListPosition(position).hashCode();
+    public long getItemId(int position){return interactWithGoalFragment.getGoalAtListPosition(position).hashCode();
         // returning unique hashcode here because we have set setStableIds(true) for the adapter.
         // this is to solve IndexOutOfBoundsException which occurs when removing items.
         // https://stackoverflow.com/a/41659302/6200378 <- suggested here
@@ -247,8 +283,11 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
     }
 
     private void deleteGoal(int pos){
-        goalInteractionInterface gil = goalInteractionListener;
-        gil.deleteGoalFromList(pos);
+        long itemId = getItemId(pos);
+        fadeOutMap.remove(itemId);
+        interactWithGoalFragment.deleteGoalFromActiveList(pos);
+        //notifyItemRemoved(pos);
+
     }
 
 

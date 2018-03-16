@@ -16,30 +16,25 @@ import android.widget.Toast;
 
 import com.example.nikhilanj.oopomo_new.goals_package.GoalsFragment;
 
-import java.util.List;
 import java.util.Stack;
 
-interface IGoalFragmentInterface{
-    List getGoalsListFromMainActivity();
-
-}
-public class MainActivity extends AppCompatActivity implements timerFragmentInterface{
+public class MainActivity extends AppCompatActivity implements timerFragmentInterface,IgoalFragmentActivityInterface{
 
     private BottomNavigationView bottomNav;
+    float bottomNavDefaultElevation;
     private FragmentManager manager = getSupportFragmentManager();
     private HomeFragment homeFragment = new HomeFragment();
     private GoalsFragment goalsFragment = new GoalsFragment();
     private StatsFragment statsFragment = new StatsFragment();
     private SettingsFragment settingsFragment = new SettingsFragment();
 
-    public static Stack<Integer> bottomNavTabStack = new Stack<>();
     private timeChangeListenerInterface tcli;
     Timer mainTimer;
+
+    public static Stack<Integer> bottomNavTabStack = new Stack<>();
     //bottomNavTabStack is the stack where all the tabs are added on clicking.
     //This will be useful to go back to previous tab when back (<-) is pressed
     static MenuItem item1;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
 
         bottomNav = findViewById(R.id.bottomnavigation);
         bottomNav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        bottomNavDefaultElevation = bottomNav.getElevation();
 
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().add(android.R.id.content, homeFragment).commit();
@@ -172,6 +168,16 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
 
     @Override
     public void stopFullCountdown(Timer timerinstance){timerinstance.stopTimer();}
+
+    @Override
+    public void setBottomNavBarElevation(float elev) {
+        bottomNav.setElevation(elev);
+    }
+
+    @Override
+    public float getBottomNavBarDefaultElevation() {
+        return bottomNavDefaultElevation;
+    }
 
     /**
      * Implementation of HomeFragment interaction listener
