@@ -48,6 +48,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
     private List<GoalCardItem> goalsActiveList = new ArrayList<>();
     private List<GoalCardItem> goalsDoneList = new ArrayList<>();
 
+
     private IgoalFragmentActivityInterface interactWithActivity;
 
     RecyclerView goalsRecyclerView;
@@ -72,16 +73,16 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         //TODO: goalsActiveList = readGoalsActiveListFromDb();
         //TODO: goalsDoneList = readGoalsDoneListFromDb();
 
-        /*
+/*
         //For testing purposes
         if(goalsActiveList.isEmpty()){
-            for(int i = 1;i<=6;i++){
+            for(int i = 1;i<=50;i++){
                 String t = String.format(Locale.getDefault(),"Goal %d",i);
                 String d = String.format(Locale.getDefault(),"This is description for goal %d",i);
-                addGoalToActiveList(t,d);
+                addGoalToActiveList(0,t,d);
             }
         }
-        */
+*/
 
         if (savedInstanceState != null) {
             System.out.println("savedinstancestate alive");
@@ -156,24 +157,34 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
     }
 
     public long addGoalToActiveList(int position){
-        //method to add empty goal, i.e. a new goal
+        //method to add empty goal
             GoalCardItem newGoal = new GoalCardItem();
             goalsActiveList.add(position,newGoal);
             return newGoal.hashCode();
             }
 
-    public long addGoalToActiveList(String title,String desc){
+    public long addGoalToActiveList(int position, String title,String desc){
         //overloaded method to add one with pre-existing title, description
         GoalCardItem newGoal = new GoalCardItem(title,desc);
-        goalsActiveList.add(0,newGoal);
-        return newGoal.hashCode();
+        goalsActiveList.add(position,newGoal);
+        long id = newGoal.hashCode();
+        try{goalsRecyclerViewAdapter.fadeOutMap.put(id,false);}
+        catch(NullPointerException e){e.printStackTrace();}
+        return id;
     }
 
+    public long addGoalToActiveList(int position, GoalCardItem item){
+        //overloaded method to add one with pre-existing title, description
+        goalsActiveList.add(position,item);
+        long id = item.hashCode();
+        goalsRecyclerViewAdapter.fadeOutMap.put(id,false);
+        return id;
+    }
 
     public void addGoalManually() {
         long newGoalId = addGoalToActiveList(0);
         goalsRecyclerView.scrollToPosition(0);
-        goalsRecyclerViewAdapter.addNewGoal(newGoalId);
+        goalsRecyclerViewAdapter.addNewGoalManually(newGoalId);
         setTextIfNoGoal();
     }
 
@@ -189,7 +200,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
     @Override
     public void deleteGoalFromActiveList(int position) {
         goalsActiveList.remove(position);
-        try {goalsRecyclerView.removeViewAt(position);}
+        try {goalsRecyclerView.removeViewAt(position);goalsRecyclerViewAdapter.notifyItemRemoved(position);}
         // NPE can occur when you're deleting items while scrolling. In that case, removeViewAt cannot find the view.
         //For these cases, notifyDataSetChanged() works.
         catch(NullPointerException e){
@@ -219,20 +230,19 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         snack.addCallback(new Snackbar.Callback(){
             @Override
             public void onDismissed(Snackbar snackbar,int event){
-                int snackbarHeight = snackbar.getView().getHeight();
-                ViewPropertyAnimator animator = addGoalFab.animate().translationYBy(+snackbarHeight);
+                ViewPropertyAnimator animator = addGoalFab.animate().translationY(0);
                 interactWithActivity.setBottomNavBarElevation(interactWithActivity.getBottomNavBarDefaultElevation());
                 //set elevation to default on snackbar dismissed
                 animator.start();
-                markGoalDone(goalMarkedDonePosition);
             }
 
             @Override
             public void onShown(Snackbar snackbar){
                 int snackbarHeight = snackbar.getView().getHeight();
-                ViewPropertyAnimator animator = addGoalFab.animate().translationYBy(-snackbarHeight);
+                ViewPropertyAnimator animator = addGoalFab.animate().translationY(-snackbarHeight);
                 interactWithActivity.setBottomNavBarElevation(0.0f);
                 animator.start();
+                markGoalDone(goalMarkedDonePosition);
             }
         });
 
@@ -250,7 +260,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         @Override
         public void onClick(View view) {
             Toast.makeText(getContext(),"Undid",Toast.LENGTH_SHORT).show();
-            //undoMarkAsDone();
+            undoMarkGoalDone(goalMarkedDonePosition);
         }
     }
 
@@ -265,18 +275,26 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
 
     }
 
-    public void undoMarkGoalDone(int position,boolean done) {
+    public void undoMarkGoalDone(int position) {
         getGoalAtListPosition(position).markGoalAsDone(false);
         //write back to file saying "done"
-        deleteGoalFromDoneList(position);
-        addGoalToActiveList(position);
+        GoalCardItem deletedGoal = deleteGoalFromDoneList(0);
+        addGoalToActiveList(position,deletedGoal);
+        goalsRecyclerViewAdapter.notifyDataSetChanged();
+        goalsRecyclerView.scrollToPosition(position);
         // doesnt actually "delete"
         // removes the mentioned goal from current goals list and moves it to "completed" list
         //TODO : sort out this
     }
 
-    public void deleteGoalFromDoneList(int position){
-        goalsDoneList.remove(position);
+    public GoalCardItem deleteGoalFromDoneList(int position){
+        try{
+            GoalCardItem deletedItem = goalsDoneList.get(position);
+            goalsDoneList.remove(deletedItem);
+            return deletedItem;
+        }
+        catch(IndexOutOfBoundsException e){e.printStackTrace();}
+        return null;
     }
 
 

@@ -40,7 +40,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
     // If you have any better ideas, raise an issue on GitHub.
 
     @SuppressLint("UseSparseArrays")
-    private HashMap<Long, Boolean> fadeOutMap = new HashMap<>();
+    HashMap<Long, Boolean> fadeOutMap = new HashMap<>();
     //private LongSparseArray<Boolean> fadeOutMap = new LongSparseArray<>();
 
     // IDE would prompt you to use LongSparseArray(LSA) instead of HashMap here, as LSA is more memory efficient.
@@ -206,7 +206,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
         }
     }
 
-    void addNewGoal(long newGoalId) {
+    void addNewGoalManually(long newGoalId) {
         for (Long id : fadeOutMap.keySet()) {fadeOutMap.put(id, true);}
         fadeOutMap.put(newGoalId, false);
         addingNewGoal = true;
@@ -214,9 +214,10 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
         notifyDataSetChanged();
         System.out.println(parentGoalFragment.getGoalsActiveListSize());
         previousAction = PREVIOUS_ACTION_IS_ADDING;
-
         parentGoalFragment.enableAddGoalFab(false);
     }
+
+
 
     @Override
     public GoalsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -229,14 +230,17 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
     @Override
     public void onBindViewHolder(GoalsViewHolder holder, int position) {
         long itemId = getItemId(position);
-        if (fadeOutMap.get(itemId)) {
-            //set faded alpha i.e. 0.25f if fadeOut is true i.e. if you want it to fade
-            holder.goalCardView.setAlpha(FADE_OUT_ALPHA);
-            holder.showGoalEditMenuButton.setEnabled(false);
-        } else {
-            holder.goalCardView.setAlpha(DEFAULT_ALPHA);
-            holder.showGoalEditMenuButton.setEnabled(true);
+        try {
+            if (fadeOutMap.get(itemId)) {
+                //set faded alpha i.e. 0.25f if fadeOut is true i.e. if you want it to fade
+                holder.goalCardView.setAlpha(FADE_OUT_ALPHA);
+                holder.showGoalEditMenuButton.setEnabled(false);
+            } else {
+                holder.goalCardView.setAlpha(DEFAULT_ALPHA);
+                holder.showGoalEditMenuButton.setEnabled(true);
+            }
         }
+        catch (NullPointerException e){e.printStackTrace();}
 
         GoalCardItem cardItem = interactWithGoalFragment.getGoalAtListPosition(position);
         String goalTitle = cardItem.getGoalTitle();
