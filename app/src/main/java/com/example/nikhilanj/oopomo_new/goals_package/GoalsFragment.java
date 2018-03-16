@@ -39,7 +39,6 @@ interface IgoalFragmentAdapterInteraction{
     void deleteGoalFromActiveList(int position);
     void enableAddGoalFab(boolean enabled);
     void clearFocusAndHideSoftInputKeyboard();
-    //void markGoalDone(int position, boolean done);
 }
 
 
@@ -47,7 +46,6 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
 
     private List<GoalCardItem> goalsActiveList = new ArrayList<>();
     private List<GoalCardItem> goalsDoneList = new ArrayList<>();
-
 
     private IgoalFragmentActivityInterface interactWithActivity;
 
@@ -58,13 +56,12 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
     private FloatingActionButton addGoalFab;
     private ColorStateList defaultAddFabEnabledColour;
     private ColorStateList defaultAddFabDisabledColour;
-    private Snackbar snack;
-    private boolean goalMarkedAsDone = false;
     private int goalMarkedDonePosition = -1;
     final int BOTTOM_NAV_BAR_HEIGHT = 60;
 
 
     public GoalsFragment() {}
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,14 +76,15 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
             for(int i = 1;i<=50;i++){
                 String t = String.format(Locale.getDefault(),"Goal %d",i);
                 String d = String.format(Locale.getDefault(),"This is description for goal %d",i);
-                addGoalToActiveList(0,t,d);
+                addGoalToActiveList(0,new GoalCardItem(t,d));
             }
         }
 */
 
         if (savedInstanceState != null) {
             System.out.println("savedinstancestate alive");
-        }}
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState){
@@ -125,7 +123,6 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
                     @Override
                     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                         GoalsCardAdapter.GoalsViewHolder holder = (GoalsCardAdapter.GoalsViewHolder) viewHolder;
-                        goalMarkedAsDone = true;
                         goalMarkedDonePosition = viewHolder.getAdapterPosition();
                         String title = holder.getHolderTitleText();
                         showMarkGoalSnackBar(title);
@@ -156,28 +153,22 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         return view;
     }
 
+    @Override
+    public void onDetach() {super.onDetach();}
+
     public long addGoalToActiveList(int position){
         //method to add empty goal
-            GoalCardItem newGoal = new GoalCardItem();
-            goalsActiveList.add(position,newGoal);
-            return newGoal.hashCode();
-            }
-
-    public long addGoalToActiveList(int position, String title,String desc){
-        //overloaded method to add one with pre-existing title, description
-        GoalCardItem newGoal = new GoalCardItem(title,desc);
+        GoalCardItem newGoal = new GoalCardItem();
         goalsActiveList.add(position,newGoal);
-        long id = newGoal.hashCode();
-        try{goalsRecyclerViewAdapter.fadeOutMap.put(id,false);}
-        catch(NullPointerException e){e.printStackTrace();}
-        return id;
+        return newGoal.hashCode();
     }
 
     public long addGoalToActiveList(int position, GoalCardItem item){
-        //overloaded method to add one with pre-existing title, description
+        //overloaded method to add already created goals
         goalsActiveList.add(position,item);
         long id = item.hashCode();
-        goalsRecyclerViewAdapter.fadeOutMap.put(id,false);
+        try{goalsRecyclerViewAdapter.fadeOutMap.put(id,false);}
+        catch(NullPointerException e){e.printStackTrace();}
         return id;
     }
 
@@ -215,18 +206,22 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         setTextIfNoGoal();
     }
 
-    @Override
-    public GoalCardItem getGoalAtListPosition(int position) {return goalsActiveList.get(position);}
-
-    @Override
-    public int getGoalsActiveListSize() {return goalsActiveList.size();}
+    public GoalCardItem deleteGoalFromDoneList(int position){
+        try{
+            GoalCardItem deletedItem = goalsDoneList.get(position);
+            goalsDoneList.remove(deletedItem);
+            return deletedItem;
+        }
+        catch(IndexOutOfBoundsException e){e.printStackTrace();}
+        return null;
+    }
 
     public void showMarkGoalSnackBar(String goalTitle){
         //set snackbar layout params so that it shows above bottom nav bar.
 
-        snack = Snackbar.make(getActivity().findViewById(android.R.id.content),
-                String.format(Locale.getDefault(),"Marked '%s' as done",goalTitle),
-                Snackbar.LENGTH_LONG).setAction("UNDO",new SnackBarListener());
+        Snackbar snack = Snackbar.make(getActivity().findViewById(android.R.id.content),
+                String.format(Locale.getDefault(), "Marked '%s' as done", goalTitle),
+                Snackbar.LENGTH_LONG).setAction("UNDO", new SnackBarListener());
         snack.addCallback(new Snackbar.Callback(){
             @Override
             public void onDismissed(Snackbar snackbar,int event){
@@ -251,9 +246,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         int bottomnavBarMargin = (int)(BOTTOM_NAV_BAR_HEIGHT * d);
         parameters.setMargins(0, 0, 0, bottomnavBarMargin);
         snack.getView().setLayoutParams(parameters);
-
         snack.show();
-        //TODO : Snackbar currently overlaps FAB. fix this.
     }
 
     public class SnackBarListener implements View.OnClickListener{
@@ -270,7 +263,6 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         //write back to file saying "done"
         deleteGoalFromActiveList(position);
         goalsDoneList.add(0,item);
-        goalMarkedAsDone = false;
         // removes the mentioned goal from current goals list and moves it to "completed" list
 
     }
@@ -282,22 +274,23 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         addGoalToActiveList(position,deletedGoal);
         goalsRecyclerViewAdapter.notifyDataSetChanged();
         goalsRecyclerView.scrollToPosition(position);
-        // doesnt actually "delete"
-        // removes the mentioned goal from current goals list and moves it to "completed" list
-        //TODO : sort out this
     }
 
-    public GoalCardItem deleteGoalFromDoneList(int position){
-        try{
-            GoalCardItem deletedItem = goalsDoneList.get(position);
-            goalsDoneList.remove(deletedItem);
-            return deletedItem;
+    public void setTextIfNoGoal() {
+        if (goalsActiveList.size() != 0) emptyGoalsText.setVisibility(View.INVISIBLE);
+        else {
+            emptyGoalsText.setVisibility(View.VISIBLE);
+            enableAddGoalFab(true);
         }
-        catch(IndexOutOfBoundsException e){e.printStackTrace();}
-        return null;
     }
 
 
+    //Interface methods
+    @Override
+    public GoalCardItem getGoalAtListPosition(int position) {return goalsActiveList.get(position);}
+
+    @Override
+    public int getGoalsActiveListSize() {return goalsActiveList.size();}
 
     @Override
     public void enableAddGoalFab(boolean enabled){
@@ -315,17 +308,5 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
                 (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
     }
-
-    public void setTextIfNoGoal() {
-        if (goalsActiveList.size() != 0) emptyGoalsText.setVisibility(View.INVISIBLE);
-        else {
-            emptyGoalsText.setVisibility(View.VISIBLE);
-            enableAddGoalFab(true);
-        }
-    }
-
-    @Override
-    public void onDetach() {super.onDetach();}
-
 
 }
