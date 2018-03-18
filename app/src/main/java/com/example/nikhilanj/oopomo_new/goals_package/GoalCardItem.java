@@ -8,9 +8,10 @@ class GoalCardItem{
 
     GoalCardItem(){} //empty constructor
 
-    GoalCardItem(String title,String desc){
+    GoalCardItem(String title,String desc,boolean markedImportant){
         this.title = title;
         this.description = desc;
+        this.markedImportant = markedImportant;
     }
 
     void markGoalAsDone(boolean done){ this.markedAsDone = done;}

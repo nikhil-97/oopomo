@@ -1,13 +1,17 @@
 package com.example.nikhilanj.oopomo_new;
 
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.internal.BottomNavigationItemView;
+import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.MenuItem;
@@ -16,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.nikhilanj.oopomo_new.goals_package.GoalsFragment;
 
+import java.lang.reflect.Field;
 import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity implements timerFragmentInterface,IgoalFragmentActivityInterface{
@@ -42,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
         setContentView(R.layout.activity_main);
 
         bottomNav = findViewById(R.id.bottomnavigation);
+        BottomNavigationViewHelper.disableShiftMode(bottomNav);
         bottomNav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         bottomNavDefaultElevation = bottomNav.getElevation();
 
@@ -50,6 +56,31 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
         getSupportActionBar().setTitle(getString (R.string.app_name));
 
         bottomNavTabStack.push(R.id.navigation_home);
+    }
+
+    static class BottomNavigationViewHelper {
+        @SuppressLint("RestrictedApi")
+        static void disableShiftMode(BottomNavigationView view) {
+            BottomNavigationMenuView menuView = (BottomNavigationMenuView) view.getChildAt(0);
+            try {
+                Field shiftingMode = menuView.getClass().getDeclaredField("mShiftingMode");
+                shiftingMode.setAccessible(true);
+                shiftingMode.setBoolean(menuView, false);
+                shiftingMode.setAccessible(false);
+                for (int i = 0; i < menuView.getChildCount(); i++) {
+                    BottomNavigationItemView item = (BottomNavigationItemView) menuView.getChildAt(i);
+                    //noinspection RestrictedApi
+                    item.setShiftingMode(false);
+                    // set once again checked value, so view will be updated
+                    //noinspection RestrictedApi
+                    item.setChecked(item.getItemData().isChecked());
+                }
+            } catch (NoSuchFieldException e) {
+                Log.e("BNVHelper", "Unable to get shift mode field", e);
+            } catch (IllegalAccessException e) {
+                Log.e("BNVHelper", "Unable to change value of shift mode", e);
+            }
+        }
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -112,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        System.out.println("selected something");
         switch (item.getItemId()) {
             case R.id.dark_mode_setting:
                 item.setChecked(!item.isChecked());
@@ -132,16 +164,22 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
                 item.setChecked(!item.isChecked());
                 if(item.isChecked()){
                     final View decorView = getWindow().getDecorView();
-                    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN);
+                    decorView.setSystemUiVisibility(
+                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
+                    item.setIcon(R.drawable.ic_fullscreen_exit_white_24px);
                     System.out.println("insane checked");
                 }
-                else{
+                else if(!item.isChecked()){
                     getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                    item.setIcon(R.drawable.ic_fullscreen_white_24px);
                     System.out.println("insane unchecked");
                 }
+                return true;
         }
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     private void loadTabFragment(Fragment fragment,int stringid){

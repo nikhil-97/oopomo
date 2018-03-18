@@ -105,8 +105,6 @@
 
                 </TableRow>
 
-
-
             </TableLayout>
         </LinearLayout>
 
@@ -125,14 +123,19 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_column="0"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginEnd="4dp"
                         android:layout_marginHorizontal="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_span="2"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="4dp"
                         android:layout_weight="1"
-                        android:padding="8dp"
+                        android:elevation="0dp"
+                        android:paddingBottom="4dp"
+                        android:paddingEnd="4dp"
+                        android:paddingStart="4dp"
+                        android:paddingTop="4dp"
                         android:text="Goal 1"
-                        android:textAlignment="textStart"
+                        android:textAlignment="viewStart"
                         android:textAllCaps="false"
                         android:textColor="@android:color/black"
                         android:textSize="20sp"
@@ -140,39 +143,63 @@
 
                     <android.support.design.widget.FloatingActionButton
                         android:id="@+id/btn_show_goal_edit_menu"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_column="1"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginEnd="4dp"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="8dp"
-                        android:padding="8dp"
-                        app:backgroundTint="@android:color/white"
-                        app:elevation="2dp"
+                        android:layout_column="0"
+                        android:padding="4dp"
+                        android:visibility="visible"
                         app:fabSize="mini"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_weight="0"
+                        android:elevation="0dp"
+                        app:backgroundTint="@android:color/white"
+                        app:elevation="0dp"
                         app:srcCompat="@drawable/ic_more_vert_black_24px" />
                 </TableRow>
 
-                <TableRow>
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
                     <TextView
                         android:id="@+id/tv_show_goal_desc_when_not_editing"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_column="0"
                         android:layout_marginBottom="4dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_span="4"
-                        android:layout_weight="1"
+                        android:layout_marginTop="4dp"
+                        android:layout_weight="9"
+                        android:allowUndo="true"
+                        android:ems="20"
+                        android:gravity="start"
                         android:minLines="2"
+                        android:paddingEnd="4dp"
+                        android:paddingStart="4dp"
+                        android:paddingTop="4dp"
                         android:text="Description of Goal 1"
                         android:textAlignment="textStart"
                         android:textColor="@android:color/darker_gray"
                         android:textSize="16sp"
                         android:textStyle="italic" />
+
+                    <ImageButton
+                        android:id="@+id/btn_mark_important"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_column="1"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="4dp"
+                        android:background="@null"
+                        android:elevation="2dp"
+                        android:paddingTop="0dp"
+                        android:src="@drawable/ic_star_yellow_filled_30dp" />
 
                 </TableRow>
 

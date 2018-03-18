@@ -1,7 +1,6 @@
 package com.example.nikhilanj.oopomo_new.goals_package;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -13,7 +12,9 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
@@ -80,8 +81,10 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
         private FloatingActionButton goalSaveButton;
         private FloatingActionButton goalUndoButton;
         private FloatingActionButton showGoalEditMenuButton;
+        private ImageButton markImportantButton;
         boolean isCurrentlySwipeable = true;
         boolean isCurrentlyEditable = false;
+        boolean isImportant = false;
         float defaultCardElevation = 1.0f;
 
 
@@ -96,6 +99,8 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
             goalSaveButton = itemView.findViewById(R.id.btn_save_goal);
             goalUndoButton = itemView.findViewById(R.id.btn_undo_goal);
             showGoalEditMenuButton = itemView.findViewById(R.id.btn_show_goal_edit_menu);
+            markImportantButton = itemView.findViewById(R.id.btn_mark_important);
+
             switchEditable = itemView.findViewById(R.id.goalViewSwitcher);
             defaultCardElevation = goalCardView.getCardElevation();
 
@@ -158,6 +163,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
                                     long currentItemId = GoalsCardAdapter.this.getItemId(getAdapterPosition());
                                     for (Long id : fadeOutMap.keySet()) {fadeOutMap.put(id, id != currentItemId);}
                                     notifyDataSetChanged();
+                                    parentGoalFragment.goalsRecyclerView.scrollToPosition(getAdapterPosition());
                                     //calling notifyDataSetChanged because we have to change view of all other viewholders
                                     return true;
                                 case R.id.btn_delete_goal:
@@ -170,6 +176,15 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
                     popup.show();
                 }
 
+            });
+
+            markImportantButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    isImportant = !isImportant;
+                    markImportantButton.setImageResource(
+                            isImportant ? R.drawable.ic_star_yellow_filled_30dp :R.drawable.ic_star_yellow_border_30dp);
+                }
             });
         }
 
@@ -212,9 +227,8 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
         addingNewGoal = true;
         notifyItemInserted(0);
         notifyDataSetChanged();
-        System.out.println(parentGoalFragment.getGoalsActiveListSize());
         previousAction = PREVIOUS_ACTION_IS_ADDING;
-        parentGoalFragment.enableAddGoalFab(false);
+        interactWithGoalFragment.enableAddGoalFab(false);
     }
 
 
@@ -222,7 +236,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
     @Override
     public GoalsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.goal_cardview_editable_layout, parent, false);
+                R.layout.goal_cardview_layout, parent, false);
 
         return new GoalsViewHolder(view);
     }
@@ -245,6 +259,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
         GoalCardItem cardItem = interactWithGoalFragment.getGoalAtListPosition(position);
         String goalTitle = cardItem.getGoalTitle();
         String goalDesc = cardItem.getGoalDescription();
+        boolean markedImportant = cardItem.isMarkedImportant();
 
         if (addingNewGoal) {
             changeGoalViewMode(holder,position, GOAL_VIEW_MODE_NOW_EDITING);
@@ -254,6 +269,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
         if ((goalTitle != null && goalDesc != null) && !holder.isCurrentlyEditable) {
             holder.goalTitleTextView.setText(goalTitle);
             holder.goalDescTextView.setText(goalDesc);
+            holder.isImportant = markedImportant;
             holder.switchEditable.setDisplayedChild(1);
         } else holder.switchEditable.setDisplayedChild(0);
 

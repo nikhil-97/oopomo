@@ -70,16 +70,16 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         //TODO: goalsActiveList = readGoalsActiveListFromDb();
         //TODO: goalsDoneList = readGoalsDoneListFromDb();
 
-/*
+
         //For testing purposes
         if(goalsActiveList.isEmpty()){
-            for(int i = 1;i<=50;i++){
+            for(int i = 1;i<=5;i++){
                 String t = String.format(Locale.getDefault(),"Goal %d",i);
                 String d = String.format(Locale.getDefault(),"This is description for goal %d",i);
-                addGoalToActiveList(0,new GoalCardItem(t,d));
+                addGoalToActiveList(0,new GoalCardItem(t,d,i%2==0));
             }
         }
-*/
+
 
         if (savedInstanceState != null) {
             System.out.println("savedinstancestate alive");
@@ -143,8 +143,8 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx,int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if(dy>1) if(addGoalFab.getVisibility()== View.VISIBLE) addGoalFab.setVisibility(View.GONE);
-                if(dy<0) if(addGoalFab.getVisibility()== View.GONE) addGoalFab.setVisibility(View.VISIBLE);
+                if(dy>5) if(addGoalFab.getVisibility()== View.VISIBLE) addGoalFab.setVisibility(View.GONE);
+                if(dy<5) if(addGoalFab.getVisibility()== View.GONE) addGoalFab.setVisibility(View.VISIBLE);
             }
         });
 
@@ -156,14 +156,14 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
     @Override
     public void onDetach() {super.onDetach();}
 
-    public long addGoalToActiveList(int position){
+    private long addGoalToActiveList(int position){
         //method to add empty goal
         GoalCardItem newGoal = new GoalCardItem();
         goalsActiveList.add(position,newGoal);
         return newGoal.hashCode();
     }
 
-    public long addGoalToActiveList(int position, GoalCardItem item){
+    private long addGoalToActiveList(int position, GoalCardItem item){
         //overloaded method to add already created goals
         goalsActiveList.add(position,item);
         long id = item.hashCode();
@@ -172,41 +172,15 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         return id;
     }
 
-    public void addGoalManually() {
+    private void addGoalManually() {
         long newGoalId = addGoalToActiveList(0);
         goalsRecyclerView.scrollToPosition(0);
         goalsRecyclerViewAdapter.addNewGoalManually(newGoalId);
         setTextIfNoGoal();
     }
 
-    @Override
-    public void saveGoalToList(String goalTitle,String goalDesc,int pos) {
-        if(getGoalAtListPosition(pos)!=null){
-            GoalCardItem item = getGoalAtListPosition(pos);
-            item.setGoalTitle(goalTitle);
-            item.setGoalDesciption(goalDesc);
-        }
-    }
-
-    @Override
-    public void deleteGoalFromActiveList(int position) {
-        goalsActiveList.remove(position);
-        try {goalsRecyclerView.removeViewAt(position);goalsRecyclerViewAdapter.notifyItemRemoved(position);}
-        // NPE can occur when you're deleting items while scrolling. In that case, removeViewAt cannot find the view.
-        //For these cases, notifyDataSetChanged() works.
-        catch(NullPointerException e){
-            Log.e("NPE @ deleteGoal","NPE occured at deleteGoalFromList position = "+position);
-            Log.e("StackTrace",Log.getStackTraceString(e));
-            goalsRecyclerView.removeAllViews();
-            goalsRecyclerViewAdapter.notifyDataSetChanged();
-        }
-        // The .removeViewAt(position) removes the old ViewHolder at the given position.
-        // Without this, the old ViewHolder would get repeated, i.e. after you delete the item, when
-        // you add it back, the same view is generated, although the underlying list is different.
-        setTextIfNoGoal();
-    }
-
-    public GoalCardItem deleteGoalFromDoneList(int position){
+    private GoalCardItem deleteGoalFromDoneList(int position){
+        //Only GoalsFragment handles the doneList (for now).
         try{
             GoalCardItem deletedItem = goalsDoneList.get(position);
             goalsDoneList.remove(deletedItem);
@@ -216,7 +190,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         return null;
     }
 
-    public void showMarkGoalSnackBar(String goalTitle){
+    private void showMarkGoalSnackBar(String goalTitle){
         //set snackbar layout params so that it shows above bottom nav bar.
 
         Snackbar snack = Snackbar.make(getActivity().findViewById(android.R.id.content),
@@ -249,7 +223,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         snack.show();
     }
 
-    public class SnackBarListener implements View.OnClickListener{
+    private class SnackBarListener implements View.OnClickListener{
         @Override
         public void onClick(View view) {
             Toast.makeText(getContext(),"Undid",Toast.LENGTH_SHORT).show();
@@ -257,7 +231,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         }
     }
 
-    public void markGoalDone(int position) {
+    private void markGoalDone(int position) {
         GoalCardItem item = getGoalAtListPosition(position);
         item.markGoalAsDone(true);
         //write back to file saying "done"
@@ -267,16 +241,16 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
 
     }
 
-    public void undoMarkGoalDone(int position) {
-        getGoalAtListPosition(position).markGoalAsDone(false);
+    void undoMarkGoalDone(int position) {
         //write back to file saying "done"
         GoalCardItem deletedGoal = deleteGoalFromDoneList(0);
         addGoalToActiveList(position,deletedGoal);
+        getGoalAtListPosition(position).markGoalAsDone(false);
         goalsRecyclerViewAdapter.notifyDataSetChanged();
         goalsRecyclerView.scrollToPosition(position);
     }
 
-    public void setTextIfNoGoal() {
+    private void setTextIfNoGoal() {
         if (goalsActiveList.size() != 0) emptyGoalsText.setVisibility(View.INVISIBLE);
         else {
             emptyGoalsText.setVisibility(View.VISIBLE);
@@ -291,6 +265,33 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
 
     @Override
     public int getGoalsActiveListSize() {return goalsActiveList.size();}
+
+    @Override
+    public void saveGoalToList(String goalTitle,String goalDesc,int pos) {
+        if(getGoalAtListPosition(pos)!=null){
+            GoalCardItem item = getGoalAtListPosition(pos);
+            item.setGoalTitle(goalTitle);
+            item.setGoalDesciption(goalDesc);
+        }
+    }
+
+    @Override
+    public void deleteGoalFromActiveList(int position) {
+        goalsActiveList.remove(position);
+        try {goalsRecyclerView.removeViewAt(position);goalsRecyclerViewAdapter.notifyItemRemoved(position);}
+        // NPE can occur when you're deleting items while scrolling. In that case, removeViewAt cannot find the view.
+        //For these cases, notifyDataSetChanged() works.
+        catch(NullPointerException e){
+            Log.e("NPE @ deleteGoal","NPE occured at deleteGoalFromList position = "+position);
+            Log.e("StackTrace",Log.getStackTraceString(e));
+            goalsRecyclerView.removeAllViews();
+            goalsRecyclerViewAdapter.notifyDataSetChanged();
+        }
+        // The .removeViewAt(position) removes the old ViewHolder at the given position.
+        // Without this, the old ViewHolder would get repeated, i.e. after you delete the item, when
+        // you add it back, the same view is generated, although the underlying list is different.
+        setTextIfNoGoal();
+    }
 
     @Override
     public void enableAddGoalFab(boolean enabled){

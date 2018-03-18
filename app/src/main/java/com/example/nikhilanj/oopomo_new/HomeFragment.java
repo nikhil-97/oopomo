@@ -1,5 +1,8 @@
 package com.example.nikhilanj.oopomo_new;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 
 import android.content.DialogInterface;
@@ -16,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewAnimator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,15 +87,16 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                pauseButton.setAlpha((float)0.001);
+                pauseButton.setAlpha(0.001f);
                 pauseButton.setVisibility(View.VISIBLE);
-                stopButton.setAlpha((float)0.001);
+                stopButton.setAlpha(0.001f);
                 stopButton.setVisibility(View.VISIBLE);
 
-                buttonFadeAnimation(startButton,(float)0.001,1000,false);
+                buttonFadeAnimation(startButton,0.001f,1000,false);
+                buttonFadeAnimation(pauseButton,1.0f,1200,true);
+                buttonFadeAnimation(stopButton,1.0f,1200,true);
+
                 //startCountdown();
-                buttonFadeAnimation(pauseButton,(float)1,1200,true);
-                buttonFadeAnimation(stopButton,(float)1,1200,true);
                 Toast.makeText(getContext(), "Starting Time !", Toast.LENGTH_SHORT).show();
                 try {
                     gsti = (getSetTimesInterface) timeProfileFragment;
@@ -138,6 +143,8 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     }
 
     private void buttonFadeAnimation(FloatingActionButton somebutton,float toAlpha,long fadetime,boolean setenable){
+        //Overloaded method for fade animation without any movement
+
         ViewPropertyAnimator buttonanimation = somebutton.animate().alpha(toAlpha).setDuration(fadetime);
         buttonanimation.start();
         somebutton.setEnabled(setenable);
@@ -165,9 +172,9 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
 
     private void quitTimer(){
         Toast.makeText(getContext(), "stopCountdown()", Toast.LENGTH_SHORT).show();
-        buttonFadeAnimation(pauseButton, (float)0.001,1000,false);
-        buttonFadeAnimation(stopButton, (float)0.001,1000,false);
-        buttonFadeAnimation(startButton,1, 1000,true);
+        buttonFadeAnimation(pauseButton, 0.001f,800,false);
+        buttonFadeAnimation(stopButton, 0.001f,800,false);
+        buttonFadeAnimation(startButton, 1.0f,1200,true);
         //TODO : stopCountdown();
         if(timer_instance!=null) tfi.stopFullCountdown(timer_instance);
     }
