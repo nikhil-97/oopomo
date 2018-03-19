@@ -44,8 +44,10 @@ interface IgoalFragmentAdapterInteraction{
 
 public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInteraction {
 
-    private List<GoalCardItem> goalsActiveList = new ArrayList<>();
+    public List<GoalCardItem> goalsActiveList = new ArrayList<>();
     private List<GoalCardItem> goalsDoneList = new ArrayList<>();
+    static int activeGoalId = 0;
+
 
     private IgoalFragmentActivityInterface interactWithActivity;
 
@@ -70,17 +72,18 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         //TODO: goalsActiveList = readGoalsActiveListFromDb();
         //TODO: goalsDoneList = readGoalsDoneListFromDb();
 
-
+/*
         //For testing purposes
         if(goalsActiveList.isEmpty()){
-            for(int i = 1;i<=5;i++){
-                String t = String.format(Locale.getDefault(),"Goal %d",i);
+            for(int i = 1;i<=10;i++){
+                int id = activeGoalId+=1;
+                String t = String.format(Locale.getDefault(),"Goal %d",id);
                 String d = String.format(Locale.getDefault(),"This is description for goal %d",i);
-                addGoalToActiveList(0,new GoalCardItem(t,d,false));
+                addGoalToActiveList(0,new GoalCardItem(id,t,d,false));
             }
         }
 
-
+*/
         if (savedInstanceState != null) {
             System.out.println("savedinstancestate alive");
         }
@@ -158,17 +161,18 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
 
     private long addGoalToActiveList(int position){
         //method to add empty goal
-        GoalCardItem newGoal = new GoalCardItem();
+        int newGoalId = activeGoalId+=1;
+        GoalCardItem newGoal = new GoalCardItem(newGoalId);
         goalsActiveList.add(position,newGoal);
-        return newGoal.hashCode();
+        return newGoalId;
     }
 
-    private long addGoalToActiveList(int position, GoalCardItem item){
+    private int addGoalToActiveList(int position, GoalCardItem item){
         //overloaded method to add already created goals
+        int id = item.getGoalId();
         goalsActiveList.add(position,item);
-        long id = item.hashCode();
-        try{goalsRecyclerViewAdapter.fadeOutMap.put(id,false);}
-        catch(NullPointerException e){e.printStackTrace();}
+        goalsRecyclerViewAdapter.fadeOutMap.put((long)id,false);
+        //catch(NullPointerException e){e.printStackTrace();}
         return id;
     }
 
@@ -238,6 +242,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         deleteGoalFromActiveList(position);
         goalsDoneList.add(0,item);
         // removes the mentioned goal from current goals list and moves it to "completed" list
+        goalsRecyclerViewAdapter.notifyDataSetChanged();
 
     }
 
@@ -247,7 +252,8 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         addGoalToActiveList(position,deletedGoal);
         getGoalAtListPosition(position).markGoalAsDone(false);
         goalsRecyclerViewAdapter.notifyDataSetChanged();
-        goalsRecyclerView.scrollToPosition(position);
+        try{goalsRecyclerView.scrollToPosition(position);}
+        catch(Exception e){goalsRecyclerView.scrollToPosition(position);}
         setTextIfNoGoal();
     }
 
@@ -262,7 +268,9 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
 
     //Interface methods
     @Override
-    public GoalCardItem getGoalAtListPosition(int position) {return goalsActiveList.get(position);}
+    public GoalCardItem getGoalAtListPosition(int position) {
+        System.out.println("goalsActive list = "+goalsActiveList);
+        return goalsActiveList.get(position);}
 
     @Override
     public int getGoalsActiveListSize() {return goalsActiveList.size();}
@@ -279,18 +287,6 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
     @Override
     public void deleteGoalFromActiveList(int position) {
         goalsActiveList.remove(position);
-        try {goalsRecyclerView.removeViewAt(position);goalsRecyclerViewAdapter.notifyItemRemoved(position);}
-        // NPE can occur when you're deleting items while scrolling. In that case, removeViewAt cannot find the view.
-        //For these cases, notifyDataSetChanged() works.
-        catch(NullPointerException e){
-            Log.e("NPE @ deleteGoal","NPE occured at deleteGoalFromList position = "+position);
-            Log.e("StackTrace",Log.getStackTraceString(e));
-            goalsRecyclerView.removeAllViews();
-            goalsRecyclerViewAdapter.notifyDataSetChanged();
-        }
-        // The .removeViewAt(position) removes the old ViewHolder at the given position.
-        // Without this, the old ViewHolder would get repeated, i.e. after you delete the item, when
-        // you add it back, the same view is generated, although the underlying list is different.
         setTextIfNoGoal();
     }
 

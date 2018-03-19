@@ -3,6 +3,7 @@ package com.example.nikhilanj.oopomo_new.goals_package;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.util.LongSparseArray;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
@@ -20,9 +21,12 @@ import android.widget.ViewSwitcher;
 
 import com.example.nikhilanj.oopomo_new.R;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Stack;
+import java.util.logging.Handler;
 
 
 public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.GoalsViewHolder> {
@@ -42,13 +46,12 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
 
     @SuppressLint("UseSparseArrays")
     HashMap<Long, Boolean> fadeOutMap = new HashMap<>();
-    //private LongSparseArray<Boolean> fadeOutMap = new LongSparseArray<>();
+    //LongSparseArray<Boolean> fadeOutMap = new LongSparseArray<>();
 
     // IDE would prompt you to use LongSparseArray(LSA) instead of HashMap here, as LSA is more memory efficient.
-    // Although find the key is O(logN) in LSA, we would have quite a few items here (assume not more than 50)
+    // Fetching the keys in LSA takes more time { O(logN) I think ?
     // But however, we find the keys every single time onBindViewHolder is called, i.e. every time view is generated.
-    // There would be far more key accesses. Hence time overhead is more important than memory overhead here.
-    // Also, as it's only a few items, the memory advantage is not considerable.
+    // Also, the memory advantage is not considerable (from empirical testing) .
 
     final private float FADE_OUT_ALPHA = 0.25f;
     final private float DEFAULT_ALPHA = 1.0f;
@@ -66,9 +69,9 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
         setHasStableIds(true);
         this.parentGoalFragment = goalsFragment;
         this.interactWithGoalFragment = (IgoalFragmentAdapterInteraction) this.parentGoalFragment;
-        for (int i = 0; i < interactWithGoalFragment.getGoalsActiveListSize(); i++) {
+        /*for (int i = 0; i < interactWithGoalFragment.getGoalsActiveListSize(); i++) {
             fadeOutMap.put(getItemId(i), false);
-        }
+        }*/
     }
 
     class GoalsViewHolder extends RecyclerView.ViewHolder {
@@ -104,6 +107,31 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
             switchEditable = itemView.findViewById(R.id.goalViewSwitcher);
             defaultCardElevation = goalCardView.getCardElevation();
 
+            goalCardView.setOnClickListener(new View.OnClickListener() {
+                //View changes to Edit mode on clicking the view.
+                //Initial research showed that mosttt people tended to click on the goal directly,
+                // instead of looking for the edit button. THe edit button still stays however.
+                @Override
+                public void onClick(View view) {
+                    Runnable cardClickAction = new Runnable() {
+                        @Override
+                        public void run() {
+                            previousAction = PREVIOUS_ACTION_IS_EDITING;
+                            changeGoalViewMode(GoalsViewHolder.this,getAdapterPosition(), GOAL_VIEW_MODE_NOW_EDITING);
+                            long currentItemId = GoalsCardAdapter.this.getItemId(getAdapterPosition());
+                            for (Long id : fadeOutMap.keySet()) {fadeOutMap.put(id, id != currentItemId);}
+                            notifyDataSetChanged();
+                            parentGoalFragment.goalsRecyclerView.scrollToPosition(getAdapterPosition());
+                            //calling notifyDataSetChanged because we have to change view of all other viewholders
+                        }
+                    };
+                    new android.os.Handler().postDelayed(cardClickAction,250);
+                    //added this delay so that the view is changed after some delay.
+                    // immediate changing of the view is kinda "shocking" to the user...and jarring
+
+                }
+            });
+
             goalSaveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -127,7 +155,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
             goalUndoButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    GoalsViewHolder holder = GoalsViewHolder.this;
+                    GoalsViewHolder holder;
                     if(previousAction==GOAL_VIEW_MODE_NOW_EDITING){
                         try{holder = viewHolderStack.pop();
                             changeGoalViewMode(holder,getAdapterPosition(), GOAL_VIEW_MODE_NOW_VIEWING);}
@@ -142,6 +170,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
                     notifyDataSetChanged();
                     //notifyItemRangeChanged(0, interactWithGoalFragment.getGoalsListSize());
                     interactWithGoalFragment.enableAddGoalFab(true);
+                    //interactWithGoalFragment.clearFocusAndHideSoftInputKeyboard();
                 }
             });
 
@@ -183,6 +212,17 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
                     isImportant = !isImportant;
                     GoalCardItem cardItem = interactWithGoalFragment.getGoalAtListPosition(getAdapterPosition());
                     cardItem.setMarkedImportant(isImportant);
+                    Collections.sort(parentGoalFragment.goalsActiveList, new Comparator<GoalCardItem>() {
+                        @Override
+                        public int compare(final GoalCardItem item1, final GoalCardItem item2) {
+                            int result;
+                            result = Boolean.compare(item2.isMarkedImportant(),item1.isMarkedImportant());
+                            if(result==0)
+                                result = Integer.compare(item2.getGoalId(),item1.getGoalId());
+                                //descending sort
+                            return result;
+                        }
+                    });
                     notifyDataSetChanged();
                 }
             });
@@ -192,7 +232,6 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
 
     }
 
-    //private void setAllAndNotifyRangeChanged(HashMap<Long, Boolean> fadeOutMap,boolean set){}
 
     private void changeGoalViewMode(GoalsViewHolder holder,int adapterPos, boolean viewMode) {
         GoalCardItem goalItem = interactWithGoalFragment.getGoalAtListPosition(adapterPos);
@@ -243,6 +282,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
 
     @Override
     public void onBindViewHolder(GoalsViewHolder holder, int position) {
+        System.out.println("fadeoutMap = "+fadeOutMap);
         long itemId = getItemId(position);
         try {
             if (fadeOutMap.get(itemId)) {
@@ -283,7 +323,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
     public int getItemCount() {return interactWithGoalFragment.getGoalsActiveListSize();}
 
     @Override
-    public long getItemId(int position){return interactWithGoalFragment.getGoalAtListPosition(position).hashCode();
+    public long getItemId(int position){return (long)interactWithGoalFragment.getGoalAtListPosition(position).getGoalId();
         // returning unique hashcode here because we have set setStableIds(true) for the adapter.
         // this is to solve IndexOutOfBoundsException which occurs when removing items.
         // https://stackoverflow.com/a/41659302/6200378 <- suggested here
@@ -308,10 +348,29 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
 
     private void deleteGoal(int pos){
         long itemId = getItemId(pos);
-        fadeOutMap.remove(itemId);
         interactWithGoalFragment.deleteGoalFromActiveList(pos);
-        //notifyItemRemoved(pos);
-
+        try{if(!fadeOutMap.isEmpty()) fadeOutMap.remove(itemId);}
+        catch(IndexOutOfBoundsException e){
+            Log.e("IOoBE@fadeOutMap.remove","IOoBE when removing from fadeoutmap -"+pos);
+            Log.e("StackTrace",Log.getStackTraceString(e));
+        }
+        catch(NullPointerException e){
+            Log.e("NPE @ deleteGoal","NPE occured at deleteGoalFromList position = "+pos);
+            Log.e("StackTrace",Log.getStackTraceString(e));
+        }
+        try {notifyItemRemoved(pos);}
+        // NPE can occur when you're deleting items while scrolling. In that case, removeViewAt cannot find the view.
+        //For these cases, notifyDataSetChanged() works.
+        catch(NullPointerException e){
+            Log.e("NPE @ deleteGoal","NPE occured at deleteGoalFromList position = "+pos);
+            Log.e("StackTrace",Log.getStackTraceString(e));
+            parentGoalFragment.goalsRecyclerView.removeAllViews();
+            notifyDataSetChanged();
+        }
+        // The .removeViewAt(position) removes the old ViewHolder at the given position.
+        // Without this, the old ViewHolder would get repeated, i.e. after you delete the item, when
+        // you add it back, the same view is generated, although the underlying list is different.
+        parentGoalFragment.goalsRecyclerView.scrollToPosition(pos);
     }
 
 

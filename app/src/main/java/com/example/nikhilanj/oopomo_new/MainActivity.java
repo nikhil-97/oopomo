@@ -8,6 +8,7 @@ import android.support.design.internal.BottomNavigationItemView;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
 
@@ -183,7 +184,10 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
     }
 
     private void loadTabFragment(Fragment fragment,int stringid){
-        manager.beginTransaction().replace(android.R.id.content, fragment).commit();
+
+        FragmentTransaction ft = manager.beginTransaction();
+        ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
+        ft.replace(android.R.id.content, fragment).commit();
         getSupportActionBar().setTitle(getString (stringid));
     }
 

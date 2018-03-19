@@ -7,13 +7,14 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="0dp"
     android:layout_marginBottom="0dp"
-
-
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintHorizontal_bias="0.0"
     app:cardUseCompatPadding="true"
-    card_view:cardElevation="0dp">
+    card_view:cardElevation="0dp"
+    android:clickable="true"
+    android:focusable="auto"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <ViewSwitcher
         android:id="@+id/goalViewSwitcher"
