@@ -3,8 +3,8 @@ package com.example.nikhilanj.oopomo_new.goals_package;
 class GoalCardItem{
     private String title;
     private String description;
-    private boolean markedAsDone = false;
-    private boolean markedImportant = false;
+    private boolean markedAsDone;
+    private boolean markedImportant;
 
     GoalCardItem(){} //empty constructor
 

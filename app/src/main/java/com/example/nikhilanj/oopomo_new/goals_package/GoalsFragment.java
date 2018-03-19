@@ -76,7 +76,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
             for(int i = 1;i<=5;i++){
                 String t = String.format(Locale.getDefault(),"Goal %d",i);
                 String d = String.format(Locale.getDefault(),"This is description for goal %d",i);
-                addGoalToActiveList(0,new GoalCardItem(t,d,i%2==0));
+                addGoalToActiveList(0,new GoalCardItem(t,d,false));
             }
         }
 
@@ -241,13 +241,14 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
 
     }
 
-    void undoMarkGoalDone(int position) {
+    private void undoMarkGoalDone(int position) {
         //write back to file saying "done"
         GoalCardItem deletedGoal = deleteGoalFromDoneList(0);
         addGoalToActiveList(position,deletedGoal);
         getGoalAtListPosition(position).markGoalAsDone(false);
         goalsRecyclerViewAdapter.notifyDataSetChanged();
         goalsRecyclerView.scrollToPosition(position);
+        setTextIfNoGoal();
     }
 
     private void setTextIfNoGoal() {

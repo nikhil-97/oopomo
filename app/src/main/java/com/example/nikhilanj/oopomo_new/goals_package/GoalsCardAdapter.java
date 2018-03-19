@@ -84,7 +84,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
         private ImageButton markImportantButton;
         boolean isCurrentlySwipeable = true;
         boolean isCurrentlyEditable = false;
-        boolean isImportant = false;
+        boolean isImportant;
         float defaultCardElevation = 1.0f;
 
 
@@ -119,7 +119,6 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
                     changeGoalViewMode(GoalsViewHolder.this,getAdapterPosition(), GOAL_VIEW_MODE_NOW_VIEWING);
                     for (Long id : fadeOutMap.keySet()) {fadeOutMap.put(id, false);}
                     notifyItemRangeChanged(0, interactWithGoalFragment.getGoalsActiveListSize());
-                    //notifyItemChanged(getAdapterPosition());
                     //calling notifyDataSetChanged because we have to change view of all other viewholders
 
                 }
@@ -182,8 +181,9 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
                 @Override
                 public void onClick(View view) {
                     isImportant = !isImportant;
-                    markImportantButton.setImageResource(
-                            isImportant ? R.drawable.ic_star_yellow_filled_30dp :R.drawable.ic_star_yellow_border_30dp);
+                    GoalCardItem cardItem = interactWithGoalFragment.getGoalAtListPosition(getAdapterPosition());
+                    cardItem.setMarkedImportant(isImportant);
+                    notifyDataSetChanged();
                 }
             });
         }
@@ -270,10 +270,14 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
             holder.goalTitleTextView.setText(goalTitle);
             holder.goalDescTextView.setText(goalDesc);
             holder.isImportant = markedImportant;
+            holder.markImportantButton.setImageResource(
+                    cardItem.isMarkedImportant() ? R.drawable.ic_star_yellow_filled_30dp :R.drawable.ic_star_yellow_border_30dp);
             holder.switchEditable.setDisplayedChild(1);
         } else holder.switchEditable.setDisplayedChild(0);
 
     }
+
+
 
     @Override
     public int getItemCount() {return interactWithGoalFragment.getGoalsActiveListSize();}
