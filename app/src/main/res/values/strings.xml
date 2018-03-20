@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Oopomo</string>
 
+    <!--shared preferences keys-->
+    <string name="app_shared_preferences_key">POMO_APP_PREFERENCES</string>
+    <string name="current_profile_key">CURRENT_POMO_PROFLE</string>
     <!--All strings related to Home-->
     <string name="title_home">Home</string>
     <string name="stoptrackingdialog_title">Stop Timer ?</string>

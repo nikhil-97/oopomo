@@ -1,8 +1,14 @@
 package com.example.nikhilanj.oopomo_new.utils;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+
+import com.example.nikhilanj.oopomo_new.R;
 import com.example.nikhilanj.oopomo_new.db.PomoDatabase;
 import com.example.nikhilanj.oopomo_new.db.entity.PomoProfile;
 
+import java.security.PublicKey;
 import java.util.List;
 
 public class PomoProfileManager {
@@ -38,5 +44,25 @@ public class PomoProfileManager {
 
     public void updatePomoProfile(PomoProfile pomoProfile) {
         this.pomoDatabase.pomoProfileDao().updatePomoProfile(pomoProfile);
+    }
+
+    public void saveProfilePreference(Context context, String profileName) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(
+                context.getString(R.string.app_shared_preferences_key),
+                Context.MODE_PRIVATE );
+        SharedPreferences.Editor sharedPreferencesEditor =  sharedPreferences.edit();
+        sharedPreferencesEditor.putString(
+                context.getString(R.string.current_profile_key), profileName
+        );
+    }
+
+    public PomoProfile getCurrentProfile(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(
+                context.getString(R.string.app_shared_preferences_key),
+                Context.MODE_PRIVATE );
+        String profileName = sharedPreferences.getString(
+                context.getString(R.string.current_profile_key), "Classic"
+        );
+        return this.getProfileByName(profileName);
     }
 }

@@ -81,7 +81,7 @@
                 android:defaultFocusHighlightEnabled="false"
                 android:enabled="false"
                 android:max="60"
-                android:min="5"
+                android:min="1"
                 android:progress="25"
                 android:saveEnabled="true" />
 

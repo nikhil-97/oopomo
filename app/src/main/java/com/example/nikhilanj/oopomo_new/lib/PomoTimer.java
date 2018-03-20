@@ -1,5 +1,7 @@
 package com.example.nikhilanj.oopomo_new.lib;
 
+import android.util.Log;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -8,12 +10,11 @@ public class PomoTimer {
     private TimerTask task;
     private int countdownTime, currentCountdown;
     private boolean isTimerRunning;
-    private PomoTimerEventsListener mListener;
+    private TimerEventsListener mListener;
 
-    public PomoTimer(int countdownTime, PomoTimerEventsListener mListener) {
+    public PomoTimer(int countdownTime, TimerEventsListener mListener) {
         this.mListener = mListener;
         this.countdownTime = countdownTime;
-        this.timer = new Timer();
         this.task = new PomoTimerTask();
     }
 
@@ -37,7 +38,15 @@ public class PomoTimer {
         return String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
     }
 
+    public static String getTime(int timeInSeconds) {
+        int minutes = timeInSeconds/60;
+        int seconds = timeInSeconds % 60;
+        return String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
+    }
+
     public void startTimer() {
+        this.timer = new Timer();
+        this.task = new PomoTimerTask();
         this.currentCountdown = countdownTime;
         this.isTimerRunning = true;
         this.timer.scheduleAtFixedRate(task, 0, 1000);
@@ -58,7 +67,7 @@ public class PomoTimer {
         this.isTimerRunning = true;
     }
 
-    public void updateViews(){
+    public void notifyTimerListeners(){
         this.mListener.onPomoTimerUpdate();
     }
 
@@ -67,10 +76,11 @@ public class PomoTimer {
             if( currentCountdown == 0 ) {
                 timer.cancel();
                 isTimerRunning = false;
+                mListener.onPomoTimerTick();
                 return;
             }
             currentCountdown--;
-            updateViews();
+            notifyTimerListeners();
         }
     }
 
@@ -78,7 +88,8 @@ public class PomoTimer {
      *  This interface must be implemented
      *  by the class that listens to the timer update events
      */
-    public interface PomoTimerEventsListener{
+    public interface TimerEventsListener {
         void onPomoTimerUpdate();
+        void onPomoTimerTick();
     }
 }
