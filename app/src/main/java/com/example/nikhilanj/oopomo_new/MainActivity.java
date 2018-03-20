@@ -15,14 +15,11 @@ import android.widget.Toast;
 
 
 import com.example.nikhilanj.oopomo_new.db.PomoDatabase;
-import com.example.nikhilanj.oopomo_new.lib.PomoTimer;
 
 import java.util.Stack;
 
-import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 
-
-public class MainActivity extends AppCompatActivity implements timerFragmentInterface{
+public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
     private FragmentManager manager = getSupportFragmentManager();
@@ -33,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
 
     public static Stack<Integer> bottomNavTabStack = new Stack<>();
     private timeChangeListenerInterface tcli;
-    Timer mainTimer;
+    //Timer mainTimer;
     //bottomNavTabStack is the stack where all the tabs are added on clicking.
     //This will be useful to go back to previous tab when back (<-) is pressed
     static MenuItem item1;
@@ -154,73 +151,24 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
         getSupportActionBar().setTitle(getString (stringid));
     }
 
-    public void updateTimeViewInHomeFragment(int data){
-        tcli = homeFragment;
-        tcli.updateTimeView(data);
-    }
+//    public void updateTimeViewInHomeFragment(int data){
+//        tcli = homeFragment;
+//        tcli.updateTimeView(data);
+//    }
+//
+//    @Override
+//    public Timer startCountdown(int f,int s,int l,int r){
+//        this.mainTimer = new Timer(f,s,l,r);
+//        return this.mainTimer;
+//    }
+//
+//    @Override
+//    public void pauseCountdown(Timer timerinstance){timerinstance.pauseTimer();}
+//
+//    @Override
+//    public void resumeCountdown(Timer timerinstance){timerinstance.resumeTimer();}
+//
+//    @Override
+//    public void stopFullCountdown(Timer timerinstance){timerinstance.stopTimer();}
 
-    @Override
-    public Timer startCountdown(int f,int s,int l,int r){
-        this.mainTimer = new Timer(f,s,l,r);
-        return this.mainTimer;
-    }
-
-    @Override
-    public void pauseCountdown(Timer timerinstance){timerinstance.pauseTimer();}
-
-    @Override
-    public void resumeCountdown(Timer timerinstance){timerinstance.resumeTimer();}
-
-    @Override
-    public void stopFullCountdown(Timer timerinstance){timerinstance.stopTimer();}
-
-    /**
-     * Implementation of HomeFragment interaction listener
-     */
-    /*PomoTimer pomoTimer;
-    public void startTimer(View view){
-        if( this.pomoTimer != null ){
-            if(this.pomoTimer.isTimerRunning()){
-                this.pauseTimer(view);
-            }
-            else {
-                this.resumeTimer(view);
-            }
-            return;
-        }
-        this.pomoTimer = new PomoTimer(60, this);
-        this.pomoTimer.startTimer();
-        FloatingActionButton timerActionButton = view.findViewById(R.id.timer_action_button);
-        timerActionButton.setImageDrawable(
-                ResourcesCompat.getDrawable(
-                        getResources(),
-                        R.drawable.ic_pause_black_24dp,
-                        null
-                )
-        );
-    }
-
-    public void pauseTimer(View view){
-        this.pomoTimer.pauseTimer();
-        FloatingActionButton timerActionButton = view.findViewById(R.id.timer_action_button);
-        timerActionButton.setImageDrawable(
-                ResourcesCompat.getDrawable(
-                        getResources(),
-                        R.drawable.ic_play_arrow_white_24dp,
-                        null
-                )
-        );
-    }
-
-    public void resumeTimer(View view){
-        this.pomoTimer.resumeTimer();
-        FloatingActionButton timerActionButton = view.findViewById(R.id.timer_action_button);
-        timerActionButton.setImageDrawable(
-                ResourcesCompat.getDrawable(
-                        getResources(),
-                        R.drawable.ic_pause_black_24dp,
-                        null
-                )
-        );
-    }*/
 }

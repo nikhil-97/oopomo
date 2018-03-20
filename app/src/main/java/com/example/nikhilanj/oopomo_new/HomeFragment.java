@@ -17,9 +17,11 @@ import android.view.ViewPropertyAnimator;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.example.nikhilanj.oopomo_new.db.PomoDatabase;
+import com.example.nikhilanj.oopomo_new.db.entity.PomoProfile;
+import com.example.nikhilanj.oopomo_new.lib.PomoTask;
+import com.example.nikhilanj.oopomo_new.lib.PomoTimer;
+import com.example.nikhilanj.oopomo_new.utils.PomoProfileManager;
 
 
 interface timeChangeListenerInterface{
@@ -27,36 +29,40 @@ interface timeChangeListenerInterface{
 }
 
 
-public class HomeFragment extends Fragment implements timeChangeListenerInterface{
-
-    private timerFragmentInterface tfi;
-    private getSetTimesInterface gsti;
+public class HomeFragment extends Fragment implements
+        PomoTimer.TimerEventsListener,
+        TimeProfileSheetFragment.ProfileSheetInteractionListener{
 
     public HomeFragment() {} //essential empty constructor
+
+    private PomoTimer pomoTimer;
+    private PomoTask pomoTask;
+    private PomoProfile selectedProfile;
+    private PomoProfileManager pomoProfileManager;
 
     private FloatingActionButton startButton;
     private FloatingActionButton pauseButton;
     private FloatingActionButton stopButton;
 
+    private TextView timeTextView;
+    private TextView currentTaskTextView;
+
     private BottomSheetDialogFragment timeProfileFragment;
-
-    Timer timer_instance;
-
-    private int f1,s1,l1,r1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v("Created View", "Not ded");}
+        this.pomoProfileManager = new PomoProfileManager(
+                PomoDatabase.getPomoDatabaseInstance(getContext())
+        );
+        this.selectedProfile = pomoProfileManager.getCurrentProfile(getContext());
+        this.pomoTimer = new PomoTimer(this.selectedProfile.getFocusTime(), this);
+        this.pomoTask = new PomoTask(this.selectedProfile, this.pomoTimer);
+    }
 
     @Override
     public void onAttach(Context context){
         super.onAttach(context);
-        try {
-            tfi = (timerFragmentInterface) context;
-        } catch (ClassCastException castException) {
-            Log.e("ClassCastException","Couldn't attach");
-        }
     }
 
 
@@ -65,13 +71,17 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home_fragment_layout, container, false);
 
-        //timeSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet));
-        //profilesbutton = (Button) view.findViewById(R.id.timeProfilesButton);
-
         FloatingActionButton editTimeProfilesButton = view.findViewById(R.id.editTimeProfilesButton);
+
+        timeTextView = view.findViewById(R.id.current_countdown_time_view);
+        currentTaskTextView = view.findViewById(R.id.textView3);
+
         startButton = view.findViewById(R.id.startButton);
         pauseButton = view.findViewById(R.id.pauseTimeButton);
         stopButton = view.findViewById(R.id.stopTimeButton);
+
+        timeTextView.setText(PomoTimer.getTime(selectedProfile.getFocusTime() * 60));
+        currentTaskTextView.setText(pomoTask.getCurrentTask());
 
         editTimeProfilesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,40 +99,36 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
                 stopButton.setVisibility(View.VISIBLE);
 
                 buttonFadeAnimation(startButton,(float)0.001,1000,false);
-                //startCountdown();
                 buttonFadeAnimation(pauseButton,(float)1,1200,true);
                 buttonFadeAnimation(stopButton,(float)1,1200,true);
                 Toast.makeText(getContext(), "Starting Time !", Toast.LENGTH_SHORT).show();
-                try {
-                    gsti = (getSetTimesInterface) timeProfileFragment;
-                    f1 = gsti.getFocusTime();
-                    s1 = gsti.getShortBreakTime();
-                    l1 = gsti.getLongBreakTime();
-                    r1 = gsti.getRepeats();
+
+                if(pomoTask.isTaskRunning()) {
+                    pomoTimer.resumeTimer();
+                    return;
                 }
-                catch(NullPointerException e){
-                    System.out.println("Can't get timeprofilesheetfragment. Loading default settings.");
-                    List<Integer> default_data = loadDefaultTimeSettings();
-                    f1 = default_data.get(1);
-                    s1 = default_data.get(2);
-                    l1 = default_data.get(3);
-                    r1 = default_data.get(4);
-                }
-                updateTimeView(f1);
-                //timer_instance = tfi.startCountdown(f1,s1,l1,r1);
+
+                pomoTask.setProfile(selectedProfile);
+                pomoTask.startFocus();
+                currentTaskTextView.setText(pomoTask.getCurrentTask());
             }
         });
 
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                if(timer_instance!=null) tfi.pauseCountdown(timer_instance);
+                pomoTimer.pauseTimer();
+                preventUnboundedPause();
+                buttonFadeAnimation(startButton, 1f,1000,true);
+                buttonFadeAnimation(pauseButton,0f,1200,false);
+                buttonFadeAnimation(stopButton,1f,1200,true);
             }
         });
 
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+                pomoTimer.pauseTimer();
                 showStopAlert();
             }
         });
@@ -133,8 +139,7 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     public void showTimeSettingsFragment() {
         timeProfileFragment = new TimeProfileSheetFragment();
         getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_layout, null);
-        timeProfileFragment.show(getFragmentManager(), timeProfileFragment.getTag());
-
+        timeProfileFragment.show(getChildFragmentManager(), timeProfileFragment.getTag());
     }
 
     private void buttonFadeAnimation(FloatingActionButton somebutton,float toAlpha,long fadetime,boolean setenable){
@@ -146,65 +151,85 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     private void showStopAlert(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage( R.string.stoptrackingdialog_message).setTitle(R.string.stoptrackingdialog_title);
-        builder.setPositiveButton(R.string.stoptrackingdialog_quitmsg, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {quitTimer();}
-        });
-        builder.setNeutralButton(R.string.stoptrackingdialog_skipcurrent, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {skipCurrentSession();}
-        });
-        builder.setNegativeButton(R.string.stoptrackingdialog_nogoback, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {continueTimer();}
-        });
+
+        builder.setPositiveButton(
+                R.string.stoptrackingdialog_quitmsg,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        quitTask();
+                    }
+                });
+
+        builder.setNeutralButton(
+                R.string.stoptrackingdialog_skipcurrent,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        skipCurrentSession();
+                    }
+                });
+
+        builder.setNegativeButton(
+                R.string.stoptrackingdialog_nogoback,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        continueTimer();
+                    }
+                });
 
         AlertDialog dialog = builder.create();
         dialog.show();
     }
 
-    private void quitTimer(){
+    private void quitTask(){
         Toast.makeText(getContext(), "stopCountdown()", Toast.LENGTH_SHORT).show();
-        buttonFadeAnimation(pauseButton, (float)0.001,1000,false);
-        buttonFadeAnimation(stopButton, (float)0.001,1000,false);
-        buttonFadeAnimation(startButton,1, 1000,true);
-        //TODO : stopCountdown();
-        if(timer_instance!=null) tfi.stopFullCountdown(timer_instance);
+        buttonFadeAnimation(pauseButton, 0f,1000,false);
+        buttonFadeAnimation(stopButton, 0f,1000,false);
+        buttonFadeAnimation(startButton,1f, 1000,true);
+
+        this.pomoTask.resetTask();
+        this.timeTextView.setText(PomoTimer.getTime(selectedProfile.getFocusTime() * 60));
+        this.currentTaskTextView.setText(this.pomoTask.getCurrentTask());
     }
 
     private void skipCurrentSession(){
         Toast.makeText(getContext(), "skipSession()", Toast.LENGTH_SHORT).show();
-        //TODO : skipSession()
+        this.pomoTask.startNextTask();
+        this.currentTaskTextView.setText(this.pomoTask.getCurrentTask());
+        if(pomoTask.getRepeats() == 0) {
+            quitTask();
+        }
     }
 
     private void continueTimer(){
         Toast.makeText(getContext(), "resumeCountdown()", Toast.LENGTH_SHORT).show();
-        if(timer_instance!=null) tfi.resumeCountdown(timer_instance);
-        //TODO : resumeCountdown()
+        pomoTimer.resumeTimer();
     }
 
-    @Override
-    public void updateTimeView(int data) {
-        final String[] placeholder_string = new String[]{"placeholder"};
-        System.out.println("updateTimeView in fragment");
-        placeholder_string[0] = Integer.toString(data)+":00";
-        System.out.println(placeholder_string);
-        try {
-            getView().post(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("in getView().post");
-                        TextView timeview = getView().findViewById(R.id.current_countdown_time_view);
-                        timeview.setText(placeholder_string[0]);
+    public void preventUnboundedPause() {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10000);
+                    if(!pomoTimer.isTimerRunning()) {
+                        showUnboundedPauseAlert();
                     }
-                    catch (NullPointerException e) {
-                        Log.v("Cannot find timeView", "NPE @ find timeView");
-                    }
-                }
-            });
+                    return;
+                } catch (InterruptedException e) {
 
-        }
-        catch (NullPointerException e) {
-            Log.v("Cannot find View", "NPE @ getView().post()");
-        }
+                }
+            }
+        };
+        thread.start();
+    }
+
+    public void showUnboundedPauseAlert() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getContext(), "Pause time limit exceeded !", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -213,14 +238,40 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
         //Save the fragment's state here
     }
 
-    private List<Integer> loadDefaultTimeSettings(){
-        List<Integer> defaultSetting = new ArrayList<Integer>();
-        defaultSetting.addAll(Arrays.asList(0,25,5,15,4));
-        return defaultSetting;
+    /*
+    TimerEventsListener interface implementation
+    */
+    public void onPomoTimerUpdate() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                timeTextView.setText( pomoTimer.getTime() );
+            }
+        });
     }
 
+    public void onPomoTimerTick() {
+        this.pomoTask.startNextTask();
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                currentTaskTextView.setText( pomoTask.getCurrentTask() );
+                if(pomoTask.getRepeats() == 0) {
+                    timeTextView.setText(PomoTimer.getTime(selectedProfile.getFocusTime() * 60));
+                }
+            }
+        });
+    }
+
+    /*
+    ProfileSheetInteractionListener interface implementation
+    */
+    public void onSelectedProfileChange(PomoProfile selectedProfile) {
+        this.selectedProfile = selectedProfile;
+        this.timeTextView.setText( PomoTimer.getTime(selectedProfile.getFocusTime() * 60) );
+    }
 }

@@ -2,6 +2,7 @@ package com.example.nikhilanj.oopomo_new;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.util.Log;
@@ -16,18 +17,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.example.nikhilanj.oopomo_new.db.PomoDatabase;
-import com.example.nikhilanj.oopomo_new.db.dao.PomoProfileDao;
 import com.example.nikhilanj.oopomo_new.db.entity.PomoProfile;
 import com.example.nikhilanj.oopomo_new.utils.PomoProfileManager;
 
 public class TimeProfileSheetFragment extends BottomSheetDialogFragment
-        implements AdapterView.OnItemSelectedListener,getSetTimesInterface {
+        implements AdapterView.OnItemSelectedListener {
 
     final private PomoDatabase pomoDatabase = PomoDatabase.getPomoDatabaseInstance(getContext());
 
@@ -55,6 +52,8 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
     private int longBreakTime;
     private int repeats;
 
+    ProfileSheetInteractionListener mListener;
+
     @SuppressLint("RestrictedApi")
     @Override
     public void setupDialog(final Dialog dialog, int style) {
@@ -70,7 +69,8 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
         ArrayAdapter<PomoProfile> adapter = new ArrayAdapter<>(
                 getContext(),
                 android.R.layout.simple_spinner_item,
-                pomoProfileNames);
+                pomoProfileNames
+        );
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         timeProfileSpinner.setAdapter(adapter);
@@ -215,10 +215,9 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
                                int pos, long id) {
 
         this.selectedProfile = (PomoProfile) parent.getItemAtPosition(pos);
-        //Set Seekbars progress
-        setAllSeekbarsProgress(this.selectedProfile);
-        //set TimeTextViews values
-        setAllTimeTextViews(this.selectedProfile);
+
+        setAllSeekbarsProgress(this.selectedProfile); //Set Seekbars progress
+        setAllTimeTextViews(this.selectedProfile); //set TimeTextViews values
 
         if(selectedProfile.isEditingAllowed()) {
             enableCustomTimeSetting();
@@ -226,7 +225,25 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
             disableCustomTimeSetting();
         }
 
+        this.pomoProfileManager.saveProfilePreference(getContext(), selectedProfile.getProfileName());
+        if(mListener != null) {
+            mListener.onSelectedProfileChange(this.selectedProfile);
+            Log.d("APP_DEBUG", "selected profile is set");
+        }
         setHomeFragmentTimeView(this.focusTime);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mListener = (ProfileSheetInteractionListener) getParentFragment();
+            Log.d("APP_DEBUG", "mListener is set " + getParentFragment().toString());
+        } catch (ClassCastException e) {
+            Log.d("APP_DEBUG", "mListener is not set " + getParentFragment().toString());
+            throw new ClassCastException(getParentFragment().toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
     }
 
 
@@ -324,15 +341,14 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
         System.out.println("repeats = "+this.repeats);
     }
 
-    public int getFocusTime(){return this.focusTime;}
-    public int getShortBreakTime(){return this.shortBreakTime;}
-    public int getLongBreakTime(){return this.longBreakTime;}
-    public int getRepeats(){return this.repeats;}
-
     private void setHomeFragmentTimeView(int data){
         MainActivity host = (MainActivity)this.getHost();
-        host.updateTimeViewInHomeFragment(data);
+        //host.updateTimeViewInHomeFragment(data);
     }
 
     public void onNothingSelected(AdapterView<?> parent) {}
+
+    public interface ProfileSheetInteractionListener {
+        void onSelectedProfileChange(PomoProfile pomoProfile);
+    }
 }
