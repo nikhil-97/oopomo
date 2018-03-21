@@ -143,7 +143,9 @@ public class HomeFragment extends Fragment implements
 
         skipSessionButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {showSkipAlert();}
+            public void onClick(View view) {
+                showSkipAlert();
+            }
         });
 
         return view;
@@ -167,10 +169,14 @@ public class HomeFragment extends Fragment implements
         String stopMessage = getString(R.string.stoptrackingdialog_message);
         builder.setMessage(stopMessage).setTitle(R.string.stoptrackingdialog_title);
         builder.setPositiveButton(R.string.stoptrackingdialog_quitmsg, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {quitTask();}
+            public void onClick(DialogInterface dialog, int id) {
+                quitTask();
+            }
         });
         builder.setNegativeButton(R.string.stoptrackingdialog_nogoback, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {continueTimer();}
+            public void onClick(DialogInterface dialog, int id) {
+                continueTimer();
+            }
         });
 
         AlertDialog dialog = builder.create();
@@ -195,8 +201,11 @@ public class HomeFragment extends Fragment implements
         String currentSession = "FOCUS 1";
         String stopMessage = "Skip current session ?\n This will erase your progress in this session.";
         builder.setMessage(stopMessage).setTitle("Skip FOCUS 1");
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {skipCurrentSession();}
+        builder.setPositiveButton("YES",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        skipCurrentSession();
+                    }
         });
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {continueTimer();}

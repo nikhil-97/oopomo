@@ -45,6 +45,11 @@ public class PomoTimer {
     }
 
     public void startTimer() {
+
+        if(this.isTimerRunning()) {
+            this.timer.cancel();
+        }
+
         this.timer = new Timer();
         this.task = new PomoTimerTask();
         this.currentCountdown = countdownTime;

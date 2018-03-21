@@ -98,6 +98,7 @@ public class PomoTask {
     }
 
     public void resetTask() {
+        this.pomoTimer.pauseTimer();
         this.currentFocus = 1;
         this.setTaskRunning(false);
         this.currentTask = TASK_FOCUS;
