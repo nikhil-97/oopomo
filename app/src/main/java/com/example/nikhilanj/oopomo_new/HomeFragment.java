@@ -1,9 +1,13 @@
 package com.example.nikhilanj.oopomo_new;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -16,6 +20,9 @@ import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewAnimator;
+
+import com.github.lzyzsd.circleprogress.CircleProgress;
 
 import com.example.nikhilanj.oopomo_new.db.PomoDatabase;
 import com.example.nikhilanj.oopomo_new.db.entity.PomoProfile;
@@ -37,6 +44,8 @@ public class HomeFragment extends Fragment implements
     private FloatingActionButton startButton;
     private FloatingActionButton pauseButton;
     private FloatingActionButton stopButton;
+    private FloatingActionButton skipSessionButton;
+    private CircleProgress progressCircle;
 
     private TextView timeTextView;
     private TextView currentTaskTextView;
@@ -64,15 +73,16 @@ public class HomeFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home_fragment_layout, container, false);
-
+        progressCircle = view.findViewById(R.id.circleProgress2);
         FloatingActionButton editTimeProfilesButton = view.findViewById(R.id.editTimeProfilesButton);
 
         timeTextView = view.findViewById(R.id.current_countdown_time_view);
-        currentTaskTextView = view.findViewById(R.id.textView3);
+        currentTaskTextView = view.findViewById(R.id.current_session_view);
 
         startButton = view.findViewById(R.id.startButton);
         pauseButton = view.findViewById(R.id.pauseTimeButton);
         stopButton = view.findViewById(R.id.stopTimeButton);
+        skipSessionButton = view.findViewById(R.id.skipSessionButton);
 
         timeTextView.setText(PomoTimer.getTime(selectedProfile.getFocusTime() * 60));
         currentTaskTextView.setText(pomoTask.getCurrentTask());
@@ -87,14 +97,18 @@ public class HomeFragment extends Fragment implements
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                pauseButton.setAlpha((float)0.001);
+                pauseButton.setAlpha(0.001f);
                 pauseButton.setVisibility(View.VISIBLE);
-                stopButton.setAlpha((float)0.001);
+                stopButton.setAlpha(0.001f);
                 stopButton.setVisibility(View.VISIBLE);
+                skipSessionButton.setAlpha(0.001f);
+                skipSessionButton.setVisibility(View.VISIBLE);
 
-                buttonFadeAnimation(startButton,(float)0.001,1000,false);
-                buttonFadeAnimation(pauseButton,(float)1,1200,true);
-                buttonFadeAnimation(stopButton,(float)1,1200,true);
+                buttonFadeAnimation(startButton,0.001f,1000,false);
+                buttonFadeAnimation(pauseButton,1.0f,1200,true);
+                buttonFadeAnimation(stopButton,1.0f,1200,true);
+                buttonFadeAnimation(skipSessionButton,1.0f,1200,true);
+
                 Toast.makeText(getContext(), "Starting Time !", Toast.LENGTH_SHORT).show();
 
                 if(pomoTask.isTaskRunning()) {
@@ -127,6 +141,11 @@ public class HomeFragment extends Fragment implements
             }
         });
 
+        skipSessionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {showSkipAlert();}
+        });
+
         return view;
     }
 
@@ -144,31 +163,15 @@ public class HomeFragment extends Fragment implements
 
     private void showStopAlert(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage( R.string.stoptrackingdialog_message).setTitle(R.string.stoptrackingdialog_title);
 
-        builder.setPositiveButton(
-                R.string.stoptrackingdialog_quitmsg,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        quitTask();
-                    }
-                });
-
-        builder.setNeutralButton(
-                R.string.stoptrackingdialog_skipcurrent,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        skipCurrentSession();
-                    }
-                });
-
-        builder.setNegativeButton(
-                R.string.stoptrackingdialog_nogoback,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        continueTimer();
-                    }
-                });
+        String stopMessage = getString(R.string.stoptrackingdialog_message);
+        builder.setMessage(stopMessage).setTitle(R.string.stoptrackingdialog_title);
+        builder.setPositiveButton(R.string.stoptrackingdialog_quitmsg, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {quitTask();}
+        });
+        builder.setNegativeButton(R.string.stoptrackingdialog_nogoback, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {continueTimer();}
+        });
 
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -176,13 +179,30 @@ public class HomeFragment extends Fragment implements
 
     private void quitTask(){
         Toast.makeText(getContext(), "stopCountdown()", Toast.LENGTH_SHORT).show();
-        buttonFadeAnimation(pauseButton, 0f,1000,false);
-        buttonFadeAnimation(stopButton, 0f,1000,false);
-        buttonFadeAnimation(startButton,1f, 1000,true);
+
+        buttonFadeAnimation(pauseButton, 0f,800,false);
+        buttonFadeAnimation(stopButton, 0f,800,false);
+        buttonFadeAnimation(startButton, 1f,1200,true);
+        buttonFadeAnimation(skipSessionButton, 0f,800,false);
 
         this.pomoTask.resetTask();
         this.timeTextView.setText(PomoTimer.getTime(selectedProfile.getFocusTime() * 60));
         this.currentTaskTextView.setText(this.pomoTask.getCurrentTask());
+    }
+
+    private void showSkipAlert(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        String currentSession = "FOCUS 1";
+        String stopMessage = "Skip current session ?\n This will erase your progress in this session.";
+        builder.setMessage(stopMessage).setTitle("Skip FOCUS 1");
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {skipCurrentSession();}
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {continueTimer();}
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void skipCurrentSession(){
