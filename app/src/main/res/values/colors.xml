@@ -2,6 +2,10 @@
 <resources>
     <color name="colorPrimary">#d50000</color>
     <color name="colorPrimaryDark">#9b0000</color>
-    <color name="colorAccent">#007bc5</color>
+    <color name="colorAccent">#1181c8</color>
     <color name="addFabDisabledColour">@android:color/darker_gray</color>
+    <color name="timeCircleFinished">#002741</color>
+    <color name="timeCircleUnfinished">#1F6BA2</color>
+    <color name="lightGrayMaterial">#e0e0e0</color>
+    <color name="lightGrayAccessibleText">#616161</color>
 </resources>

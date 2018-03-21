@@ -72,18 +72,17 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         //TODO: goalsActiveList = readGoalsActiveListFromDb();
         //TODO: goalsDoneList = readGoalsDoneListFromDb();
 
-/*
+
         //For testing purposes
         if(goalsActiveList.isEmpty()){
             for(int i = 1;i<=10;i++){
                 int id = activeGoalId+=1;
                 String t = String.format(Locale.getDefault(),"Goal %d",id);
-                String d = String.format(Locale.getDefault(),"This is description for goal %d",i);
+                String d = String.format(Locale.getDefault(),"This is the one and only description for goal %d lmao",i);
                 addGoalToActiveList(0,new GoalCardItem(id,t,d,false));
             }
         }
 
-*/
         if (savedInstanceState != null) {
             System.out.println("savedinstancestate alive");
         }
@@ -159,7 +158,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
     @Override
     public void onDetach() {super.onDetach();}
 
-    private long addGoalToActiveList(int position){
+    private long addNewGoalToActiveList(int position){
         //method to add empty goal
         int newGoalId = activeGoalId+=1;
         GoalCardItem newGoal = new GoalCardItem(newGoalId);
@@ -171,13 +170,13 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         //overloaded method to add already created goals
         int id = item.getGoalId();
         goalsActiveList.add(position,item);
-        goalsRecyclerViewAdapter.fadeOutMap.put((long)id,false);
-        //catch(NullPointerException e){e.printStackTrace();}
+        try{goalsRecyclerViewAdapter.fadeOutMap.put((long)id,false);}
+        catch(NullPointerException e){e.printStackTrace();}
         return id;
     }
 
     private void addGoalManually() {
-        long newGoalId = addGoalToActiveList(0);
+        long newGoalId = addNewGoalToActiveList(0);
         goalsRecyclerView.scrollToPosition(0);
         goalsRecyclerViewAdapter.addNewGoalManually(newGoalId);
         setTextIfNoGoal();
@@ -204,7 +203,6 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
             @Override
             public void onDismissed(Snackbar snackbar,int event){
                 ViewPropertyAnimator animator = addGoalFab.animate().translationY(0);
-                interactWithActivity.setBottomNavBarElevation(interactWithActivity.getBottomNavBarDefaultElevation());
                 //set elevation to default on snackbar dismissed
                 animator.start();
             }
@@ -213,7 +211,6 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
             public void onShown(Snackbar snackbar){
                 int snackbarHeight = snackbar.getView().getHeight();
                 ViewPropertyAnimator animator = addGoalFab.animate().translationY(-snackbarHeight);
-                interactWithActivity.setBottomNavBarElevation(0.0f);
                 animator.start();
                 markGoalDone(goalMarkedDonePosition);
             }

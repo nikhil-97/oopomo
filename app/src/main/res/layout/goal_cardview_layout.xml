@@ -7,14 +7,16 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="0dp"
     android:layout_marginBottom="0dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:hapticFeedbackEnabled="true"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintHorizontal_bias="0.0"
     app:cardUseCompatPadding="true"
     card_view:cardElevation="0dp"
-    android:clickable="true"
-    android:focusable="auto"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:longClickable="true">
 
     <ViewSwitcher
         android:id="@+id/goalViewSwitcher"
@@ -69,7 +71,8 @@
                         android:hint="Write a description of your goal here"
                         android:inputType="textMultiLine"
                         android:minEms="25"
-                        android:minLines="2"
+                        android:minLines="1"
+                        android:maxLines="2"
                         android:textAlignment="textStart"
                         android:textSize="14sp"
                         android:visibility="visible" />
@@ -168,7 +171,7 @@
                     <TextView
                         android:id="@+id/tv_show_goal_desc_when_not_editing"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_column="0"
                         android:layout_marginBottom="4dp"
                         android:layout_marginEnd="8dp"
@@ -185,7 +188,7 @@
                         android:text="Description of Goal 1"
                         android:textAlignment="textStart"
                         android:textColor="@android:color/darker_gray"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:textStyle="italic" />
 
                     <ImageButton

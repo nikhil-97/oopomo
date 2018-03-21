@@ -20,7 +20,7 @@
         android:checkable="false"
         android:textSize="10sp"
         android:title="Fullscreen Mode"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:icon="@drawable/ic_fullscreen_white_24px"/>
 
     <item

@@ -7,6 +7,7 @@ import android.content.Context;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,8 @@ import android.view.ViewPropertyAnimator;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
+
+import com.github.lzyzsd.circleprogress.CircleProgress;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +44,8 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     private FloatingActionButton startButton;
     private FloatingActionButton pauseButton;
     private FloatingActionButton stopButton;
+    private FloatingActionButton skipSessionButton;
+    private CircleProgress progressCircle;
 
     private BottomSheetDialogFragment timeProfileFragment;
 
@@ -72,10 +77,13 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
         //timeSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet));
         //profilesbutton = (Button) view.findViewById(R.id.timeProfilesButton);
 
+        progressCircle = view.findViewById(R.id.circleProgress2);
+
         FloatingActionButton editTimeProfilesButton = view.findViewById(R.id.editTimeProfilesButton);
         startButton = view.findViewById(R.id.startButton);
         pauseButton = view.findViewById(R.id.pauseTimeButton);
         stopButton = view.findViewById(R.id.stopTimeButton);
+        skipSessionButton = view.findViewById(R.id.skipSessionButton);
 
         editTimeProfilesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,10 +99,13 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
                 pauseButton.setVisibility(View.VISIBLE);
                 stopButton.setAlpha(0.001f);
                 stopButton.setVisibility(View.VISIBLE);
+                skipSessionButton.setAlpha(0.001f);
+                skipSessionButton.setVisibility(View.VISIBLE);
 
                 buttonFadeAnimation(startButton,0.001f,1000,false);
                 buttonFadeAnimation(pauseButton,1.0f,1200,true);
                 buttonFadeAnimation(stopButton,1.0f,1200,true);
+                buttonFadeAnimation(skipSessionButton,1.0f,1200,true);
 
                 //startCountdown();
                 Toast.makeText(getContext(), "Starting Time !", Toast.LENGTH_SHORT).show();
@@ -132,6 +143,11 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
             }
         });
 
+        skipSessionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {showSkipAlert();}
+        });
+
         return view;
     }
 
@@ -143,8 +159,6 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     }
 
     private void buttonFadeAnimation(FloatingActionButton somebutton,float toAlpha,long fadetime,boolean setenable){
-        //Overloaded method for fade animation without any movement
-
         ViewPropertyAnimator buttonanimation = somebutton.animate().alpha(toAlpha).setDuration(fadetime);
         buttonanimation.start();
         somebutton.setEnabled(setenable);
@@ -153,14 +167,10 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     private void showStopAlert(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         String currentSession = "FOCUS 1";
-        String stopMessage = getString(R.string.stoptrackingdialog_message,currentSession);
+        String stopMessage = getString(R.string.stoptrackingdialog_message);
         builder.setMessage(stopMessage).setTitle(R.string.stoptrackingdialog_title);
         builder.setPositiveButton(R.string.stoptrackingdialog_quitmsg, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {quitTimer();}
-        });
-        builder.setNeutralButton(getString(R.string.stoptrackingdialog_skipcurrent,currentSession),
-                new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {skipCurrentSession();}
         });
         builder.setNegativeButton(R.string.stoptrackingdialog_nogoback, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {continueTimer();}
@@ -174,9 +184,25 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
         Toast.makeText(getContext(), "stopCountdown()", Toast.LENGTH_SHORT).show();
         buttonFadeAnimation(pauseButton, 0.001f,800,false);
         buttonFadeAnimation(stopButton, 0.001f,800,false);
+        buttonFadeAnimation(skipSessionButton, 0.001f,800,false);
         buttonFadeAnimation(startButton, 1.0f,1200,true);
         //TODO : stopCountdown();
         if(timer_instance!=null) tfi.stopFullCountdown(timer_instance);
+    }
+
+    private void showSkipAlert(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        String currentSession = "FOCUS 1";
+        String stopMessage = "Skip current session ?\n This will erase your progress in this session.";
+        builder.setMessage(stopMessage).setTitle("Skip FOCUS 1");
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {skipCurrentSession();}
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {continueTimer();}
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void skipCurrentSession(){
@@ -192,7 +218,7 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
 
     @Override
     public void updateTimeView(int data) {
-        System.out.println("updateTimeView in fragment");
+    /*    System.out.println("updateTimeView in fragment");
         final String timeString = Integer.toString(data)+":00";
         try {
             getView().post(new Runnable() {
@@ -213,6 +239,7 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
         catch (NullPointerException e) {
             Log.v("Cannot find View", "NPE @ getView().post()");
         }
+       */
     }
 
     @Override

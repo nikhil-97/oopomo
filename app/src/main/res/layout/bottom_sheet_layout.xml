@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="350dp">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/textView2"
@@ -59,31 +59,40 @@
         app:layout_constraintVertical_bias="0.509">
 
         <TableRow
-            android:layout_marginBottom="4dp"
-            android:layout_marginTop="4dp">
+            android:layout_margin="0dp"
+            android:paddingBottom="4dp" android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:layout_span="2"
+            android:layout_weight="2"
+            android:defaultFocusHighlightEnabled="false"
+            android:enabled="false"
+            android:max="60"
+            android:min="5"
+            android:paddingEnd="4dp"
+            android:paddingStart="4dp"
+            android:progress="25"
+            android:saveEnabled="true"
+            android:paddingTop="4dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
-                android:layout_margin="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:layout_weight="0"
                 android:text="Focus Time" />
 
             <SeekBar
                 android:id="@+id/focustimeseekbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:layout_margin="8dp"
-                android:layout_span="2"
-                android:layout_weight="2"
-                android:defaultFocusHighlightEnabled="false"
-                android:enabled="false"
-                android:max="60"
-                android:min="5"
-                android:progress="25"
-                android:saveEnabled="true" />
+               />
 
             <TextView
                 android:id="@+id/focustimeseekbarvalue"
@@ -100,7 +109,9 @@
 
         <TableRow
             android:layout_marginBottom="4dp"
-            android:layout_marginTop="4dp">
+            android:layout_marginTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -124,6 +135,8 @@
                 android:enabled="false"
                 android:max="15"
                 android:min="1"
+                android:paddingEnd="4dp"
+                android:paddingStart="4dp"
                 android:progress="5" />
 
             <TextView
@@ -141,7 +154,9 @@
 
         <TableRow
             android:layout_marginBottom="4dp"
-            android:layout_marginTop="4dp">
+            android:layout_marginTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -182,7 +197,9 @@
 
         <TableRow
             android:layout_marginBottom="4dp"
-            android:layout_marginTop="4dp">
+            android:layout_marginTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp">
 
             <TextView
                 android:layout_width="wrap_content"
