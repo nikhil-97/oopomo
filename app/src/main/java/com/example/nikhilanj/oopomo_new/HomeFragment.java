@@ -24,7 +24,10 @@ import android.view.ViewGroup;
 
 import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
+import android.view.animation.CycleInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.ScaleAnimation;
@@ -54,6 +57,8 @@ public class HomeFragment extends Fragment implements
 
     private CircleProgress progressCircle;
 
+    private TextView showPausedTextView;
+    ViewPropertyAnimator showPausedAnimator;
     private TextView timeTextView;
     private TextView currentTaskTextView;
 
@@ -88,6 +93,8 @@ public class HomeFragment extends Fragment implements
         View view = inflater.inflate(R.layout.home_fragment_layout, container, false);
         progressCircle = view.findViewById(R.id.circleProgress2);
 
+        showPausedTextView = view.findViewById(R.id.tv_show_when_paused);
+
         timeTextView = view.findViewById(R.id.current_countdown_time_view);
         currentTaskTextView = view.findViewById(R.id.current_session_view);
 
@@ -99,8 +106,6 @@ public class HomeFragment extends Fragment implements
 
         timeTextView.setText(PomoTimer.getTime(selectedProfile.getFocusTime() * 60));
         currentTaskTextView.setText(pomoTask.getCurrentTask());
-
-
 
         editTimeProfilesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,6 +123,7 @@ public class HomeFragment extends Fragment implements
                 Toast.makeText(getContext(), "Starting Time !", Toast.LENGTH_SHORT).show();
                 if(pomoTask.isTaskRunning()) {
                     pomoTimer.resumeTimer();
+                    showPausedAnimator.cancel();
                     return;
                 }
 
@@ -132,9 +138,7 @@ public class HomeFragment extends Fragment implements
             public void onClick(View arg0) {
                 pomoTimer.pauseTimer();
                 preventUnboundedPause();
-                buttonFadeAnimation(startButton, 1f,1000,true);
-                buttonFadeAnimation(pauseButton,0f,1200,false);
-                buttonFadeAnimation(stopButton,1f,1200,true);
+                animationWhenPaused();
             }
         });
 
@@ -164,10 +168,10 @@ public class HomeFragment extends Fragment implements
         timeProfileFragment.show(getChildFragmentManager(), timeProfileFragment.getTag());
     }
 
-    private void buttonFadeAnimation(FloatingActionButton somebutton,float toAlpha,long fadetime,boolean setenable){
-        ViewPropertyAnimator buttonanimation = somebutton.animate().alpha(toAlpha).setDuration(fadetime);
+    private void buttonFadeAnimation(View view,float toAlpha,long fadetime,boolean setenable){
+        ViewPropertyAnimator buttonanimation = view.animate().alpha(toAlpha).setDuration(fadetime);
         buttonanimation.start();
-        somebutton.setEnabled(setenable);
+        view.setEnabled(setenable);
     }
 
     private void animationOnStartClicked(){
@@ -181,11 +185,24 @@ public class HomeFragment extends Fragment implements
         ViewPropertyAnimator timeViewSizeAnimator = timeTextView.animate().scaleX(1.3f).scaleY(1.3f).setDuration(2000);
         timeViewSizeAnimator.setInterpolator(new DecelerateInterpolator());
         timeViewSizeAnimator.start();
-        buttonFadeAnimation(editTimeProfilesButton,0.0f,1000,false);
+        //showPausedAnimator.cancel();
+        buttonFadeAnimation(editTimeProfilesButton,0f,500,false);
         buttonFadeAnimation(startButton,0f,1000,false);
         buttonFadeAnimation(pauseButton,1.0f,1200,true);
         buttonFadeAnimation(stopButton,1.0f,1200,true);
         buttonFadeAnimation(skipSessionButton,1.0f,1200,true);
+    }
+
+    private void animationWhenPaused(){
+        int DURATION_PER_CYCLE = 1500;
+        int NUM_CYCLES = 100;
+        showPausedTextView.setText("PAUSED");
+        showPausedAnimator = showPausedTextView.animate().alpha(1f).setDuration(DURATION_PER_CYCLE*NUM_CYCLES);
+        showPausedAnimator.setInterpolator(new CycleInterpolator(100));
+        showPausedAnimator.start();
+        buttonFadeAnimation(startButton, 1f,1000,true);
+        buttonFadeAnimation(pauseButton,0f,1200,false);
+        buttonFadeAnimation(stopButton,1f,1200,true);
     }
 
     private void showStopAlert(){
@@ -210,7 +227,13 @@ public class HomeFragment extends Fragment implements
 
     private void quitTask(){
         Toast.makeText(getContext(), "stopCountdown()", Toast.LENGTH_SHORT).show();
+        animationOnQuitTask();
+        this.pomoTask.resetTask();
+        this.timeTextView.setText(PomoTimer.getTime(selectedProfile.getFocusTime() * 60));
+        this.currentTaskTextView.setText(this.pomoTask.getCurrentTask());
+    }
 
+    private void animationOnQuitTask(){
         buttonFadeAnimation(pauseButton, 0f,800,false);
         buttonFadeAnimation(stopButton, 0f,800,false);
         buttonFadeAnimation(skipSessionButton, 0f,800,false);
@@ -218,13 +241,10 @@ public class HomeFragment extends Fragment implements
         buttonFadeAnimation(startButton, 1f,1200,true);
         buttonFadeAnimation(editTimeProfilesButton,1f,1200,true);
 
+        showPausedTextView.setAlpha(0.001f);
         ViewPropertyAnimator timeViewSizeAnimator = timeTextView.animate().scaleX(1.0f).scaleY(1.0f).setDuration(1500);
         timeViewSizeAnimator.setInterpolator(new LinearOutSlowInInterpolator());
         timeViewSizeAnimator.start();
-
-        this.pomoTask.resetTask();
-        this.timeTextView.setText(PomoTimer.getTime(selectedProfile.getFocusTime() * 60));
-        this.currentTaskTextView.setText(this.pomoTask.getCurrentTask());
     }
 
     private void showSkipAlert(){
@@ -281,7 +301,33 @@ public class HomeFragment extends Fragment implements
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(getContext(), "Pause time limit exceeded !", Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                String stopMessage = "You have paused work for too long !\n";
+                builder.setMessage(stopMessage).setTitle("Get back to work !");
+                builder.setPositiveButton("BACK TO WORK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                pomoTimer.resumeTimer();
+                                showPausedTextView.setText("RESUMED");
+                                //showPausedTextView.setAlpha(1f);
+                                //showPausedAnimator.cancel();
+                                Animation blinkAnimation = new AlphaAnimation(1,0);
+                                blinkAnimation.setDuration(1500);
+                                blinkAnimation.setInterpolator(new LinearInterpolator());
+                                showPausedTextView.setAnimation(blinkAnimation);
+
+                                //ViewPropertyAnimator showResumed =  showPausedTextView.animate().alpha(0.1f).setDuration(2000);
+                                //showResumed.setStartDelay(2000);
+                                //showResumed.start();
+                            }
+                        });
+                builder.setNegativeButton("SNOOZE", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //TODO : restartUnboundedPauseCounter;
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
     }
