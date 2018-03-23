@@ -285,13 +285,15 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
         System.out.println("fadeoutMap = "+fadeOutMap);
         long itemId = getItemId(position);
         try {
-            if (fadeOutMap.get(itemId)) {
-                //set faded alpha i.e. 0.25f if fadeOut is true i.e. if you want it to fade
-                holder.goalCardView.setAlpha(FADE_OUT_ALPHA);
-                holder.showGoalEditMenuButton.setEnabled(false);
-            } else {
-                holder.goalCardView.setAlpha(DEFAULT_ALPHA);
-                holder.showGoalEditMenuButton.setEnabled(true);
+            if (fadeOutMap.get(itemId) != null) {
+                if (fadeOutMap.get(itemId)) {
+                    //set faded alpha i.e. 0.25f if fadeOut is true i.e. if you want it to fade
+                    holder.goalCardView.setAlpha(FADE_OUT_ALPHA);
+                    holder.showGoalEditMenuButton.setEnabled(false);
+                } else {
+                    holder.goalCardView.setAlpha(DEFAULT_ALPHA);
+                    holder.showGoalEditMenuButton.setEnabled(true);
+                }
             }
         }
         catch (NullPointerException e){e.printStackTrace();}
