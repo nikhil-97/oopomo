@@ -3,6 +3,7 @@ package com.example.nikhilanj.oopomo_new.lib;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -37,10 +38,20 @@ public class PomoTimer {
         this.countdownTime = countdownTime;
     }
 
-    public String getTime() {
-        int minutes = currentCountdown/60;
-        int seconds = currentCountdown % 60;
-        return String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
+    public int getTotalCountdownTime() {return this.countdownTime;}
+
+    public int getCurrentCountdownTime() {return this.currentCountdown;}
+
+    public int getCurrentCountdownMinutes(){return currentCountdown/60;}
+
+    public int getCurrentCountdownSeconds(){return currentCountdown%60;}
+
+
+    public String getTimeString() {
+        int minutes = getCurrentCountdownMinutes();
+        int seconds = getCurrentCountdownSeconds();
+        return String.format(Locale.getDefault(),"%02d", minutes) + ":" +
+                String.format(Locale.getDefault(),"%02d", seconds);
     }
 
     public static String getTime(int timeInSeconds) {

@@ -219,7 +219,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
                             result = Boolean.compare(item2.isMarkedImportant(),item1.isMarkedImportant());
                             if(result==0)
                                 result = Integer.compare(item2.getGoalId(),item1.getGoalId());
-                                //descending sort
+                            //descending sort
                             return result;
                         }
                     });
@@ -375,4 +375,3 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
 
 
 }
-

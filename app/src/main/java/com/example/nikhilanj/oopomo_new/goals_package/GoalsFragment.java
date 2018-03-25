@@ -25,6 +25,7 @@ import com.example.nikhilanj.oopomo_new.R;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
 
 /*
 interface IloadGoalFromDb{
@@ -78,7 +79,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
             for(int i = 1;i<=10;i++){
                 int id = activeGoalId+=1;
                 String t = String.format(Locale.getDefault(),"Goal %d",id);
-                String d = String.format(Locale.getDefault(),"This is the one and only description for goal %d lmao",i);
+                String d = String.format(Locale.getDefault(),"This is the description for goal %d",i);
                 addGoalToActiveList(0,new GoalCardItem(id,t,d,false));
             }
         }
@@ -104,6 +105,12 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
 
         goalsRecyclerView.setLayoutManager(goalsRecyclerViewLayoutMgr);
         goalsRecyclerView.setAdapter(goalsRecyclerViewAdapter);
+
+        for (GoalCardItem item : goalsActiveList) {
+            int id = item.getGoalId();
+            try{goalsRecyclerViewAdapter.fadeOutMap.put((long)id,false);}
+            catch(NullPointerException e){e.printStackTrace();}
+        }
 
         emptyGoalsText = view.findViewById(R.id.tv_show_if_no_goals);
 
@@ -170,8 +177,6 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         //overloaded method to add already created goals
         int id = item.getGoalId();
         goalsActiveList.add(position,item);
-        try{goalsRecyclerViewAdapter.fadeOutMap.put((long)id,false);}
-        catch(NullPointerException e){e.printStackTrace();}
         return id;
     }
 
