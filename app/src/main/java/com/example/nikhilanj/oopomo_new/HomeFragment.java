@@ -145,10 +145,17 @@ public class HomeFragment extends Fragment implements
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+                boolean isTimerRunning = pomoTimer.isTimerRunning();
                 pomoTimer.pauseTimer();
                 stopButton.setHapticFeedbackEnabled(true);
                 getView().performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 showStopAlert();
+                /*
+                * Resume timer if task is not quit and timer is running before "STOP" dialog
+                */
+                if(pomoTask.isTaskRunning() && isTimerRunning) {
+                    pomoTimer.resumeTimer();
+                }
             }
         });
 
@@ -217,7 +224,7 @@ public class HomeFragment extends Fragment implements
         });
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                continueTimer();
+                dialog.dismiss();
             }
         });
 
@@ -259,7 +266,9 @@ public class HomeFragment extends Fragment implements
                     }
                 });
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {continueTimer();}
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
         });
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -272,11 +281,6 @@ public class HomeFragment extends Fragment implements
         if(pomoTask.getRepeats() == 0) {
             quitTask();
         }
-    }
-
-    private void continueTimer(){
-        Toast.makeText(getContext(), "resumeCountdown()", Toast.LENGTH_SHORT).show();
-        pomoTimer.resumeTimer();
     }
 
     public void preventUnboundedPause() {
