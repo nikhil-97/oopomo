@@ -1,5 +1,6 @@
 package com.example.nikhilanj.oopomo_new.lib;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.Timer;
@@ -25,9 +26,13 @@ public class PomoTimer {
         return isTimerRunning;
     }
 
+    public int getCurrentCountdown() {
+        return currentCountdown;
+    }
+
     /*
-    * Setters
-    * */
+        * Setters
+        * */
     public void setCountdownTime(int countdownTime) {
         this.countdownTime = countdownTime;
     }
@@ -53,8 +58,8 @@ public class PomoTimer {
         this.timer = new Timer();
         this.task = new PomoTimerTask();
         this.currentCountdown = countdownTime;
-        this.isTimerRunning = true;
         this.timer.scheduleAtFixedRate(task, 0, 1000);
+        this.isTimerRunning = true;
     }
 
     public void pauseTimer() {
