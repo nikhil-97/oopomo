@@ -77,8 +77,8 @@ public class HomeFragment extends Fragment implements
                 PomoDatabase.getPomoDatabaseInstance(getContext())
         );
         this.selectedProfile = pomoProfileManager.getCurrentProfile(getContext());
-        this.pomoTimer = new PomoTimer(this.selectedProfile.getFocusTime(), this);
-        this.pomoTask = new PomoTask(this.selectedProfile, this.pomoTimer);
+        this.pomoTimer = PomoTimer.getPomoTimer(this.selectedProfile.getFocusTime(), this);
+        this.pomoTask = PomoTask.getPomoTask(this.selectedProfile, this.pomoTimer);
     }
 
     @Override

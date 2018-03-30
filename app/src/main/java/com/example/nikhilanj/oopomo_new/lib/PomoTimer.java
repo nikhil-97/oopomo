@@ -8,18 +8,26 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class PomoTimer {
+    private static PomoTimer pomoTimer = null;
     private Timer timer;
     private TimerTask task;
     private int countdownTime, currentCountdown;
     private boolean isTimerRunning;
     private TimerEventsListener mListener;
 
-    public PomoTimer(int countdownTime, TimerEventsListener mListener) {
+    private PomoTimer(int countdownTime, TimerEventsListener mListener) {
         this.mListener = mListener;
         this.countdownTime = countdownTime;
         this.task = new PomoTimerTask();
     }
 
+    public static PomoTimer getPomoTimer(int countdownTime, TimerEventsListener mListener) {
+        if(pomoTimer != null) {
+            return pomoTimer;
+        }
+        pomoTimer = new PomoTimer(countdownTime, mListener);
+        return pomoTimer;
+    }
     /*
     * Getters
     * */

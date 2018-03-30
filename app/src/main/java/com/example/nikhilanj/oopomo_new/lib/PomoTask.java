@@ -10,11 +10,14 @@ public class PomoTask {
     private static final int TASK_SHORT_BREAK = 1;
     private static final int TASK_LONG_BREAK = 2;
 
+    private static PomoTask pomoTask = null;
+
     private int focusTime, shortBreakTime, longBreakTime, repeats;
     private int currentTask = TASK_FOCUS;
     private int currentFocus = 1;
     private boolean shortBreakDone;
     private boolean taskRunning = false;
+
     private PomoTimer pomoTimer;
 
     PomoTask(int focusTime, int shortBreakTime, int longBreakTime, int repeats, PomoTimer pomoTimer){
@@ -25,12 +28,20 @@ public class PomoTask {
         this.pomoTimer = pomoTimer;
     }
 
-    public PomoTask(PomoProfile pomoProfile, PomoTimer pomoTimer) {
+    private PomoTask(PomoProfile pomoProfile, PomoTimer pomoTimer) {
         this.focusTime = pomoProfile.getFocusTime();
         this.shortBreakTime = pomoProfile.getShortBreakTime();
         this.longBreakTime = pomoProfile.getLongBreakTime();
         this.repeats = pomoProfile.getRepeats();
         this.pomoTimer = pomoTimer;
+    }
+
+    public static PomoTask getPomoTask(PomoProfile pomoProfile, PomoTimer pomoTimer) {
+        if( pomoTask != null) {
+            return pomoTask;
+        }
+        pomoTask = new PomoTask(pomoProfile, pomoTimer);
+        return pomoTask;
     }
 
     public boolean isTaskRunning() {
