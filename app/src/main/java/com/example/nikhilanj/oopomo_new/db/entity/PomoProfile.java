@@ -102,10 +102,9 @@ public class PomoProfile {
     public void setEditingAllowed(boolean editingAllowed) {
         this.editingAllowed = editingAllowed;
     }
-
     /*
-         * End of setters and getters
-         */
+    * End of setters and getters
+    */
     @Override
     public String toString() {
         return this.profileName;

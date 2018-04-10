@@ -7,17 +7,20 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.example.nikhilanj.oopomo_new.db.dao.StatDao;
 import com.example.nikhilanj.oopomo_new.db.entity.PomoProfile;
 import com.example.nikhilanj.oopomo_new.db.dao.PomoProfileDao;
+import com.example.nikhilanj.oopomo_new.db.entity.Stat;
 
 import java.util.concurrent.Executors;
 
-@Database(entities = {PomoProfile.class}, version = 1)
+@Database(entities = {PomoProfile.class, Stat.class}, version = 1)
 public abstract class PomoDatabase extends RoomDatabase {
 
     private static PomoDatabase pomoDatabaseInstance = null;
 
     public abstract PomoProfileDao pomoProfileDao();
+    public abstract StatDao statDao();
 
     public synchronized static PomoDatabase getPomoDatabaseInstance(final Context context) {
         if(pomoDatabaseInstance == null) {
