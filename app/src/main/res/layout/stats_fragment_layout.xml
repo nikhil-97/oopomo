@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context="com.example.nikhilanj.oopomo_new.MainActivity">
 
-    <RadioGroup
+    <!--RadioGroup
         android:id="@+id/rangeradiogroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -55,33 +55,91 @@
             android:text="Monthly"
             android:textSize="16sp" />
 
-    </RadioGroup>
+    </RadioGroup-->
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="0dp"
+        app:elevation="0dp">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/stats_tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="0dp"
+            android:elevation="0dp"
+            android:padding="0dp"
+            app:tabIndicatorColor="@android:color/white"
+            app:tabSelectedTextColor="@android:color/white"
+            app:tabTextColor="@android:color/darker_gray">
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/daily_tab_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Daily">
+
+                <!--org.eazegraph.lib.charts.StackedBarChart
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/daily_stats_barchart"
+                    android:layout_width="match_parent"
+                    android:layout_height="256dp"
+                    android:padding="10dp"
+                    app:egFixedBarWidth="true"
+                    app:egBarWidth="20dp"
+                    app:egLegendHeight="40dp"/-->
+
+            </android.support.design.widget.TabItem>
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/weekly_tab_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weekly">
+                <!--org.eazegraph.lib.charts.StackedBarChart
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/weekly_stats_barchart"
+                    android:layout_width="match_parent"
+                    android:layout_height="256dp"
+                    android:padding="10dp"
+                    app:egFixedBarWidth="true"
+                    app:egBarWidth="20dp"
+                    app:egLegendHeight="40dp"/-->
+            </android.support.design.widget.TabItem>
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/monthly_tab_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monthly">
+                    <!--org.eazegraph.lib.charts.StackedBarChart
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/monthly_stats_barchart"
+                        android:layout_width="match_parent"
+                        android:layout_height="256dp"
+                        android:padding="10dp"
+                        app:egFixedBarWidth="true"
+                        app:egBarWidth="20dp"
+                        app:egLegendHeight="40dp"/-->
+            </android.support.design.widget.TabItem>
+
+        </android.support.design.widget.TabLayout>
+    </android.support.design.widget.AppBarLayout>
 
     <TextView
         android:id="@+id/statstext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:text="@string/statsname"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textSize="18sp"
+        android:textColor="@android:color/darker_gray"
+        android:textAlignment="center"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold"
+        />
 
-    <!--Spinner
-        android:id="@+id/spinner_timely"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/imageView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.055"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" /-->
 
-</android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

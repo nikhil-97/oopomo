@@ -25,18 +25,9 @@ import com.example.nikhilanj.oopomo_new.goals_package.GoalsFragment;
 import java.lang.reflect.Field;
 import java.util.Stack;
 
-class Convert {
-    public static float pxTodp(float px) {
-        return px / Resources.getSystem().getDisplayMetrics().density;
-    }
-    public static float dpTopx(float dp) {
-        return dp * Resources.getSystem().getDisplayMetrics().density;
-    }
-}
+public class MainActivity extends AppCompatActivity{
 
-public class MainActivity extends AppCompatActivity implements IgoalFragmentActivityInterface{
-
-    private BottomNavigationView bottomNav;
+    public BottomNavigationView bottomNav;
     float bottomNavDefaultElevation;
     private FragmentManager manager = getSupportFragmentManager();
     private HomeFragment homeFragment = new HomeFragment();
@@ -59,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements IgoalFragmentActi
 
         setContentView(R.layout.activity_main);
 
+
         bottomNav = findViewById(R.id.bottomnavigation);
         BottomNavigationViewHelper.disableShiftMode(bottomNav);
         bottomNav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -67,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements IgoalFragmentActi
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().add(android.R.id.content, homeFragment).commit();
         getSupportActionBar().setTitle(getString (R.string.app_name));
+        this.getSupportActionBar().setElevation(0f);
 
         bottomNavTabStack.push(R.id.navigation_home);
     }
@@ -115,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements IgoalFragmentActi
 
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    loadTabFragment(homeFragment,R.string.title_home);
+                    loadTabFragment(homeFragment,R.string.app_name);
                     return true;
                 case R.id.navigation_goals:
                     loadTabFragment(goalsFragment,R.string.title_goals);
@@ -200,17 +193,11 @@ public class MainActivity extends AppCompatActivity implements IgoalFragmentActi
         FragmentTransaction ft = manager.beginTransaction();
         ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
         ft.replace(android.R.id.content, fragment).commit();
-        getSupportActionBar().setTitle(getString (stringid));
-    }
-
-    @Override
-    public void setBottomNavBarElevation(float elev) {
-        bottomNav.setElevation(elev);
-    }
-
-    @Override
-    public float getBottomNavBarDefaultElevation() {
-        return bottomNavDefaultElevation;
+        String actionBarString = getString(stringid);
+        if(actionBarString.equals(getString(R.string.title_home)))
+            actionBarString = getString(R.string.app_name);
+        //If Home, set action bar name as app name
+        getSupportActionBar().setTitle(actionBarString);
     }
 
 }

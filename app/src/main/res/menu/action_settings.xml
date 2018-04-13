@@ -23,10 +23,10 @@
         app:showAsAction="never"
         android:icon="@drawable/ic_fullscreen_white_24px"/>
 
-    <item
+    <!--item
         android:textSize="10sp"
         android:title="Another Setting"
-        app:showAsAction="never"/>
+        app:showAsAction="never"/-->
 
 
 </menu>

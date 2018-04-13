@@ -61,7 +61,7 @@ public class PomoProfileManager {
                 context.getString(R.string.app_shared_preferences_key),
                 Context.MODE_PRIVATE );
         String profileName = sharedPreferences.getString(
-                context.getString(R.string.current_profile_key), "Classic"
+                context.getString(R.string.current_profile_key), "Pomodoro"
         );
         return this.getProfileByName(profileName);
     }

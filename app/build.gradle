@@ -31,6 +31,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.github.lzyzsd:circleprogress:1.2.1'
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.github.blackfizz:eazegraph:1.2.2@aar'
 
     implementation 'com.android.support:cardview-v7:26.1.0'
 
