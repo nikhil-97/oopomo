@@ -19,7 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-//import com.example.nikhilanj.oopomo_new.IgoalFragmentActivityInterface;
+import com.example.nikhilanj.oopomo_new.IgoalFragmentActivityInterface;
 import com.example.nikhilanj.oopomo_new.R;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
     static int activeGoalId = 0;
 
 
-    //private IgoalFragmentActivityInterface interactWithActivity;
+    private IgoalFragmentActivityInterface interactWithActivity;
 
     RecyclerView goalsRecyclerView;
     GoalsCardAdapter goalsRecyclerViewAdapter;
@@ -73,7 +73,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         //TODO: goalsActiveList = readGoalsActiveListFromDb();
         //TODO: goalsDoneList = readGoalsDoneListFromDb();
 
-/*
+
         //For testing purposes
         if(goalsActiveList.isEmpty()){
             for(int i = 1;i<=10;i++){
@@ -83,7 +83,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
                 addGoalToActiveList(0,new GoalCardItem(id,t,d,false));
             }
         }
-*/
+
         if (savedInstanceState != null) {
             System.out.println("savedinstancestate alive");
         }
@@ -94,7 +94,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
 
         View view = inflater.inflate(R.layout.goals_fragment_layout, container, false);
 
-        //interactWithActivity = (IgoalFragmentActivityInterface) getActivity(); //asuming it's always mainactivity
+        interactWithActivity = (IgoalFragmentActivityInterface) getActivity(); //asuming it's always mainactivity
 
         goalsRecyclerView = view.findViewById(R.id.goals_recycler_view);
         goalsRecyclerViewAdapter = new GoalsCardAdapter(this);

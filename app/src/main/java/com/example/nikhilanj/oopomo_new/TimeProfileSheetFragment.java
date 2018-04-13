@@ -77,7 +77,7 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
         timeProfileSpinner.setOnItemSelectedListener(this);
 
         profileNameEditText = contentView.findViewById(R.id.addcustomtext);
-        profileNameEditText.setHint("Custom Profile");
+        profileNameEditText.setHint("profile name");
 
         focusTimeSeekBar = contentView.findViewById(R.id.focustimeseekbar);
         focusTimeTextView = contentView.findViewById(R.id.focustimeseekbarvalue);
@@ -170,19 +170,22 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
                 PomoProfile newPomoProfile = new PomoProfile(selectedProfile);
                 String profileName = profileNameEditText.getText().toString().trim();
 
-                if( !selectedProfile.getProfileName().equals("Add Custom") ) {
+                if( !selectedProfile.getProfileName().equals("Custom") ) {
                     pomoProfileManager.updatePomoProfile(selectedProfile);
-                    Toast.makeText(getContext(), "Profile changes done successfully", Toast.LENGTH_SHORT).show();
+                    Toast infoToast = Toast.makeText(getContext(), "Profile changes done successfully", Toast.LENGTH_SHORT);
+                    infoToast.show();
                     return;
                 }
 
                 if( profileName.isEmpty() ) {
-                    Toast.makeText(getContext(), "Profile name can't be empty", Toast.LENGTH_SHORT).show();
+                    Toast infoToast = Toast.makeText(getContext(), "Profile name can't be empty", Toast.LENGTH_SHORT);
+                    infoToast.show();
                     return;
                 }
 
                 if ( pomoProfileManager.getProfileByName(profileName) != null) {
-                    Toast.makeText(getContext(), "Profile already exists", Toast.LENGTH_SHORT).show();
+                    Toast infoToast = Toast.makeText(getContext(), "Profile already exists", Toast.LENGTH_SHORT);
+                    infoToast.show();
                     return;
                 }
 
@@ -276,7 +279,7 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
     }
 
     private void enableCustomTimeSetting(){
-        if( selectedProfile.getProfileName().equals("Add Custom") ) {
+        if( selectedProfile.getProfileName().equals("Custom") ) {
             profileNameEditText.setVisibility(View.VISIBLE);
             profileNameEditText.setEnabled(true);
         } else {

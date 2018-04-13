@@ -15,7 +15,7 @@
         android:maxLines="2"
         android:minLines="1"
         android:singleLine="false"
-        android:text="@string/choose_a_time_profile_or_add_a_custom_time_setting"
+        android:text="Choose a time profile or add a custom time setting"
         android:textAlignment="center"
         android:textColor="@android:color/darker_gray"
         android:textSize="12sp"
@@ -30,6 +30,7 @@
         android:layout_column="0"
         android:layout_margin="16dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:contextClickable="true"
@@ -58,22 +59,36 @@
         app:layout_constraintVertical_bias="0.509">
 
         <TableRow
-            android:layout_marginBottom="4dp"
-            android:layout_marginTop="4dp"
-            android:paddingBottom="4dp"
+            android:layout_margin="0dp"
+            android:paddingBottom="4dp" android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:layout_span="2"
+            android:layout_weight="2"
+            android:defaultFocusHighlightEnabled="false"
+            android:enabled="false"
+            android:max="60"
+            android:min="5"
+            android:paddingEnd="4dp"
+            android:paddingStart="4dp"
+            android:progress="25"
+            android:saveEnabled="true"
             android:paddingTop="4dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
-                android:layout_margin="8dp"
                 android:layout_marginBottom="8dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="0"
-                android:text="Focus Time"
-                android:textSize="16sp"/>
+                android:text="Focus Time" />
 
             <SeekBar
                 android:id="@+id/focustimeseekbar"
@@ -99,8 +114,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:text="@string/focustimeviewstring"
-                android:textAlignment="textEnd"
-                android:textSize="16sp"/>
+                android:textAlignment="textEnd" />
 
         </TableRow>
 
@@ -119,8 +133,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="0"
-                android:text="Short Break"
-                android:textSize="16sp"/>
+                android:text="Short Break" />
 
             <SeekBar
                 android:id="@+id/shortbreaktimeseekbar"
@@ -130,12 +143,12 @@
                 android:layout_margin="8dp"
                 android:layout_span="2"
                 android:layout_weight="2"
-                android:defaultFocusHighlightEnabled="false"
                 android:enabled="false"
                 android:max="15"
                 android:min="1"
-                android:progress="5"
-                android:saveEnabled="true" />
+                android:paddingEnd="4dp"
+                android:paddingStart="4dp"
+                android:progress="5" />
 
             <TextView
                 android:id="@+id/shortbreaktimeseekbarvalue"
@@ -146,8 +159,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:text="@string/shortbreaktimeviewstring"
-                android:textAlignment="textEnd"
-                android:textSize="16sp"/>
+                android:textAlignment="textEnd" />
 
         </TableRow>
 
@@ -166,8 +178,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="0"
-                android:text="Long Break"
-                android:textSize="16sp"/>
+                android:text="Long Break" />
 
             <SeekBar
                 android:id="@+id/longbreaktimeseekbar"
@@ -191,8 +202,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:text="@string/longbreaktimeviewstring"
-                android:textAlignment="textEnd"
-                android:textSize="16sp"/>
+                android:textAlignment="textEnd" />
 
         </TableRow>
 
@@ -208,8 +218,7 @@
                 android:layout_column="0"
                 android:layout_margin="8dp"
                 android:layout_weight="0"
-                android:text="Repeats"
-                android:textSize="16sp"/>
+                android:text="Repeats" />
 
             <SeekBar
                 android:id="@+id/intervalseekbar"
@@ -231,8 +240,7 @@
                 android:layout_column="3"
                 android:layout_margin="8dp"
                 android:text="@string/repeatsviewstring"
-                android:textAlignment="textEnd"
-                android:textSize="16sp"/>
+                android:textAlignment="textEnd" />
 
         </TableRow>
     </TableLayout>
@@ -259,10 +267,10 @@
         android:layout_height="wrap_content"
         android:layout_column="1"
         android:layout_margin="8dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:background="@android:color/white"
         android:text="SAVE"
         android:textColor="@color/colorAccent"

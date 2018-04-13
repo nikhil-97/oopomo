@@ -29,9 +29,9 @@ public class PomoProfile {
     private boolean editingAllowed;
 
     public static PomoProfile[] defaultProfiles = new PomoProfile[] {
-            new PomoProfile("Pomodoro", 25, 5, 15, 4, false),
+            new PomoProfile("Classic", 25, 5, 15, 4, false),
             new PomoProfile("Super Focus", 60, 10, 20, 6, false),
-            new PomoProfile("Add Custom", 25, 5, 15, 4, true),
+            new PomoProfile("Custom", 25, 5, 15, 4, true),
     };
 
     public PomoProfile(String profileName, int focusTime, int shortBreakTime, int longBreakTime, int repeats,
