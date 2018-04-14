@@ -1,6 +1,5 @@
 package com.example.nikhilanj.oopomo_new;
 
-
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -21,18 +20,10 @@ import android.widget.Toast;
 
 import com.example.nikhilanj.oopomo_new.db.PomoDatabase;
 import com.example.nikhilanj.oopomo_new.goals_package.GoalsFragment;
+import com.example.nikhilanj.oopomo_new.stats_package.StatsFragment;
 
 import java.lang.reflect.Field;
 import java.util.Stack;
-
-class Convert {
-    public static float pxTodp(float px) {
-        return px / Resources.getSystem().getDisplayMetrics().density;
-    }
-    public static float dpTopx(float dp) {
-        return dp * Resources.getSystem().getDisplayMetrics().density;
-    }
-}
 
 public class MainActivity extends AppCompatActivity implements IgoalFragmentActivityInterface{
 

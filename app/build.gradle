@@ -32,6 +32,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.github.lzyzsd:circleprogress:1.2.1'
 
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+
     implementation 'com.android.support:cardview-v7:26.1.0'
 
     // Required -- JUnit 4 framework
