@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements IgoalFragmentActi
         manager.beginTransaction().add(android.R.id.content, homeFragment).commit();
         getSupportActionBar().setTitle(getString (R.string.app_name));
 
+        getSupportActionBar().setElevation(0);
+        //Need this to remove shadow between action bar and tabs in stats fragment
+
         bottomNavTabStack.push(R.id.navigation_home);
     }
 
@@ -200,7 +203,9 @@ public class MainActivity extends AppCompatActivity implements IgoalFragmentActi
         FragmentTransaction ft = manager.beginTransaction();
         ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
         ft.replace(android.R.id.content, fragment).commit();
-        getSupportActionBar().setTitle(getString (stringid));
+        String fragmentTitle = getString(stringid);
+        if(fragmentTitle.equals(getString(R.string.title_home))) fragmentTitle = "Oopomo";
+        getSupportActionBar().setTitle(fragmentTitle);
     }
 
     @Override

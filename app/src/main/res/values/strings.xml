@@ -26,7 +26,7 @@
 
     <!--All strings related to Statistics-->
     <string name="title_stats">Stats</string>
-    <string name="statsname">Stats</string>
+    <string name="statsname">No statistics yet.\nStart working now to see your stats !</string>
 
 
     <!--All strings related to Settings-->

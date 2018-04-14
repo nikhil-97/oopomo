@@ -170,7 +170,7 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
                 PomoProfile newPomoProfile = new PomoProfile(selectedProfile);
                 String profileName = profileNameEditText.getText().toString().trim();
 
-                if( !selectedProfile.getProfileName().equals("Custom") ) {
+                if( !selectedProfile.getProfileName().equals("Add Custom") ) {
                     pomoProfileManager.updatePomoProfile(selectedProfile);
                     Toast infoToast = Toast.makeText(getContext(), "Profile changes done successfully", Toast.LENGTH_SHORT);
                     infoToast.show();
