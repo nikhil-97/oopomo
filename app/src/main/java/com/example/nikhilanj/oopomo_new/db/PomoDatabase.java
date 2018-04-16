@@ -10,11 +10,11 @@ import android.support.annotation.NonNull;
 import com.example.nikhilanj.oopomo_new.db.dao.StatDao;
 import com.example.nikhilanj.oopomo_new.db.entity.PomoProfile;
 import com.example.nikhilanj.oopomo_new.db.dao.PomoProfileDao;
-import com.example.nikhilanj.oopomo_new.db.entity.Stat;
+import com.example.nikhilanj.oopomo_new.db.entity.StatObject;
 
 import java.util.concurrent.Executors;
 
-@Database(entities = {PomoProfile.class, Stat.class}, version = 1)
+@Database(entities = {PomoProfile.class, StatObject.class}, version = 1)
 public abstract class PomoDatabase extends RoomDatabase {
 
     private static PomoDatabase pomoDatabaseInstance = null;

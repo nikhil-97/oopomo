@@ -1,6 +1,5 @@
 package com.example.nikhilanj.oopomo_new.stats_package;
 
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -12,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.nikhilanj.oopomo_new.R;
+import com.example.nikhilanj.oopomo_new.db.entity.StatObject;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -22,7 +22,6 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 class DayValueFormatter implements IAxisValueFormatter {
 
-    static long convertDDMMYYYYDateStringToLongTimeMillis(String datestring){
+    static long convertDateStringToLongTimeMillis(String datestring){
         SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy", Locale.getDefault());
         try{
             Date d = sdf.parse(datestring);
@@ -45,13 +44,25 @@ class DayValueFormatter implements IAxisValueFormatter {
         return 0;
     }
 
-    static String getDateMonthStringFromTimeMillis(long timeInMinutes){
-        long timeInMillis = TimeUnit.DAYS.toMillis(timeInMinutes);
+    static long convertMonthStringToLongTimeMillis(String datestring){
+        SimpleDateFormat sdf = new SimpleDateFormat("M-yyyy", Locale.getDefault());
+        try{
+            Date m = sdf.parse(datestring);
+            System.out.println("m = "+m);
+            return m.getTime();
+        }
+        catch (ParseException p){p.printStackTrace();}
+        return 0;
+    }
+
+    private static String getDateMonthStringFromTimeDays(long timeInDays){
+        long timeInMillis = TimeUnit.DAYS.toMillis(timeInDays+1);
         return (new SimpleDateFormat("dd",Locale.getDefault()).format(timeInMillis)+"-"+
                 new SimpleDateFormat("MMM",Locale.getDefault()).format(timeInMillis));
     }
-    static String getMonthStringFromTimeMillis(long timeInDays){
-        long timeInMillis = TimeUnit.DAYS.toMillis(timeInDays);
+    private static String getMonthStringFromTimeDays(long timeInDays){
+        long timeInMillis = TimeUnit.DAYS.toMillis(timeInDays+1);
+        System.out.println("timeInDays = "+timeInDays+" timeInMillis = "+timeInMillis);
         return (new SimpleDateFormat("MMMM",Locale.getDefault()).format(timeInMillis));
     }
 
@@ -60,11 +71,12 @@ class DayValueFormatter implements IAxisValueFormatter {
     public String getFormattedValue(float value, AxisBase axis){
         String x = "0";
         if(StatsFragment.currentViewRange==StatsFragment.VIEWRANGE_DAILY) {
-            x = getDateMonthStringFromTimeMillis((long) value);
+            x = getDateMonthStringFromTimeDays((long) value);
         }
         else if(StatsFragment.currentViewRange==StatsFragment.VIEWRANGE_MONTHLY) {
-            x = getMonthStringFromTimeMillis((long) value);
+            x = getMonthStringFromTimeDays((long) value);
         }
+        System.out.println("x getFormattedValue = "+x);
         return x;
     }
 }
@@ -128,13 +140,12 @@ public class StatsFragment extends Fragment{
         xLabels.setValueFormatter(new DayValueFormatter());
         xLabels.setGranularity(1f);
         xLabels.setDrawGridLines(true);
-        xLabels.setLabelCount(8,true);
 
         statsBarChart.getLegend().setEnabled(false);
 
         showChart(VIEWRANGE_DAILY);
 
-        statsBarChart.setFitBars(true);
+        statsBarChart.setFitBars(false);
         statsBarChart.invalidate();
 
 
@@ -172,7 +183,7 @@ public class StatsFragment extends Fragment{
     @Override
     public void onDetach() {super.onDetach();}
 
-    private void makeChart(ArrayList<BarEntry> yValues){
+    private void makeChart(ArrayList<BarEntry> yValues,int viewRange){
         if(statsBarChart.getBarData()!=null) statsBarChart.getBarData().clearValues();
         BarDataSet set1;
         set1 = new BarDataSet(yValues, "Your Stats");
@@ -187,12 +198,19 @@ public class StatsFragment extends Fragment{
         data.setValueTextColor(Color.WHITE);
 
         statsBarChart.setData(data);
+        int xRangeMax = 7;
+        if(viewRange==VIEWRANGE_DAILY) xRangeMax = 7;
+        else if(viewRange==VIEWRANGE_WEEKLY) xRangeMax = 4;
+        else if(viewRange==VIEWRANGE_MONTHLY) xRangeMax = 4;
+        statsBarChart.setVisibleXRange(1,xRangeMax);
+
         }
 
     private void showChart(int viewRange){
         ArrayList<StatObject> statsListInRange = loadStats(viewRange);
         ArrayList<BarEntry> yVals1 = addTimeValues(statsListInRange);
-        makeChart(yVals1);
+        System.out.println(yVals1);
+        makeChart(yVals1,viewRange);
         statsBarChart.getBarData().notifyDataChanged();
         statsBarChart.notifyDataSetChanged();
 
@@ -225,20 +243,25 @@ public class StatsFragment extends Fragment{
         ArrayList<StatObject> statsRequested = new ArrayList<>();
         if(viewRange==VIEWRANGE_DAILY){
             //load stats for last 7 days
+            statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis("08-4-2018"),2,0));
+            statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis("09-4-2018"),25,17));
+            statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis("10-4-2018"),15,10));
+            statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis("11-4-2018"),20,15));
+            statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis("12-4-2018"),45,20));
+            statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis("13-4-2018"),35,10));
+            statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis("14-4-2018"),25,5));
         }
         else if(viewRange==VIEWRANGE_WEEKLY){
             //Load stats for last 4 weeks
         }
         else if(viewRange==VIEWRANGE_MONTHLY){
             //load stats for last 4(?) months
+            statsRequested.add(new StatObject(DayValueFormatter.convertMonthStringToLongTimeMillis("4-2018"),100,10));
+            statsRequested.add(new StatObject(DayValueFormatter.convertMonthStringToLongTimeMillis("3-2018"),25,17));
+            statsRequested.add(new StatObject(DayValueFormatter.convertMonthStringToLongTimeMillis("2-2018"),15,10));
+            statsRequested.add(new StatObject(DayValueFormatter.convertMonthStringToLongTimeMillis("1-2018"),20,15));
         }
-        statsRequested.add(new StatObject(DayValueFormatter.convertDDMMYYYYDateStringToLongTimeMillis("08-4-2018"),2,0));
-        statsRequested.add(new StatObject(DayValueFormatter.convertDDMMYYYYDateStringToLongTimeMillis("09-4-2018"),25,17));
-        statsRequested.add(new StatObject(DayValueFormatter.convertDDMMYYYYDateStringToLongTimeMillis("10-4-2018"),15,10));
-        statsRequested.add(new StatObject(DayValueFormatter.convertDDMMYYYYDateStringToLongTimeMillis("11-4-2018"),20,15));
-        statsRequested.add(new StatObject(DayValueFormatter.convertDDMMYYYYDateStringToLongTimeMillis("12-4-2018"),45,20));
-        statsRequested.add(new StatObject(DayValueFormatter.convertDDMMYYYYDateStringToLongTimeMillis("13-4-2018"),35,10));
-        statsRequested.add(new StatObject(DayValueFormatter.convertDDMMYYYYDateStringToLongTimeMillis("14-4-2018"),25,5));
+
         return statsRequested;
     }
 
