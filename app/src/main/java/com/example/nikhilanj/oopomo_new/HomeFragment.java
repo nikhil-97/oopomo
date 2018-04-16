@@ -8,6 +8,9 @@ import android.content.Context;
 
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -42,6 +45,9 @@ import com.example.nikhilanj.oopomo_new.db.entity.PomoProfile;
 import com.example.nikhilanj.oopomo_new.lib.PomoTask;
 import com.example.nikhilanj.oopomo_new.lib.PomoTimer;
 import com.example.nikhilanj.oopomo_new.utils.PomoProfileManager;
+
+import static android.provider.Settings.System.DEFAULT_NOTIFICATION_URI;
+import static android.provider.Settings.System.DEFAULT_RINGTONE_URI;
 
 
 public class HomeFragment extends Fragment implements
@@ -383,6 +389,19 @@ public class HomeFragment extends Fragment implements
         catch(NullPointerException e){Log.e("Can't update time",Log.getStackTraceString(e));}
     }
 
+    public void onTimerAlert(){
+        try {
+            Log.d("appdebug","method running successfully");
+//            Uri notification = RingtoneManager.getActualDefaultRingtoneUri(getContext(), RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(getContext(), DEFAULT_NOTIFICATION_URI);
+            Log.d("appdebug", r.getTitle(getContext()));
+            r.play();
+        } catch (Exception e) {
+            Log.d("appdebug", e.toString());
+            e.printStackTrace();
+        }
+
+    }
     /*
     ProfileSheetInteractionListener interface implementation
     */

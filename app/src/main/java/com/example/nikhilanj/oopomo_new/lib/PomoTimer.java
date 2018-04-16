@@ -102,6 +102,9 @@ public class PomoTimer {
 
     class PomoTimerTask extends TimerTask {
         public void run() {
+            if(currentCountdown == 10){
+                mListener.onTimerAlert();
+            }
             if( currentCountdown == 0 ) {
                 timer.cancel();
                 isTimerRunning = false;
@@ -120,5 +123,6 @@ public class PomoTimer {
     public interface TimerEventsListener {
         void onPomoTimerUpdate();
         void onPomoTimerTick();
+        void onTimerAlert();
     }
 }

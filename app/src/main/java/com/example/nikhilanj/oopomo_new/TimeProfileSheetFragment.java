@@ -279,7 +279,7 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
     }
 
     private void enableCustomTimeSetting(){
-        if( selectedProfile.getProfileName().equals("Custom") ) {
+        if( selectedProfile.getProfileName().equals("Add Custom") ) {
             profileNameEditText.setVisibility(View.VISIBLE);
             profileNameEditText.setEnabled(true);
         } else {
