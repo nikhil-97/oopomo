@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,11 +63,13 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
         View contentView = View.inflate(getContext(), R.layout.bottom_sheet_layout, null);
         dialog.setContentView(contentView);
 
-        Spinner timeProfileSpinner = contentView.findViewById(R.id.time_profiles_spinner);
+        final Spinner timeProfileSpinner = contentView.findViewById(R.id.time_profiles_spinner);
 
         final List<PomoProfile> pomoProfileNames = this.pomoProfileManager.getAllPomoProfiles();
 
-        ArrayAdapter<PomoProfile> adapter = new ArrayAdapter<>(
+        pushAddCustomProfile(pomoProfileNames);
+
+        final ArrayAdapter<PomoProfile> adapter = new ArrayAdapter<>(
                 getContext(),
                 android.R.layout.simple_spinner_item,
                 pomoProfileNames
@@ -197,6 +200,10 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
                 Toast infoToast = Toast.makeText(getContext(), savedString, Toast.LENGTH_SHORT);
                 infoToast.setGravity(Gravity.CENTER, 0, 0);
                 infoToast.show();
+                pomoProfileNames.add(newPomoProfile);
+                pushAddCustomProfile(pomoProfileNames);
+                adapter.notifyDataSetChanged();
+                timeProfileSpinner.setSelection(adapter.getPosition(newPomoProfile));
             }
         });
 
@@ -204,6 +211,9 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
             @Override
             public void onClick(View view) {
                 pomoDatabase.pomoProfileDao().deletePomoProfile(selectedProfile);
+                pomoProfileNames.remove(selectedProfile);
+                adapter.notifyDataSetChanged();
+                timeProfileSpinner.setSelection(0);
                 Toast infoToast = Toast.makeText(getContext(), "Profile deleted successfully", Toast.LENGTH_SHORT);
                 infoToast.show();
             }
@@ -228,7 +238,6 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
         this.pomoProfileManager.saveProfilePreference(getContext(), selectedProfile.getProfileName());
         if(mListener != null) {
             mListener.onSelectedProfileChange(this.selectedProfile);
-            Log.d("APP_DEBUG", "selected profile is set");
         }
         setHomeFragmentTimeView(this.focusTime);
     }
@@ -238,9 +247,7 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
         super.onAttach(context);
         try {
             mListener = (ProfileSheetInteractionListener) getParentFragment();
-            Log.d("APP_DEBUG", "mListener is set " + getParentFragment().toString());
         } catch (ClassCastException e) {
-            Log.d("APP_DEBUG", "mListener is not set " + getParentFragment().toString());
             throw new ClassCastException(getParentFragment().toString()
                     + " must implement OnHeadlineSelectedListener");
         }
@@ -319,6 +326,23 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
         deleteButton.setEnabled(true);
         deleteButton.setTextColor(Color.BLACK);
         //TODO : somehow pass these colours also, so that they can be changed later if needed
+    }
+
+    private void pushAddCustomProfile(List<PomoProfile> profiles) {
+        PomoProfile addCustom = pomoProfileManager.getProfileByName("Add Custom");
+        int addCustomPos = -1;
+        int i = 0;
+        for(PomoProfile profile : profiles) {
+            if(profile.getProfileName().equals("Add Custom")) {
+                addCustomPos = i;
+                break;
+            }
+            i++;
+        }
+        if(addCustomPos != -1) {
+            profiles.set(addCustomPos, profiles.get(profiles.size() - 1));
+            profiles.set(profiles.size() - 1, addCustom);
+        }
     }
 
     private void setFocusTime(int focustime){
