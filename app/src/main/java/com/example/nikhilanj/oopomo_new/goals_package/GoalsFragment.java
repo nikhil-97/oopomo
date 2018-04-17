@@ -74,7 +74,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
         //TODO: goalsDoneList = readGoalsDoneListFromDb();
 
 
-        //For testing purposes
+/*       //For testing purposes
         if(goalsActiveList.isEmpty()){
             for(int i = 1;i<=10;i++){
                 int id = activeGoalId+=1;
@@ -83,7 +83,7 @@ public class GoalsFragment extends Fragment implements IgoalFragmentAdapterInter
                 addGoalToActiveList(0,new GoalCardItem(id,t,d,false));
             }
         }
-
+*/
         if (savedInstanceState != null) {
             System.out.println("savedinstancestate alive");
         }

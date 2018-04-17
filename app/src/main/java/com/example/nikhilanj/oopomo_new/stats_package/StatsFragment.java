@@ -29,12 +29,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 class DayValueFormatter implements IAxisValueFormatter {
 
     static long convertDateStringToLongTimeMillis(String datestring){
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         try{
             Date d = sdf.parse(datestring);
             System.out.println("d = "+d);
@@ -45,7 +46,7 @@ class DayValueFormatter implements IAxisValueFormatter {
     }
 
     static long convertMonthStringToLongTimeMillis(String datestring){
-        SimpleDateFormat sdf = new SimpleDateFormat("M-yyyy", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-yyyy", Locale.getDefault());
         try{
             Date m = sdf.parse(datestring);
             System.out.println("m = "+m);
@@ -61,7 +62,7 @@ class DayValueFormatter implements IAxisValueFormatter {
                 new SimpleDateFormat("MMM",Locale.getDefault()).format(timeInMillis));
     }
     private static String getMonthStringFromTimeDays(long timeInDays){
-        long timeInMillis = TimeUnit.DAYS.toMillis(timeInDays+1);
+        long timeInMillis = TimeUnit.DAYS.toMillis((timeInDays*30+30));
         System.out.println("timeInDays = "+timeInDays+" timeInMillis = "+timeInMillis);
         return (new SimpleDateFormat("MMMM",Locale.getDefault()).format(timeInMillis));
     }
@@ -145,7 +146,7 @@ public class StatsFragment extends Fragment{
 
         showChart(VIEWRANGE_DAILY);
 
-        statsBarChart.setFitBars(false);
+        statsBarChart.setFitBars(true);
         statsBarChart.invalidate();
 
 
@@ -184,11 +185,10 @@ public class StatsFragment extends Fragment{
     public void onDetach() {super.onDetach();}
 
     private void makeChart(ArrayList<BarEntry> yValues,int viewRange){
-        if(statsBarChart.getBarData()!=null) statsBarChart.getBarData().clearValues();
-        BarDataSet set1;
-        set1 = new BarDataSet(yValues, "Your Stats");
-        set1.setDrawIcons(false);
-        set1.setColors(getColors());
+        if(statsBarChart.getBarData()!=null){statsBarChart.getBarData().clearValues();}
+
+        BarDataSet set1 = new BarDataSet(yValues, "Your Stats");
+        set1.setColors(getChartColors());
         set1.setStackLabels(new String[]{"Focus Time", "Break Time"});
 
         List<IBarDataSet> dataSets = new ArrayList<>();
@@ -208,15 +208,16 @@ public class StatsFragment extends Fragment{
 
     private void showChart(int viewRange){
         ArrayList<StatObject> statsListInRange = loadStats(viewRange);
-        ArrayList<BarEntry> yVals1 = addTimeValues(statsListInRange);
-        System.out.println(yVals1);
+        ArrayList<BarEntry> yVals1 =new ArrayList<>();
+        addTimeValues(yVals1,statsListInRange);
+        System.out.println("yVals1 = "+yVals1);
         makeChart(yVals1,viewRange);
         statsBarChart.getBarData().notifyDataChanged();
         statsBarChart.notifyDataSetChanged();
 
     }
 
-    private int[] getColors() {
+    private int[] getChartColors() {
 
         int color1 = ResourcesCompat.getColor(getResources(), R.color.timeCircleFinished,null);
         int color2 = ResourcesCompat.getColor(getResources(), R.color.timeCircleUnfinished, null);
@@ -224,44 +225,48 @@ public class StatsFragment extends Fragment{
         return (new int[]{color1,color2});
     }
 
-    private ArrayList<BarEntry> addTimeValues(List<StatObject> statlist) {
-        ArrayList<BarEntry> yValues = new ArrayList<>();
+    private void addTimeValues(ArrayList<BarEntry> yValues,List<StatObject> statlist) {
         int listsize = statlist.size();
         for (int i = 0; i < listsize; i++) {
             StatObject stat = statlist.get(i);
             float focustime = (float) stat.getFocusTime();
             float breaktime = (float) stat.getBreakTime();
+            System.out.println("ft = "+focustime+" bt = "+breaktime);
 
             yValues.add(
                     new BarEntry(TimeUnit.MILLISECONDS.toDays(stat.getTimeStamp()),
                             new float[]{focustime, breaktime}));
         }
-            return yValues;
         }
 
     private ArrayList<StatObject> loadStats(int viewRange){
         ArrayList<StatObject> statsRequested = new ArrayList<>();
         if(viewRange==VIEWRANGE_DAILY){
             //load stats for last 7 days
-            statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis("08-4-2018"),2,0));
-            statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis("09-4-2018"),25,17));
-            statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis("10-4-2018"),15,10));
-            statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis("11-4-2018"),20,15));
-            statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis("12-4-2018"),45,20));
-            statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis("13-4-2018"),35,10));
-            statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis("14-4-2018"),25,5));
+            //write queries here
+            for(int i =1;i<=30;i++){
+                String monthstring = String.format("%01d",i).concat("-4-2018");
+                System.out.println(monthstring);
+                int ft = new Random().nextInt(150);
+                int bt = new Random().nextInt(60);
+
+                statsRequested.add(new StatObject(DayValueFormatter.convertDateStringToLongTimeMillis(monthstring),ft,bt));
+            }
         }
         else if(viewRange==VIEWRANGE_WEEKLY){
             //Load stats for last 4 weeks
         }
         else if(viewRange==VIEWRANGE_MONTHLY){
             //load stats for last 4(?) months
-            statsRequested.add(new StatObject(DayValueFormatter.convertMonthStringToLongTimeMillis("4-2018"),100,10));
-            statsRequested.add(new StatObject(DayValueFormatter.convertMonthStringToLongTimeMillis("3-2018"),25,17));
-            statsRequested.add(new StatObject(DayValueFormatter.convertMonthStringToLongTimeMillis("2-2018"),15,10));
-            statsRequested.add(new StatObject(DayValueFormatter.convertMonthStringToLongTimeMillis("1-2018"),20,15));
-        }
+            for(int i =1;i<=12;i++){
+                String monthstring = String.format("%02d",i).concat("-2018");
+                System.out.println(monthstring);
+                int ft = new Random().nextInt(1000);
+                int bt = new Random().nextInt(500);
 
+                statsRequested.add(new StatObject(DayValueFormatter.convertMonthStringToLongTimeMillis(monthstring),ft,bt));
+            }
+            }
         return statsRequested;
     }
 

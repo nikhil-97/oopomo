@@ -126,6 +126,10 @@ public class HomeFragment extends Fragment implements
             }
         });
 
+        if(pomoTimer.isTimerRunning()){
+            animationOnStartClicked();
+        }
+
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -193,14 +197,18 @@ public class HomeFragment extends Fragment implements
         view.setEnabled(setenable);
     }
 
-    private void animationOnStartClicked(){
-        pauseButton.setAlpha(0.001f);
-        pauseButton.setVisibility(View.VISIBLE);
-        stopButton.setAlpha(0f);
-        stopButton.setVisibility(View.VISIBLE);
-        skipSessionButton.setAlpha(0f);
-        skipSessionButton.setVisibility(View.VISIBLE);
+    boolean startClickedOnce = false;
 
+    private void animationOnStartClicked(){
+        if(!startClickedOnce) {
+            pauseButton.setAlpha(0.001f);
+            pauseButton.setVisibility(View.VISIBLE);
+            stopButton.setAlpha(0f);
+            stopButton.setVisibility(View.VISIBLE);
+            skipSessionButton.setAlpha(0f);
+            skipSessionButton.setVisibility(View.VISIBLE);
+            startClickedOnce = true;
+        }
         ViewPropertyAnimator timeViewSizeAnimator = timeTextView.animate().scaleX(1.3f).scaleY(1.3f).setDuration(2000);
         timeViewSizeAnimator.setInterpolator(new DecelerateInterpolator());
         timeViewSizeAnimator.start();
@@ -335,10 +343,6 @@ public class HomeFragment extends Fragment implements
                                 blinkAnimation.setDuration(1500);
                                 blinkAnimation.setInterpolator(new LinearInterpolator());
                                 showPausedTextView.setAnimation(blinkAnimation);
-
-                                //ViewPropertyAnimator showResumed =  showPausedTextView.animate().alpha(0.1f).setDuration(2000);
-                                //showResumed.setStartDelay(2000);
-                                //showResumed.start();
                             }
                         });
                 builder.setNegativeButton("SNOOZE", new DialogInterface.OnClickListener() {

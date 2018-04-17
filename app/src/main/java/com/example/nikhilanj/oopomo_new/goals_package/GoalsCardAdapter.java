@@ -90,7 +90,33 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
         boolean isImportant;
         float defaultCardElevation = 1.0f;
 
+/*        View.OnClickListener cardClickListener = new View.OnClickListener() {
+            //View changes to Edit mode on clicking the view.
+            //Initial research showed that mosttt people tended to click on the goal directly,
+            // instead of looking for the edit button. THe edit button still stays however.
+            @Override
+            public void onClick(View view) {
+                Runnable cardClickAction = new Runnable() {
+                    @Override
+                    public void run() {
+                        previousAction = PREVIOUS_ACTION_IS_EDITING;
+                        changeGoalViewMode(GoalsViewHolder.this, getAdapterPosition(), GOAL_VIEW_MODE_NOW_EDITING);
+                        long currentItemId = GoalsCardAdapter.this.getItemId(getAdapterPosition());
+                        for (Long id : fadeOutMap.keySet()) {
+                            fadeOutMap.put(id, id != currentItemId);
+                        }
+                        notifyDataSetChanged();
+                        parentGoalFragment.goalsRecyclerView.scrollToPosition(getAdapterPosition());
+                        //calling notifyDataSetChanged because we have to change view of all other viewholders
+                    }
+                };
+                new android.os.Handler().postDelayed(cardClickAction,250);
+                //added this delay so that the view is changed after some delay.
+                // immediate changing of the view is kinda "shocking" to the user...and jarring
 
+            }
+        };
+*/
         GoalsViewHolder(final View itemView) {
             super(itemView);
 
@@ -107,30 +133,9 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
             switchEditable = itemView.findViewById(R.id.goalViewSwitcher);
             defaultCardElevation = goalCardView.getCardElevation();
 
-            goalCardView.setOnClickListener(new View.OnClickListener() {
-                //View changes to Edit mode on clicking the view.
-                //Initial research showed that mosttt people tended to click on the goal directly,
-                // instead of looking for the edit button. THe edit button still stays however.
-                @Override
-                public void onClick(View view) {
-                    Runnable cardClickAction = new Runnable() {
-                        @Override
-                        public void run() {
-                            previousAction = PREVIOUS_ACTION_IS_EDITING;
-                            changeGoalViewMode(GoalsViewHolder.this,getAdapterPosition(), GOAL_VIEW_MODE_NOW_EDITING);
-                            long currentItemId = GoalsCardAdapter.this.getItemId(getAdapterPosition());
-                            for (Long id : fadeOutMap.keySet()) {fadeOutMap.put(id, id != currentItemId);}
-                            notifyDataSetChanged();
-                            parentGoalFragment.goalsRecyclerView.scrollToPosition(getAdapterPosition());
-                            //calling notifyDataSetChanged because we have to change view of all other viewholders
-                        }
-                    };
-                    new android.os.Handler().postDelayed(cardClickAction,250);
-                    //added this delay so that the view is changed after some delay.
-                    // immediate changing of the view is kinda "shocking" to the user...and jarring
 
-                }
-            });
+
+            //goalCardView.setOnClickListener(cardClickListener);
 
             goalSaveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -162,7 +167,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
                         catch(EmptyStackException e){
                             Log.e("empty stack when undo",Log.getStackTraceString(e));}
                     }
-                    else if(previousAction==PREVIOUS_ACTION_IS_ADDING){
+                    else if(previousAction==GOAL_VIEW_MODE_NOW_VIEWING){
                         deleteGoal(getAdapterPosition());
                     }
                     //changeGoalViewMode(holder,getItemCount(), GOAL_VIEW_MODE_NOW_VIEWING);
@@ -244,6 +249,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
             holder.switchEditable.setDisplayedChild(1);
             interactWithGoalFragment.enableAddGoalFab(true);
             interactWithGoalFragment.clearFocusAndHideSoftInputKeyboard();
+            //holder.goalCardView.setOnClickListener(null);
 
         } else if (viewMode == GOAL_VIEW_MODE_NOW_EDITING) {
             viewHolderStack.push(holder);
@@ -256,6 +262,7 @@ public class GoalsCardAdapter extends RecyclerView.Adapter<GoalsCardAdapter.Goal
             holder.isCurrentlyEditable = true;
             interactWithGoalFragment.enableAddGoalFab(false);
             holder.switchEditable.setDisplayedChild(0);
+            //holder.goalCardView.setOnClickListener(holder.cardClickListener);
 
         }
     }
