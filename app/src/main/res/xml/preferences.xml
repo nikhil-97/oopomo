@@ -4,9 +4,8 @@
         android:key="unbound_pause"
         android:title="Prevent Unbounded pause"
         android:defaultValue="true" />
-    <CheckBoxPreference
-        android:key="dark_theme"
-        android:title="Dark Theme"
-        android:defaultValue="false" />
-
+    <!--<CheckBoxPreference-->
+        <!--android:key="dark_theme"-->
+        <!--android:title="Dark Theme"-->
+        <!--android:defaultValue="false" />-->
 </PreferenceScreen>
