@@ -15,7 +15,7 @@ public interface StatDao {
     @Query("SELECT * FROM STATOBJECT WHERE stat_id = :id")
     List<StatObject> getStatById(long id);
 
-    @Query("SELECT * FROM STATOBJECT WHERE timestamp BETWEEN :from AND :to ORDER BY timestamp")
+    @Query("SELECT * FROM STATOBJECT WHERE timestamp BETWEEN :from AND :to ORDER BY timestamp DESC")
     List<StatObject> getStatObjectsBetween(long from, long to);
 
     @Insert

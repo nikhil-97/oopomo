@@ -295,6 +295,10 @@ public class TimeProfileSheetFragment extends BottomSheetDialogFragment
         }
         enableAllSeekbars();
         enableSaveAndDeleteButtons();
+        if( selectedProfile.getProfileName().equals("Add Custom") ) {
+            deleteButton.setEnabled(false);
+            deleteButton.setTextColor(Color.GRAY);
+        }
         profileNameEditText.requestFocus();
     }
 

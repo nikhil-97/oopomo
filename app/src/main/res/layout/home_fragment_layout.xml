@@ -209,32 +209,6 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
-            android:id="@+id/work_on_specifc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@color/lightGrayMaterial"
-            android:clickable="true"
-            android:drawableRight="@drawable/ic_arrow_forward_black_24dp"
-            android:elevation="0dp"
-            android:focusable="false"
-            android:hapticFeedbackEnabled="true"
-            android:padding="0dp"
-            android:paddingTop="0dp"
-            android:text="@string/work_on_specific_goal"
-            android:textAlignment="center"
-            android:textColor="@color/lightGrayAccessibleText"
-            android:textStyle="italic"
-            app:layout_constraintBottom_toTopOf="@+id/circleProgress2"
-            app:layout_constraintEnd_toEndOf="@+id/circleProgress2"
-            app:layout_constraintStart_toStartOf="@+id/circleProgress2"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.513" />
-
-        <TextView
             android:id="@+id/tv_show_when_paused"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

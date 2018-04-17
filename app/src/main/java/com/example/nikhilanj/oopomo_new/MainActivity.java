@@ -148,46 +148,46 @@ public class MainActivity extends AppCompatActivity implements IgoalFragmentActi
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        System.out.println("selected something");
-        switch (item.getItemId()) {
-            case R.id.dark_mode_setting:
-                item.setChecked(!item.isChecked());
-                String toasttext;
-                if(item.isChecked()){
-                    setTheme(R.style.DarkTheme);
-                    //TODO: Doesn't work
-                    toasttext="Dark Theme applied";
-                }
-                else {
-                    toasttext="Dark Theme removed";
-                    setTheme(R.style.AppTheme);
-                }
-                Toast.makeText(getBaseContext(), toasttext, Toast.LENGTH_SHORT).show();
-                return true;
-
-            case R.id.fullscreen_setting:
-                item.setChecked(!item.isChecked());
-                if(item.isChecked()){
-                    final View decorView = getWindow().getDecorView();
-                    decorView.setSystemUiVisibility(
-                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-
-                    item.setIcon(R.drawable.ic_fullscreen_exit_white_24px);
-                    System.out.println("insane checked");
-                }
-                else if(!item.isChecked()){
-                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-                    item.setIcon(R.drawable.ic_fullscreen_white_24px);
-                    System.out.println("insane unchecked");
-                }
-                return true;
-        }
-        return true;
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        System.out.println("selected something");
+//        switch (item.getItemId()) {
+//            case R.id.dark_mode_setting:
+//                item.setChecked(!item.isChecked());
+//                String toasttext;
+//                if(item.isChecked()){
+//                    setTheme(R.style.DarkTheme);
+//                    //TODO: Doesn't work
+//                    toasttext="Dark Theme applied";
+//                }
+//                else {
+//                    toasttext="Dark Theme removed";
+//                    setTheme(R.style.AppTheme);
+//                }
+//                Toast.makeText(getBaseContext(), toasttext, Toast.LENGTH_SHORT).show();
+//                return true;
+//
+//            case R.id.fullscreen_setting:
+//                item.setChecked(!item.isChecked());
+//                if(item.isChecked()){
+//                    final View decorView = getWindow().getDecorView();
+//                    decorView.setSystemUiVisibility(
+//                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+//                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+//                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+//
+//                    item.setIcon(R.drawable.ic_fullscreen_exit_white_24px);
+//                    System.out.println("insane checked");
+//                }
+//                else if(!item.isChecked()){
+//                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+//                    item.setIcon(R.drawable.ic_fullscreen_white_24px);
+//                    System.out.println("insane unchecked");
+//                }
+//                return true;
+//        }
+//        return true;
+//    }
 
     private void loadTabFragment(Fragment fragment,int stringid){
 

@@ -2,31 +2,31 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/request_help"
-        android:title="Help"
-        android:icon="@drawable/ic_help_white_24px"
-        app:showAsAction="always"/>
+    <!--<item-->
+        <!--android:id="@+id/request_help"-->
+        <!--android:title="Help"-->
+        <!--android:icon="@drawable/ic_help_white_24px"-->
+        <!--app:showAsAction="always"/>-->
 
-    <item
-        android:id="@+id/dark_mode_setting"
-        android:checkable="true"
-        android:textSize="10sp"
-        android:title="Dark Theme"
-        app:showAsAction="never"/>
+    <!--<item-->
+        <!--android:id="@+id/dark_mode_setting"-->
+        <!--android:checkable="true"-->
+        <!--android:textSize="10sp"-->
+        <!--android:title="Dark Theme"-->
+        <!--app:showAsAction="never"/>-->
 
-    <item
-        android:id="@+id/fullscreen_setting"
-        android:checkable="false"
-        android:textSize="10sp"
-        android:title="Fullscreen Mode"
-        app:showAsAction="never"
-        android:icon="@drawable/ic_fullscreen_white_24px"/>
+    <!--<item-->
+        <!--android:id="@+id/fullscreen_setting"-->
+        <!--android:checkable="false"-->
+        <!--android:textSize="10sp"-->
+        <!--android:title="Fullscreen Mode"-->
+        <!--app:showAsAction="never"-->
+        <!--android:icon="@drawable/ic_fullscreen_white_24px"/>-->
 
-    <item
-        android:textSize="10sp"
-        android:title="Another Setting"
-        app:showAsAction="never"/>
+    <!--<item-->
+        <!--android:textSize="10sp"-->
+        <!--android:title="Another Setting"-->
+        <!--app:showAsAction="never"/>-->
 
 
 </menu>
