@@ -7,11 +7,13 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
@@ -76,6 +78,7 @@ public class HomeFragment extends Fragment implements
 
     private BottomSheetDialogFragment timeProfileFragment;
 
+    private boolean unboundedPause;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +88,8 @@ public class HomeFragment extends Fragment implements
         this.selectedProfile = pomoProfileManager.getCurrentProfile(getContext());
         this.pomoTimer = PomoTimer.getPomoTimer(this.selectedProfile.getFocusTime(), this);
         this.pomoTask = PomoTask.getPomoTask(this.selectedProfile, this.pomoTimer);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        this.unboundedPause = sharedPref.getBoolean("unbound_pause", true);
     }
 
     @Override
@@ -290,6 +295,10 @@ public class HomeFragment extends Fragment implements
     }
 
     public void preventUnboundedPause() {
+        Log.d("appdebug", "preventUnboundedPause: working "+ this.unboundedPause) ;
+        if(this.unboundedPause == false){
+            return;
+        }
         Thread thread = new Thread() {
             @Override
             public void run() {

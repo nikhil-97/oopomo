@@ -3,6 +3,7 @@ package com.example.nikhilanj.oopomo_new;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
 import android.support.design.internal.BottomNavigationItemView;
 import android.support.design.internal.BottomNavigationMenuView;
@@ -12,6 +13,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
 
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -33,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements IgoalFragmentActi
     private HomeFragment homeFragment = new HomeFragment();
     private GoalsFragment goalsFragment = new GoalsFragment();
     private StatsFragment statsFragment = new StatsFragment();
-    private SettingsFragment settingsFragment = new SettingsFragment();
+    private PreferenceFragmentCompat settingsFragment = new SettingsFragment();
 
     public static Stack<Integer> bottomNavTabStack = new Stack<>();
 
@@ -118,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements IgoalFragmentActi
                     loadTabFragment(statsFragment,R.string.title_stats);
                     return true;
                 case R.id.navigation_settings:
-                    loadTabFragment(settingsFragment,R.string.title_settings);
+                    loadTabFragment(settingsFragment, R.string.title_settings);
                     return true;
             }
             return false;
@@ -192,6 +194,15 @@ public class MainActivity extends AppCompatActivity implements IgoalFragmentActi
     private void loadTabFragment(Fragment fragment,int stringid){
 
         FragmentTransaction ft = manager.beginTransaction();
+        ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
+        ft.replace(android.R.id.content, fragment).commit();
+        String fragmentTitle = getString(stringid);
+        if(fragmentTitle.equals(getString(R.string.title_home))) fragmentTitle = "Oopomo";
+        getSupportActionBar().setTitle(fragmentTitle);
+    }
+
+    private void loadTabFragment(PreferenceFragmentCompat fragment, int stringid){
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
         ft.replace(android.R.id.content, fragment).commit();
         String fragmentTitle = getString(stringid);
