@@ -78,6 +78,7 @@ public class HomeFragment extends Fragment implements
     FloatingActionButton editTimeProfilesButton;
 
     private BottomSheetDialogFragment timeProfileFragment;
+    boolean startClickedOnce = false;
 
     private boolean unboundedPause;
     @Override
@@ -91,6 +92,7 @@ public class HomeFragment extends Fragment implements
         this.pomoTask = PomoTask.getPomoTask(this.selectedProfile, this.pomoTimer);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         this.unboundedPause = sharedPref.getBoolean("unbound_pause", true);
+        startClickedOnce = false;
     }
 
     @Override
@@ -196,8 +198,6 @@ public class HomeFragment extends Fragment implements
         buttonanimation.start();
         view.setEnabled(setenable);
     }
-
-    boolean startClickedOnce = false;
 
     private void animationOnStartClicked(){
         if(!startClickedOnce) {
