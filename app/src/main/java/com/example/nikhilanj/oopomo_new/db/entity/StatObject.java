@@ -11,7 +11,7 @@ public class StatObject {
     @NonNull
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "stat_id")
-    private int statId;
+    private long statId;
 
     @ColumnInfo(name = "focus_time")
     private int focusTime;
@@ -34,7 +34,7 @@ public class StatObject {
 
     public void setBreakTime(int breakTime) {this.breakTime = breakTime;}
 
-    public void setStatId(@NonNull int statId) {
+    public void setStatId(long statId) {
         this.statId = statId;
     }
 
@@ -44,7 +44,7 @@ public class StatObject {
 
     public int getFocusTime() {return focusTime;}
 
-    public int getStatId() {
+    public long getStatId() {
         return statId;
     }
 }

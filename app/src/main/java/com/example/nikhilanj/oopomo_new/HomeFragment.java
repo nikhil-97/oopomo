@@ -40,16 +40,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
+import com.example.nikhilanj.oopomo_new.db.entity.StatObject;
 import com.github.lzyzsd.circleprogress.CircleProgress;
 
 import com.example.nikhilanj.oopomo_new.db.PomoDatabase;
 import com.example.nikhilanj.oopomo_new.db.entity.PomoProfile;
+import com.example.nikhilanj.oopomo_new.db.entity.StatObject;
 import com.example.nikhilanj.oopomo_new.lib.PomoTask;
 import com.example.nikhilanj.oopomo_new.lib.PomoTimer;
 import com.example.nikhilanj.oopomo_new.utils.PomoProfileManager;
 
 import static android.provider.Settings.System.DEFAULT_NOTIFICATION_URI;
-import static android.provider.Settings.System.DEFAULT_RINGTONE_URI;
 
 
 public class HomeFragment extends Fragment implements
@@ -383,6 +384,7 @@ public class HomeFragment extends Fragment implements
     }
 
     public void onPomoTimerTick() {
+        this.pomoTask.updateStatObject(getContext());
         this.pomoTask.startNextTask();
         try {
             getView().post(new Runnable() {

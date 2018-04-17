@@ -1,8 +1,11 @@
 package com.example.nikhilanj.oopomo_new.lib;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.example.nikhilanj.oopomo_new.db.PomoDatabase;
 import com.example.nikhilanj.oopomo_new.db.entity.PomoProfile;
+import com.example.nikhilanj.oopomo_new.db.entity.StatObject;
 
 public class PomoTask {
 
@@ -19,6 +22,9 @@ public class PomoTask {
     private boolean taskRunning = false;
 
     private PomoTimer pomoTimer;
+
+    private StatObject statObject = null;
+    private long statObjectId;
 
     PomoTask(int focusTime, int shortBreakTime, int longBreakTime, int repeats, PomoTimer pomoTimer){
         this.focusTime = focusTime;
@@ -113,10 +119,10 @@ public class PomoTask {
         this.currentFocus = 1;
         this.setTaskRunning(false);
         this.currentTask = TASK_FOCUS;
+        this.statObject = null;
     }
 
     public void startNextTask() {
-
         switch (currentTask) {
             case TASK_FOCUS:
                 this.repeats--;
@@ -141,5 +147,34 @@ public class PomoTask {
                 break;
         }
 
+    }
+
+    public void updateStatObject(Context context) {
+        PomoDatabase pomoDatabase = PomoDatabase.getPomoDatabaseInstance(context);
+
+        if (this.statObject == null) {
+            this.statObject = new StatObject(System.currentTimeMillis(), this.focusTime, 0);
+            this.statObjectId = pomoDatabase.statDao().insert(this.statObject);
+            this.statObject.setStatId(statObjectId);
+            return;
+        }
+
+        if (this.currentTask == TASK_FOCUS) {
+            this.statObject.setFocusTime(this.statObject.getFocusTime() + this.focusTime);
+            pomoDatabase.statDao().updateStatObject(statObject);
+            return;
+        }
+
+        else if (this.currentTask == TASK_LONG_BREAK) {
+            this.statObject.setBreakTime(this.statObject.getBreakTime() + this.longBreakTime);
+            pomoDatabase.statDao().updateStatObject(statObject);
+            return;
+        }
+
+        else if (this.currentTask == TASK_SHORT_BREAK) {
+            this.statObject.setBreakTime(this.statObject.getBreakTime() + this.shortBreakTime);
+            pomoDatabase.statDao().updateStatObject(statObject);
+            return;
+        }
     }
 }
