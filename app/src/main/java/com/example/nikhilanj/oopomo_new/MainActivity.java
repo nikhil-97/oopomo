@@ -1,56 +1,95 @@
 package com.example.nikhilanj.oopomo_new;
 
-
+import android.annotation.SuppressLint;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
+import android.support.design.internal.BottomNavigationItemView;
+import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
 
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.nikhilanj.oopomo_new.db.PomoDatabase;
+import com.example.nikhilanj.oopomo_new.goals_package.GoalsFragment;
+import com.example.nikhilanj.oopomo_new.stats_package.StatsFragment;
 
-import com.example.nikhilanj.oopomo_new.lib.PomoTimer;
-
+import java.lang.reflect.Field;
 import java.util.Stack;
 
-import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-
-
-public class MainActivity extends AppCompatActivity implements timerFragmentInterface{
+public class MainActivity extends AppCompatActivity implements IgoalFragmentActivityInterface{
 
     private BottomNavigationView bottomNav;
+    float bottomNavDefaultElevation;
     private FragmentManager manager = getSupportFragmentManager();
     private HomeFragment homeFragment = new HomeFragment();
     private GoalsFragment goalsFragment = new GoalsFragment();
     private StatsFragment statsFragment = new StatsFragment();
-    private SettingsFragment settingsFragment = new SettingsFragment();
+    private PreferenceFragmentCompat settingsFragment = new SettingsFragment();
 
     public static Stack<Integer> bottomNavTabStack = new Stack<>();
-    private timeChangeListenerInterface tcli;
-    Timer mainTimer;
+
     //bottomNavTabStack is the stack where all the tabs are added on clicking.
     //This will be useful to go back to previous tab when back (<-) is pressed
     static MenuItem item1;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //instantiate room database
+        PomoDatabase.getPomoDatabaseInstance(getApplicationContext());
+
         setContentView(R.layout.activity_main);
 
         bottomNav = findViewById(R.id.bottomnavigation);
+        BottomNavigationViewHelper.disableShiftMode(bottomNav);
         bottomNav.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        bottomNavDefaultElevation = bottomNav.getElevation();
 
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().add(android.R.id.content, homeFragment).commit();
         getSupportActionBar().setTitle(getString (R.string.app_name));
 
+        getSupportActionBar().setElevation(0);
+        //Need this to remove shadow between action bar and tabs in stats fragment
+
         bottomNavTabStack.push(R.id.navigation_home);
+    }
+
+    static class BottomNavigationViewHelper {
+        @SuppressLint("RestrictedApi")
+        static void disableShiftMode(BottomNavigationView view) {
+            BottomNavigationMenuView menuView = (BottomNavigationMenuView) view.getChildAt(0);
+            try {
+                Field shiftingMode = menuView.getClass().getDeclaredField("mShiftingMode");
+                shiftingMode.setAccessible(true);
+                shiftingMode.setBoolean(menuView, false);
+                shiftingMode.setAccessible(false);
+                for (int i = 0; i < menuView.getChildCount(); i++) {
+                    BottomNavigationItemView item = (BottomNavigationItemView) menuView.getChildAt(i);
+                    //noinspection RestrictedApi
+                    item.setShiftingMode(false);
+                    // set once again checked value, so view will be updated
+                    //noinspection RestrictedApi
+                    item.setChecked(item.getItemData().isChecked());
+                }
+            } catch (NoSuchFieldException e) {
+                Log.e("BNVHelper", "Unable to get shift mode field", e);
+            } catch (IllegalAccessException e) {
+                Log.e("BNVHelper", "Unable to change value of shift mode", e);
+            }
+        }
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -81,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
                     loadTabFragment(statsFragment,R.string.title_stats);
                     return true;
                 case R.id.navigation_settings:
-                    loadTabFragment(settingsFragment,R.string.title_settings);
+                    loadTabFragment(settingsFragment, R.string.title_settings);
                     return true;
             }
             return false;
@@ -111,112 +150,74 @@ public class MainActivity extends AppCompatActivity implements timerFragmentInte
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.dark_mode_setting:
-                item.setChecked(!item.isChecked());
-                String toasttext;
-                if(item.isChecked()){
-                    setTheme(R.style.DarkTheme);
-                    //TODO: Doesn't work
-                    toasttext="Dark Theme applied";
-                }
-                else {
-                    toasttext="Dark Theme removed";
-                    setTheme(R.style.AppTheme);
-                }
-                Toast.makeText(getBaseContext(), toasttext, Toast.LENGTH_SHORT).show();
-                return true;
-
-            case R.id.fullscreen_setting:
-                item.setChecked(!item.isChecked());
-                if(item.isChecked()){
-                    final View decorView = getWindow().getDecorView();
-                    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN);
-                    System.out.println("insane checked");
-                }
-                else{
-                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-                    System.out.println("insane unchecked");
-                }
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        System.out.println("selected something");
+//        switch (item.getItemId()) {
+//            case R.id.dark_mode_setting:
+//                item.setChecked(!item.isChecked());
+//                String toasttext;
+//                if(item.isChecked()){
+//                    setTheme(R.style.DarkTheme);
+//                    //TODO: Doesn't work
+//                    toasttext="Dark Theme applied";
+//                }
+//                else {
+//                    toasttext="Dark Theme removed";
+//                    setTheme(R.style.AppTheme);
+//                }
+//                Toast.makeText(getBaseContext(), toasttext, Toast.LENGTH_SHORT).show();
+//                return true;
+//
+//            case R.id.fullscreen_setting:
+//                item.setChecked(!item.isChecked());
+//                if(item.isChecked()){
+//                    final View decorView = getWindow().getDecorView();
+//                    decorView.setSystemUiVisibility(
+//                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+//                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+//                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+//
+//                    item.setIcon(R.drawable.ic_fullscreen_exit_white_24px);
+//                    System.out.println("insane checked");
+//                }
+//                else if(!item.isChecked()){
+//                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+//                    item.setIcon(R.drawable.ic_fullscreen_white_24px);
+//                    System.out.println("insane unchecked");
+//                }
+//                return true;
+//        }
+//        return true;
+//    }
 
     private void loadTabFragment(Fragment fragment,int stringid){
-        manager.beginTransaction().replace(android.R.id.content, fragment).commit();
-        getSupportActionBar().setTitle(getString (stringid));
+
+        FragmentTransaction ft = manager.beginTransaction();
+        ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
+        ft.replace(android.R.id.content, fragment).commit();
+        String fragmentTitle = getString(stringid);
+        if(fragmentTitle.equals(getString(R.string.title_home))) fragmentTitle = "Oopomo";
+        getSupportActionBar().setTitle(fragmentTitle);
     }
 
-    public void updateTimeViewInHomeFragment(int data){
-        tcli = homeFragment;
-        tcli.updateTimeView(data);
+    private void loadTabFragment(PreferenceFragmentCompat fragment, int stringid){
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
+        ft.replace(android.R.id.content, fragment).commit();
+        String fragmentTitle = getString(stringid);
+        if(fragmentTitle.equals(getString(R.string.title_home))) fragmentTitle = "Oopomo";
+        getSupportActionBar().setTitle(fragmentTitle);
     }
 
     @Override
-    public Timer startCountdown(int f,int s,int l,int r){
-        this.mainTimer = new Timer(f,s,l,r);
-        return this.mainTimer;
+    public void setBottomNavBarElevation(float elev) {
+        bottomNav.setElevation(elev);
     }
 
     @Override
-    public void pauseCountdown(Timer timerinstance){timerinstance.pauseTimer();}
-
-    @Override
-    public void resumeCountdown(Timer timerinstance){timerinstance.resumeTimer();}
-
-    @Override
-    public void stopFullCountdown(Timer timerinstance){timerinstance.stopTimer();}
-
-    /**
-     * Implementation of HomeFragment interaction listener
-     */
-    /*PomoTimer pomoTimer;
-    public void startTimer(View view){
-        if( this.pomoTimer != null ){
-            if(this.pomoTimer.isTimerRunning()){
-                this.pauseTimer(view);
-            }
-            else {
-                this.resumeTimer(view);
-            }
-            return;
-        }
-        this.pomoTimer = new PomoTimer(60, this);
-        this.pomoTimer.startTimer();
-        FloatingActionButton timerActionButton = view.findViewById(R.id.timer_action_button);
-        timerActionButton.setImageDrawable(
-                ResourcesCompat.getDrawable(
-                        getResources(),
-                        R.drawable.ic_pause_black_24dp,
-                        null
-                )
-        );
+    public float getBottomNavBarDefaultElevation() {
+        return bottomNavDefaultElevation;
     }
 
-    public void pauseTimer(View view){
-        this.pomoTimer.pauseTimer();
-        FloatingActionButton timerActionButton = view.findViewById(R.id.timer_action_button);
-        timerActionButton.setImageDrawable(
-                ResourcesCompat.getDrawable(
-                        getResources(),
-                        R.drawable.ic_play_arrow_white_24dp,
-                        null
-                )
-        );
-    }
-
-    public void resumeTimer(View view){
-        this.pomoTimer.resumeTimer();
-        FloatingActionButton timerActionButton = view.findViewById(R.id.timer_action_button);
-        timerActionButton.setImageDrawable(
-                ResourcesCompat.getDrawable(
-                        getResources(),
-                        R.drawable.ic_pause_black_24dp,
-                        null
-                )
-        );
-    }*/
 }

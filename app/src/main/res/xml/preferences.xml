@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="unbound_pause"
+        android:title="Prevent Unbounded pause"
+        android:defaultValue="true" />
+    <!--<CheckBoxPreference-->
+        <!--android:key="dark_theme"-->
+        <!--android:title="Dark Theme"-->
+        <!--android:defaultValue="false" />-->
+</PreferenceScreen>

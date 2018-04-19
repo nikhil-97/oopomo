@@ -1,62 +1,103 @@
 package com.example.nikhilanj.oopomo_new;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.view.ViewPropertyAnimator;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.CycleInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewAnimator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.example.nikhilanj.oopomo_new.db.entity.StatObject;
+import com.github.lzyzsd.circleprogress.CircleProgress;
+
+import com.example.nikhilanj.oopomo_new.db.PomoDatabase;
+import com.example.nikhilanj.oopomo_new.db.entity.PomoProfile;
+import com.example.nikhilanj.oopomo_new.db.entity.StatObject;
+import com.example.nikhilanj.oopomo_new.lib.PomoTask;
+import com.example.nikhilanj.oopomo_new.lib.PomoTimer;
+import com.example.nikhilanj.oopomo_new.utils.PomoProfileManager;
+
+import static android.provider.Settings.System.DEFAULT_NOTIFICATION_URI;
 
 
-interface timeChangeListenerInterface{
-    void updateTimeView(int data);
-}
-
-
-public class HomeFragment extends Fragment implements timeChangeListenerInterface{
-
-    private timerFragmentInterface tfi;
-    private getSetTimesInterface gsti;
+public class HomeFragment extends Fragment implements
+        PomoTimer.TimerEventsListener,
+        TimeProfileSheetFragment.ProfileSheetInteractionListener{
 
     public HomeFragment() {} //essential empty constructor
+
+    private PomoTimer pomoTimer;
+    private PomoTask pomoTask;
+    private PomoProfile selectedProfile;
+    private PomoProfileManager pomoProfileManager;
+
+    private CircleProgress progressCircle;
+
+    private TextView showPausedTextView;
+    ViewPropertyAnimator showPausedAnimator;
+    private TextView timeTextView;
+    private TextView currentTaskTextView;
 
     private FloatingActionButton startButton;
     private FloatingActionButton pauseButton;
     private FloatingActionButton stopButton;
+    private FloatingActionButton skipSessionButton;
+    FloatingActionButton editTimeProfilesButton;
 
     private BottomSheetDialogFragment timeProfileFragment;
+    boolean startClickedOnce = false;
 
-    Timer timer_instance;
-
-    private int f1,s1,l1,r1;
-
+    private boolean unboundedPause;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v("Created View", "Not ded");}
+        this.pomoProfileManager = new PomoProfileManager(
+                PomoDatabase.getPomoDatabaseInstance(getContext())
+        );
+        this.selectedProfile = pomoProfileManager.getCurrentProfile(getContext());
+        this.pomoTimer = PomoTimer.getPomoTimer(this.selectedProfile.getFocusTime(), this);
+        this.pomoTask = PomoTask.getPomoTask(this.selectedProfile, this.pomoTimer);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        this.unboundedPause = sharedPref.getBoolean("unbound_pause", true);
+        startClickedOnce = false;
+    }
 
     @Override
     public void onAttach(Context context){
         super.onAttach(context);
-        try {
-            tfi = (timerFragmentInterface) context;
-        } catch (ClassCastException castException) {
-            Log.e("ClassCastException","Couldn't attach");
-        }
     }
 
 
@@ -64,14 +105,21 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home_fragment_layout, container, false);
+        progressCircle = view.findViewById(R.id.circleProgress2);
 
-        //timeSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet));
-        //profilesbutton = (Button) view.findViewById(R.id.timeProfilesButton);
+        showPausedTextView = view.findViewById(R.id.tv_show_when_paused);
 
-        FloatingActionButton editTimeProfilesButton = view.findViewById(R.id.editTimeProfilesButton);
+        timeTextView = view.findViewById(R.id.current_countdown_time_view);
+        currentTaskTextView = view.findViewById(R.id.current_session_view);
+
         startButton = view.findViewById(R.id.startButton);
         pauseButton = view.findViewById(R.id.pauseTimeButton);
         stopButton = view.findViewById(R.id.stopTimeButton);
+        skipSessionButton = view.findViewById(R.id.skipSessionButton);
+        editTimeProfilesButton = view.findViewById(R.id.editTimeProfilesButton);
+
+        timeTextView.setText(PomoTimer.getTime(selectedProfile.getFocusTime() * 60));
+        currentTaskTextView.setText(pomoTask.getCurrentTask());
 
         editTimeProfilesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,50 +128,59 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
             }
         });
 
+        if(pomoTimer.isTimerRunning()){
+            animationOnStartClicked();
+        }
+
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                pauseButton.setAlpha((float)0.001);
-                pauseButton.setVisibility(View.VISIBLE);
-                stopButton.setAlpha((float)0.001);
-                stopButton.setVisibility(View.VISIBLE);
-
-                buttonFadeAnimation(startButton,(float)0.001,1000,false);
-                //startCountdown();
-                buttonFadeAnimation(pauseButton,(float)1,1200,true);
-                buttonFadeAnimation(stopButton,(float)1,1200,true);
+                animationOnStartClicked();
+                startButton.setHapticFeedbackEnabled(true);
+                getView().performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 Toast.makeText(getContext(), "Starting Time !", Toast.LENGTH_SHORT).show();
-                try {
-                    gsti = (getSetTimesInterface) timeProfileFragment;
-                    f1 = gsti.getFocusTime();
-                    s1 = gsti.getShortBreakTime();
-                    l1 = gsti.getLongBreakTime();
-                    r1 = gsti.getRepeats();
+                if(pomoTask.isTaskRunning()) {
+                    pomoTimer.resumeTimer();
+                    showPausedAnimator.cancel();
+                    return;
                 }
-                catch(NullPointerException e){
-                    System.out.println("Can't get timeprofilesheetfragment. Loading default settings.");
-                    List<Integer> default_data = loadDefaultTimeSettings();
-                    f1 = default_data.get(1);
-                    s1 = default_data.get(2);
-                    l1 = default_data.get(3);
-                    r1 = default_data.get(4);
-                }
-                updateTimeView(f1);
-                //timer_instance = tfi.startCountdown(f1,s1,l1,r1);
+
+                pomoTask.setProfile(selectedProfile);
+                pomoTask.startFocus();
+                currentTaskTextView.setText(pomoTask.getCurrentTask());
             }
         });
 
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                if(timer_instance!=null) tfi.pauseCountdown(timer_instance);
+                pomoTimer.pauseTimer();
+                preventUnboundedPause();
+                animationWhenPaused();
             }
         });
 
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+                boolean isTimerRunning = pomoTimer.isTimerRunning();
+                pomoTimer.pauseTimer();
+                stopButton.setHapticFeedbackEnabled(true);
+                getView().performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 showStopAlert();
+                /*
+                * Resume timer if task is not quit and timer is running before "STOP" dialog
+                */
+                if(pomoTask.isTaskRunning() && isTimerRunning) {
+                    pomoTimer.resumeTimer();
+                }
+            }
+        });
+
+        skipSessionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showSkipAlert();
             }
         });
 
@@ -133,78 +190,170 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     public void showTimeSettingsFragment() {
         timeProfileFragment = new TimeProfileSheetFragment();
         getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_layout, null);
-        timeProfileFragment.show(getFragmentManager(), timeProfileFragment.getTag());
-
+        timeProfileFragment.show(getChildFragmentManager(), timeProfileFragment.getTag());
     }
 
-    private void buttonFadeAnimation(FloatingActionButton somebutton,float toAlpha,long fadetime,boolean setenable){
-        ViewPropertyAnimator buttonanimation = somebutton.animate().alpha(toAlpha).setDuration(fadetime);
+    private void buttonFadeAnimation(View view,float toAlpha,long fadetime,boolean setenable){
+        ViewPropertyAnimator buttonanimation = view.animate().alpha(toAlpha).setDuration(fadetime);
         buttonanimation.start();
-        somebutton.setEnabled(setenable);
+        view.setEnabled(setenable);
+    }
+
+    private void animationOnStartClicked(){
+        if(!startClickedOnce) {
+            pauseButton.setAlpha(0.001f);
+            pauseButton.setVisibility(View.VISIBLE);
+            stopButton.setAlpha(0f);
+            stopButton.setVisibility(View.VISIBLE);
+            skipSessionButton.setAlpha(0f);
+            skipSessionButton.setVisibility(View.VISIBLE);
+            startClickedOnce = true;
+        }
+        ViewPropertyAnimator timeViewSizeAnimator = timeTextView.animate().scaleX(1.3f).scaleY(1.3f).setDuration(2000);
+        timeViewSizeAnimator.setInterpolator(new DecelerateInterpolator());
+        timeViewSizeAnimator.start();
+        //showPausedAnimator.cancel();
+        buttonFadeAnimation(editTimeProfilesButton,0f,500,false);
+        buttonFadeAnimation(startButton,0f,1000,false);
+        buttonFadeAnimation(pauseButton,1.0f,1200,true);
+        buttonFadeAnimation(stopButton,1.0f,1200,true);
+        buttonFadeAnimation(skipSessionButton,1.0f,1200,true);
+    }
+
+    private void animationWhenPaused(){
+        int DURATION_PER_CYCLE = 1500;
+        int NUM_CYCLES = 100;
+        showPausedTextView.setText("PAUSED");
+        showPausedAnimator = showPausedTextView.animate().alpha(1f).setDuration(DURATION_PER_CYCLE*NUM_CYCLES);
+        showPausedAnimator.setInterpolator(new CycleInterpolator(100));
+        showPausedAnimator.start();
+        buttonFadeAnimation(startButton, 1f,1000,true);
+        buttonFadeAnimation(pauseButton,0f,1200,false);
+        buttonFadeAnimation(stopButton,1f,1200,true);
     }
 
     private void showStopAlert(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage( R.string.stoptrackingdialog_message).setTitle(R.string.stoptrackingdialog_title);
-        builder.setPositiveButton(R.string.stoptrackingdialog_quitmsg, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {quitTimer();}
+
+        String stopMessage = getString(R.string.stoptrackingdialog_message);
+        builder.setMessage(stopMessage).setTitle(R.string.stoptrackingdialog_title);
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                quitTask();
+            }
         });
-        builder.setNeutralButton(R.string.stoptrackingdialog_skipcurrent, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {skipCurrentSession();}
-        });
-        builder.setNegativeButton(R.string.stoptrackingdialog_nogoback, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {continueTimer();}
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
         });
 
         AlertDialog dialog = builder.create();
         dialog.show();
     }
 
-    private void quitTimer(){
+    private void quitTask(){
         Toast.makeText(getContext(), "stopCountdown()", Toast.LENGTH_SHORT).show();
-        buttonFadeAnimation(pauseButton, (float)0.001,1000,false);
-        buttonFadeAnimation(stopButton, (float)0.001,1000,false);
-        buttonFadeAnimation(startButton,1, 1000,true);
-        //TODO : stopCountdown();
-        if(timer_instance!=null) tfi.stopFullCountdown(timer_instance);
+        animationOnQuitTask();
+        this.pomoTask.resetTask();
+        this.timeTextView.setText(PomoTimer.getTime(selectedProfile.getFocusTime() * 60));
+        this.currentTaskTextView.setText(this.pomoTask.getCurrentTask());
+    }
+
+    private void animationOnQuitTask(){
+        buttonFadeAnimation(pauseButton, 0f,800,false);
+        buttonFadeAnimation(stopButton, 0f,800,false);
+        buttonFadeAnimation(skipSessionButton, 0f,800,false);
+
+        buttonFadeAnimation(startButton, 1f,1200,true);
+        buttonFadeAnimation(editTimeProfilesButton,1f,1200,true);
+
+        showPausedTextView.setAlpha(0.001f);
+        ViewPropertyAnimator timeViewSizeAnimator = timeTextView.animate().scaleX(1.0f).scaleY(1.0f).setDuration(1500);
+        timeViewSizeAnimator.setInterpolator(new LinearOutSlowInInterpolator());
+        timeViewSizeAnimator.start();
+    }
+
+    private void showSkipAlert(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        String currentSession = "FOCUS 1";
+        String stopMessage = "Skip current session ?\nThis will erase your progress in this session.";
+        builder.setMessage(stopMessage).setTitle("Skip FOCUS 1");
+        builder.setPositiveButton("YES",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        skipCurrentSession();
+                    }
+                });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void skipCurrentSession(){
         Toast.makeText(getContext(), "skipSession()", Toast.LENGTH_SHORT).show();
-        //TODO : skipSession()
+        this.pomoTask.startNextTask();
+        this.currentTaskTextView.setText(this.pomoTask.getCurrentTask());
+        if(pomoTask.getRepeats() == 0) {
+            quitTask();
+        }
     }
 
-    private void continueTimer(){
-        Toast.makeText(getContext(), "resumeCountdown()", Toast.LENGTH_SHORT).show();
-        if(timer_instance!=null) tfi.resumeCountdown(timer_instance);
-        //TODO : resumeCountdown()
-    }
+    public void preventUnboundedPause() {
+        Log.d("appdebug", "preventUnboundedPause: working "+ this.unboundedPause) ;
+        if(this.unboundedPause == false){
+            return;
+        }
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10000);
+                    if(!pomoTimer.isTimerRunning()) {
+                        showUnboundedPauseAlert();
+                    }
+                    return;
+                } catch (InterruptedException e) {
 
-    @Override
-    public void updateTimeView(int data) {
-        final String[] placeholder_string = new String[]{"placeholder"};
-        System.out.println("updateTimeView in fragment");
-        placeholder_string[0] = Integer.toString(data)+":00";
-        System.out.println(placeholder_string);
-        try {
-            getView().post(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        System.out.println("in getView().post");
-                        TextView timeview = getView().findViewById(R.id.current_countdown_time_view);
-                        timeview.setText(placeholder_string[0]);
-                    }
-                    catch (NullPointerException e) {
-                        Log.v("Cannot find timeView", "NPE @ find timeView");
-                    }
                 }
-            });
+            }
+        };
+        thread.start();
+    }
 
-        }
-        catch (NullPointerException e) {
-            Log.v("Cannot find View", "NPE @ getView().post()");
-        }
+    public void showUnboundedPauseAlert() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                String stopMessage = "You have paused work for too long !\n";
+                builder.setMessage(stopMessage).setTitle("Get back to work !");
+                builder.setPositiveButton("BACK TO WORK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                pomoTimer.resumeTimer();
+                                showPausedTextView.setText("RESUMED");
+                                //showPausedTextView.setAlpha(1f);
+                                //showPausedAnimator.cancel();
+                                Animation blinkAnimation = new AlphaAnimation(1,0);
+                                blinkAnimation.setDuration(1500);
+                                blinkAnimation.setInterpolator(new LinearInterpolator());
+                                showPausedTextView.setAnimation(blinkAnimation);
+                            }
+                        });
+                builder.setNegativeButton("SNOOZE", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //TODO : restartUnboundedPauseCounter;
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
     }
 
     @Override
@@ -213,14 +362,66 @@ public class HomeFragment extends Fragment implements timeChangeListenerInterfac
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
         //Save the fragment's state here
     }
 
-    private List<Integer> loadDefaultTimeSettings(){
-        List<Integer> defaultSetting = new ArrayList<Integer>();
-        defaultSetting.addAll(Arrays.asList(0,25,5,15,4));
-        return defaultSetting;
+    /*
+    TimerEventsListener interface implementation
+    */
+    public void onPomoTimerUpdate() {
+        try {
+            getView().post(new Runnable() {
+                @Override
+                public void run() {
+                    float fraction = (float)pomoTimer.getCurrentCountdownTime()/pomoTimer.getTotalCountdownTime();
+                    int progress = (int)(fraction*100);
+                    System.out.println(pomoTimer.getCurrentCountdownTime()+"/"+
+                            pomoTimer.getTotalCountdownTime()+"="+
+                            fraction+"=>"+
+                            progress);
+                    timeTextView.setText(pomoTimer.getTimeString());
+                    progressCircle.setProgress(progress);
+                }
+            });
+        }
+        catch(NullPointerException e){Log.e("Can't update time",Log.getStackTraceString(e));}
     }
 
+    public void onPomoTimerTick() {
+        this.pomoTask.updateStatObject(getContext());
+        this.pomoTask.startNextTask();
+        try {
+            getView().post(new Runnable() {
+                @Override
+                public void run() {
+                    currentTaskTextView.setText(pomoTask.getCurrentTask());
+                    if (pomoTask.getRepeats() == 0) {
+                        timeTextView.setText(PomoTimer.getTime(selectedProfile.getFocusTime() * 60));
+                    }
+                }
+            });
+        }
+        catch(NullPointerException e){Log.e("Can't update time",Log.getStackTraceString(e));}
+    }
+
+    public void onTimerAlert(){
+        try {
+            Log.d("appdebug","method running successfully");
+//            Uri notification = RingtoneManager.getActualDefaultRingtoneUri(getContext(), RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(getContext(), DEFAULT_NOTIFICATION_URI);
+            Log.d("appdebug", r.getTitle(getContext()));
+            r.play();
+        } catch (Exception e) {
+            Log.d("appdebug", e.toString());
+            e.printStackTrace();
+        }
+
+    }
+    /*
+    ProfileSheetInteractionListener interface implementation
+    */
+    public void onSelectedProfileChange(PomoProfile selectedProfile) {
+        this.selectedProfile = selectedProfile;
+        this.timeTextView.setText( PomoTimer.getTime(selectedProfile.getFocusTime() * 60) );
+    }
 }

@@ -1,13 +1,17 @@
 <resources>
     <string name="app_name">Oopomo</string>
 
+    <!--shared preferences keys-->
+    <string name="app_shared_preferences_key">POMO_APP_PREFERENCES</string>
+    <string name="current_profile_key">CURRENT_POMO_PROFLE</string>
     <!--All strings related to Home-->
     <string name="title_home">Home</string>
-    <string name="stoptrackingdialog_title">Stop Timer ?</string>
-    <string name="stoptrackingdialog_message">Do you really want to quit the task, or just skip the current session ?</string>
-    <string name="stoptrackingdialog_quitmsg">Yes, quit the task</string>
-    <string name="stoptrackingdialog_nogoback">No, go back</string>
-    <string name="stoptrackingdialog_skipcurrent">Skip current session</string>
+    <string name="stoptrackingdialog_title">Quit Task</string>
+    <string name="stoptrackingdialog_message">Stop the timer and quit the task ?\nThis will erase any progress so far.</string>
+    <string name="stoptrackingdialog_quitmsg">quit the task</string>
+    <string name="stoptrackingdialog_nogoback">go back</string>
+    <string name="stoptrackingdialog_skipcurrent">skip \'%1$s\'</string>
+    <string name="work_on_specific_goal"> <u>Work on a specific goal</u> </string>
 
     <!--All strings related to Time profile settings in Home-->
     <string name="focustimeviewstring">%1$d mins.</string>
@@ -21,8 +25,8 @@
     <string name="newgoal">You have not set any goals yet.\n Tap + to set one !</string>
 
     <!--All strings related to Statistics-->
-    <string name="title_stats">Statistics</string>
-    <string name="statsname">Stats</string>
+    <string name="title_stats">Stats</string>
+    <string name="statsname">No statistics yet.\nStart working now to see your stats !</string>
 
 
     <!--All strings related to Settings-->
